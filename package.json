@@ -1,0 +1,14 @@
+{
+  "name": "MeepoWebroot",
+  "description": "a web project",
+  "version": "1.0.0",
+  "author": "guoye",
+  "scripts": {
+    "start": "webpack-dev-server --env=development --hot --colors",
+    "build": "webpack --env=production --progress --hide-modules --colors",
+    "dll": " webpack --env=production --progress --colors --config ./build/dll.config.js"
+  },
+  "dependencies": {},
+  "devDependencies": {
+  }
+}
