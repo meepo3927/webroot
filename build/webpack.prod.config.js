@@ -1,0 +1,92 @@
+const webpack = require('webpack');
+const path = require('path');
+const config = require('./config.js');
+const util = require('./util.js');
+const ExtractTextPlugin = require('mini-css-extract-plugin');
+const VueLoaderPlugin = require('vue-loader/lib/plugin');
+
+const plugins = [
+    new webpack.ProvidePlugin(config.provide),
+    new webpack.DllReferencePlugin({
+        context: config.DIST_PATH,
+        manifest: require('./dll-manifest.json'),
+        name: 'dll'
+    }),
+    new VueLoaderPlugin(),
+    new ExtractTextPlugin({
+        filename: 'style.css',
+        chunkFilename: "chunk.style.css"
+    })
+];
+const rules = [
+    {
+        test: /\.js$/,
+        loader: 'babel-loader',
+        exclude: /node_modules/,
+        options: {
+            presets: [["env", {
+              "modules": false,
+              "targets": {
+                "browsers": ["> 1%", "last 100 versions"]
+              }
+            }]]
+        }
+    },
+    {
+        test: /\.(png|jpg|gif|svg)$/,
+        loader: 'file-loader',
+        options: {
+            name: 'img/[name]_[hash:7].[ext]'
+        }
+    },
+    {
+        test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
+        loader: 'file-loader',
+        options: {
+            name: 'fonts/[name].[hash:7].[ext]'
+        }
+    },
+    {
+        test: /entry\.scss$/,
+        use: [
+            ExtractTextPlugin.loader,
+            'css-loader','postcss-loader','less-loader'
+        ]
+    },
+    {
+        test: /\.less$/,
+        use: [
+            'vue-style-loader', 'css-loader', 'postcss-loader', 'less-loader'
+        ]
+    },
+    {
+        test: /\.vue$/,
+        loader: 'vue-loader'
+    }
+];
+module.exports = {
+    mode: 'production',
+    entry: util.getEntry(config.JS_DIR + '/entry/'),
+    output: {
+        path: config.DIST_PATH,
+        publicPath: config.productionPublicPath,
+        filename: '[name].js',
+        chunkFilename: 'chunk.[name].js'
+    },
+    plugins: plugins,
+    module: {
+        rules: rules
+    },
+    optimization: {
+        splitChunks: {
+            chunks: 'all',
+            minChunks: 2,
+            name: 'commons'
+        }
+    },
+    resolve: {
+        alias: config.alias,
+        extensions: ['.js', '.vue']
+    },
+    devtool: false
+};

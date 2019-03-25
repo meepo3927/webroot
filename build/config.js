@@ -51,5 +51,5 @@ module.exports = {
     DIST_PATH,
     SERVER_PORT,
     SERVER_DIR,
-    VERSION: 2
+    VERSION: 4
 };

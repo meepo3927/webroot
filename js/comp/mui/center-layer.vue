@@ -28,7 +28,7 @@ const dataFunc = function () {
     let o = {};
     return o;
 };
-module.exports = {
+export default {
     data: dataFunc,
     created,
     methods,

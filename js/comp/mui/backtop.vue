@@ -6,7 +6,7 @@
 </template>
 
 <script>
-let $ = require('jquery');
+import $ from 'jquery';
 const getScrollTop = () => {
     return document.documentElement.scrollTop
         || document.body.scrollTop;
@@ -46,7 +46,7 @@ const dataFunc = function () {
     };
     return o;
 };
-module.exports = {
+export default {
     data: dataFunc,
     created,
     methods,

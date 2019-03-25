@@ -1,4 +1,4 @@
-require('polyfill');
+import 'polyfill';
 // 基础库
 window.LOG = function () {
     if (window.console && window.console.log) {
@@ -9,12 +9,12 @@ window.LOG = function () {
     }
 };
 // 扩展库
-const MUIMsg = require('extend/vue.mui-msg.js');
-const MUIMsgBox = require('extend/vue.mui-msgbox.js');
-const MUIloading = require('extend/vue.mui-loading.js');
-const MUITooltip = require('extend/vue.mui-tooltip.js');
-const vueCommon = require('extend/vue.common.js');
-require('../less/entry.less');
+import MUIMsg from 'extend/vue.mui-msg.js';
+import MUIMsgBox from 'extend/vue.mui-msgbox.js';
+import MUIloading from 'extend/vue.mui-loading.js';
+import MUITooltip from 'extend/vue.mui-tooltip.js';
+import vueCommon from 'extend/vue.common.js';
+import '../less/entry.scss';
 Vue.prototype.$msg = MUIMsg;
 Vue.prototype.$alert = MUIMsgBox.alert;
 Vue.prototype.$confirm = MUIMsgBox.confirm;

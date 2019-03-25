@@ -22,7 +22,7 @@
 </template>
 
 <script>
-const Cover = require('util/cover.js');
+import Cover from 'util/cover.js';
 
 const STATUS_OK = 1;
 const STATUS_CANCEL = 2;
@@ -133,7 +133,7 @@ const dataFunc = function () {
     };
     return o;
 };
-module.exports = {
+export default {
     data: dataFunc,
     created,
     methods,

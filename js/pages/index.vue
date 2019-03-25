@@ -6,13 +6,15 @@
         <button class="btn btn-default" @click="alert" type="button">
             确定
         </button>
-
     </form>
+    <div class="shadow-container">
+        fuck yeah
+    </div>
 </div>
 </template>
 
 <script>
-require('root');
+import 'root';
 
 let methods = {};
 methods.alert = function () {
@@ -36,7 +38,7 @@ const dataFunc = function () {
     };
     return o;
 };
-module.exports = {
+export default {
     data: dataFunc,
     created,
     methods,
