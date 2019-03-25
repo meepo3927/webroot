@@ -43,7 +43,8 @@ module.exports = {
         'Vue': 'vue',
         'Tool': 'tool',
         'Request': 'request',
-        'Config': 'config'
+        'Config': 'config',
+        'URL': 'util/url.js'
     },
     productionPublicPath,
     developmentPublicPath: '/dist/',
