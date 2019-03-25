@@ -24,6 +24,7 @@ const rules = [
         loader: 'babel-loader',
         exclude: /node_modules/,
         options: {
+            cacheDirectory: true,
             presets: [["env", {
               "modules": false,
               "targets": {
