@@ -3,12 +3,12 @@
     <form class="p15" @submit.prevent>
         <input type="text" class="form-control" v-model="name">
         <p v-text="name"></p>
-        <button class="btn btn-default" @click="alert" type="button">
-            确定
-        </button>
+        <button class="btn btn-default" @click="msg" type="button">MUI msg</button>
+        <button class="btn btn-primary" @click="alert">MUI alert</button>
     </form>
-    <div class="shadow-container">
+    <div class="shadow-container" v-tooltip="t1">
         fuck yeah
+        <v-date />
     </div>
 </div>
 </template>
@@ -17,17 +17,17 @@
 import 'root';
 
 let methods = {};
+methods.msg = function () {
+    this.$msg(Config.env + '-' + Math.random());
+};
 methods.alert = function () {
     //let ld = this.$loading();
     this.$alert(Config.env + Config.ajaxUrlBase);
-    Request.fetch2('/api/my').then((result) => {
-        
-    }).catch(() => {
-        
-        this.$msg('request fail.');
-    })
 };
 let computed = {};
+computed.t1 = function () {
+    return '我是tt11'
+};
 let watch = {};
 const created = function () {};
 const mounted = function () {};
@@ -50,7 +50,6 @@ export default {
     ],
     beforeDestroy,
     components: {
-        
     }
 };
 </script>

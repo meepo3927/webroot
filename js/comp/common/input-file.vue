@@ -40,7 +40,7 @@ const dataFunc = function () {
     };
     return o;
 };
-module.exports = {
+export default {
     data: dataFunc,
     created,
     methods,

@@ -22,7 +22,7 @@ const rules = [
     {
         test: /\.js$/,
         loader: 'babel-loader',
-        exclude: /node_modules/,
+        exclude: /(node_modules)|(lib\/)/,
         options: {
             cacheDirectory: true,
             presets: [["env", {

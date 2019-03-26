@@ -1,6 +1,7 @@
+import vMain from 'pages/upload.vue';
 new Vue({
     el: '#main',
     components: {
-        'v-main': require('pages/upload.vue')
+        'v-main': vMain
     }
 });

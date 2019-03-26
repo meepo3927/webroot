@@ -1,6 +1,6 @@
-let Vue = require('vue');
-let Main = require('comp/mui/msgbox.vue');
-let MsgConstructor = Vue.extend(Main);
+
+import Main from 'comp/mui/msgbox.vue';
+const MsgConstructor = Vue.extend(Main);
 
 let MsgBox = function (options) {
     // options = convertOptions(options);
@@ -52,4 +52,4 @@ MsgBox.prompt = function (text, title, callback) {
     return MsgBox(options);
 };
 
-module.exports = MsgBox;
+export default MsgBox;

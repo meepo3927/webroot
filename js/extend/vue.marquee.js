@@ -1,6 +1,3 @@
-
-var Vue = require('vue');
-
 const WIDTH_DIFF_MIN = 5;
 const FAKE_GAP = 10;
 

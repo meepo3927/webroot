@@ -15,8 +15,8 @@
 </template>
 
 <script>
-let $ = require('jquery');
-let Cover = require('util/cover.js');
+import $ from 'jquery';
+import Cover from 'util/cover.js';
 
 let isPercent = function (str) {
     if (!str || !str.charAt) {
@@ -149,7 +149,7 @@ const dataFunc = function () {
     };
     return o;
 };
-module.exports = {
+export default {
     data: dataFunc,
     methods,
     watch,

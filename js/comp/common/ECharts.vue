@@ -9,8 +9,7 @@
 </style>
 
 <script>
-let echarts = require('echarts');
-let Vue = require('vue');
+import echarts from 'echarts';
 const loadingColor = '#30D434';
 // enumerating ECharts events for now
 const ACTION_EVENTS = [
@@ -48,7 +47,7 @@ const MOUSE_EVENTS = [
     'globalout'
 ]
 
-module.exports = {
+export default {
     props: {
         options: Object,
         theme: String,

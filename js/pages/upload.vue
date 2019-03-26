@@ -22,7 +22,7 @@ const dataFunc = function () {
     let o = {};
     return o;
 };
-module.exports = {
+export default {
     data: dataFunc,
     created,
     methods,
@@ -33,7 +33,7 @@ module.exports = {
     mixins: [],
     beforeDestroy,
     components: {
-        'file-upload': require('comp/common/file-upload.vue')
+        'file-upload': require('comp/common/file-upload.vue').default
     }
 };
 </script>

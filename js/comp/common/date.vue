@@ -3,7 +3,7 @@
 </template>
 
 <script>
-let MDate = require('lib/mdate.js');
+import MDate from 'lib/mdate.js';
 var methods = {};
 methods.initValue = function (v) {
     if (typeof v === 'number') {
@@ -40,7 +40,7 @@ let watch = {};
 watch.value = function (v) {
     this.setValue(v);
 };
-module.exports = {
+export default {
     data: function () {
         return {};
     },

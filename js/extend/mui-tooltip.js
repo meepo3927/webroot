@@ -1,4 +1,5 @@
-let $ = require('jquery');
+const $ = require('jquery');
+
 const ARROW_PAD = 12;
 const Tooltip = function (options) {
     this.onWindowScroll = (e) => {this._onWindowScroll(e)};

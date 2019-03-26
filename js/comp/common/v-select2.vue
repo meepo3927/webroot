@@ -9,7 +9,7 @@
 </template>
 
 <script>
-require('select2');
+import 'select2';
 let uuid = 1;
 var methods = {};
 methods.init = function () {
@@ -85,7 +85,7 @@ const dataFunc = function () {
     };
     return o;
 };
-module.exports = {
+export default {
     data: dataFunc,
     methods,
     computed,

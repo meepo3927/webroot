@@ -8,7 +8,7 @@
 </template>
 
 <script>
-require('echarts');
+import echarts from 'echarts';
 
 var methods = {};
 var computed = {};

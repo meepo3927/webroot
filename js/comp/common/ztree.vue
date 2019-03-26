@@ -8,9 +8,9 @@
 </template>
 
 <script>
-require('lib/jquery.ztree.core.min.js');
-require('lib/jquery.ztree.excheck.min.js');
-const tool = require('util/tool.js');
+import 'lib/jquery.ztree.core.min.js';
+import 'lib/jquery.ztree.excheck.min.js';
+import tool from 'util/tool.js';
 
 const defaultSetting = {
     data: {

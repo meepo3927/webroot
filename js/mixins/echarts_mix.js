@@ -382,6 +382,6 @@ module.exports = {
     mixins: [
     ],
     components: {
-        'my-chart': require('comp/common/my-chart.vue')
+        'my-chart': require('comp/common/my-chart.vue').default
     }
 };

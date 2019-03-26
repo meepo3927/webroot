@@ -25,8 +25,7 @@
 </template>
 
 <script>
-let formAsync = require('util/form_async');
-let config = require('global/config');
+import formAsync from 'util/form_async';
 let uuid = 1;
 let typeExtMap = {
     image: 'jpg,png,jpeg,gif',
@@ -265,7 +264,7 @@ computed.file = function () {
     return list.split('/').pop();
 };
 computed.formAction = function () {
-    return this.action || config.uploadUrl;
+    return this.action;
 };
 computed.errmsgVisible = function () {
     if (this.errmsg) {
@@ -298,7 +297,7 @@ const mounted = function () {
     this.makeFileInput();
 };
 const beforeDestroy = function () {};
-module.exports = {
+export default {
     data: function () {
         const id = (uuid++);
         return {

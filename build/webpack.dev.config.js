@@ -12,7 +12,7 @@ let rules = [
     {
         test: /\.js$/,
         loader: 'babel-loader',
-        exclude: /node_modules/,
+        exclude: /(node_modules)|(lib\/)/,
         options: {
             presets: [["env", {
               "modules": false,
@@ -59,6 +59,7 @@ module.exports = {
         chunkFilename: 'chunk.[name].js'
     },
     module: {
+        noParse: /jquery|echarts/,
         rules: rules
     },
     resolve: {
