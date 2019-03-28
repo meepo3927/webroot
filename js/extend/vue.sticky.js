@@ -73,12 +73,7 @@ proto.make = function (offset) {
     for (var i in this.replaceProperties) {
         $elem.css(i, this.replaceProperties[i]);
     }
-    var width = 'auto';
-    if (isFirefox) {
-        width = elemWidth + 'px';
-    }
     $elem.css({
-        width: width,
         left: offset.left + 'px'
     });
     $elem.addClass(MY_CLASSNAME);
@@ -113,7 +108,6 @@ proto._onWindowResize = function () {
     if (this.$elem.hasClass(MY_CLASSNAME)) {
         let offset = this.getOffset();
         this.$elem.css({
-            //width: width,
             left: offset.left + 'px'
         });
     }
