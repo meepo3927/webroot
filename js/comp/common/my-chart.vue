@@ -9,6 +9,7 @@
 
 <script>
 import echarts from 'echarts';
+import vueCharts from 'comp/common/ECharts.vue';
 
 var methods = {};
 var computed = {};
@@ -61,7 +62,7 @@ export default {
     mounted,
     beforeDestroy,
     components: {
-        'vue-echarts': require('comp/common/ECharts.vue')
+        'vue-echarts': vueCharts
     }
 };
 </script>
