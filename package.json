@@ -7,7 +7,9 @@
     "start": "webpack-dev-server --env=development --hot --colors --config ./build/webpack.dev.config.js",
     "build": "webpack --env=production --progress --hide-modules --colors --config ./build/webpack.prod.config.js",
     "dll": " webpack --env=production --progress --colors --config ./build/webpack.dll.config.js",
-    "clean": "node ./build/clean.js"
+    "ver": "node ./build/modify_version.js",
+    "clean": "node ./build/clean.js",
+    "add": "node ./build/cli.js addentry"
   },
   "dependencies": {},
   "devDependencies": {

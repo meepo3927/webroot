@@ -59,7 +59,7 @@ module.exports = {
         chunkFilename: 'chunk.[name].js'
     },
     module: {
-        noParse: /jquery|echarts/,
+        noParse: /(jquery|echarts)$/,
         rules: rules
     },
     resolve: {

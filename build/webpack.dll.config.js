@@ -61,7 +61,7 @@ module.exports = {
     },
     plugins: plugins,
     module: {
-        noParse: /jquery|echarts/,
+        noParse: /(jquery|echarts)$/,
         rules: rules
     },
     resolve: {
