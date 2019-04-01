@@ -3,13 +3,13 @@
  * @用法  new Promise(fn, fn);
  */
 
-(function (name, factory) {
+(function (factory) {
     if (typeof define === 'function' && (define.amd || define.cmd)) {
         define([], factory);
     } else {
-        window[name] = factory();
+        factory();
     }
-})('Promise', function () {
+})(function () {
 
     var RESOLVED = 0;
     var REJECTED = 1;
@@ -234,6 +234,9 @@
         return function (fn) {
             setTimeout(fn, 4);
         }
+    }
+    if (!window.Promise) {
+        window.Promise = Promise;
     }
 
     return Promise;
