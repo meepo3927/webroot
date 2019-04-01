@@ -9,7 +9,7 @@
     } else {
         window[name] = factory();
     }
-})('mPromise', function () {
+})('Promise', function () {
 
     var RESOLVED = 0;
     var REJECTED = 1;
