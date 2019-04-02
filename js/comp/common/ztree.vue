@@ -47,6 +47,9 @@ methods.init = function (data) {
         setting,
         data
     );
+    this.$nextTick(() => {
+        this.$emit('ready', this.ztree);
+    });
 };
 methods.addNode = function (node, targetNode, position) {
     var index = -1;
