@@ -4,7 +4,7 @@
  */
 
 var $ = require('jquery');
-var Promise = require('Promise');
+var Promise = require('promise');
 
 let fetch = (url, data = {}, method = 'GET', dataType = 'json') => {
     return new Promise((resolve, reject) => {
