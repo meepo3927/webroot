@@ -74,7 +74,14 @@
                 stack.splice(i, 1);
             }
         }
-    }
+    };
+    let holders = {};
+    exports.get = (name) => {
+        if (!holders[name]) {
+            holders[name] = new exports();
+        }
+        return holders[name];
+    };
 
     return exports;
 }));
