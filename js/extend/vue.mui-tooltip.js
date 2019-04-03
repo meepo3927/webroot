@@ -1,9 +1,9 @@
-// Vue.directive('tooltip', MUITooltip);
 const Tooltip = require('./mui-tooltip.js');
+// Vue.directive('tooltip', MUITooltip);
 const buildOptions = (targetElem, binding) => {
     let text;
     let o = binding.value;
-    if (o) {
+    if (o !== undefined && o !== null) {
         if (typeof o !== 'object') {
             text = o + '';
         } else {
@@ -20,6 +20,9 @@ const buildOptions = (targetElem, binding) => {
 module.exports = {
     bind (el, binding, vnode) {
         let options = buildOptions(el, binding);
+        if (options.text === '') {
+            return;
+        }
         el.__MUITooltip = new Tooltip(options);
     },
     update (el, binding) {
