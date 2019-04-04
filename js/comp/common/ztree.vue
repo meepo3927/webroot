@@ -113,7 +113,7 @@ computed.elemId = function () {
     return this.treeId || ('ztree' + this.id);
 };
 computed.loading = function () {
-    return (this.data === 'loading');
+    return (this.data === undefined);
 };
 computed.treeVisible = function () {
     if (!this.data) {
