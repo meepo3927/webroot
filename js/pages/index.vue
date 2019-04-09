@@ -10,6 +10,10 @@
         fuck yeah
         <v-date />
     </div>
+
+    <div>
+        
+    </div>
 </div>
 </template>
 
@@ -56,4 +60,5 @@ export default {
 
 <style scoped lang="less">
 .page-index {}
+
 </style>

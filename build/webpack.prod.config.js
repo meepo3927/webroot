@@ -90,5 +90,8 @@ module.exports = {
         alias: config.alias,
         extensions: ['.js', '.vue']
     },
+    performance: {
+        hints: false
+    },
     devtool: false
 };

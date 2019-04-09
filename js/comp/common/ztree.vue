@@ -139,6 +139,9 @@ const created = function () {
 };
 const mounted = function () {
     window.zTree = this;
+    if (this.data && typeof this.data === 'object') {
+        this.init(this.data);
+    }
 };
 const beforeDestroy = function () {};
 const dataFunc = function () {
