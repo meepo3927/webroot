@@ -1,5 +1,6 @@
 
 .mui-tooltip {
+    @skin-vali-color:  #f4615c;
     z-index: 19900420;
     background-color: @mui-tooltip-backcolor;
     color: #fff;
@@ -10,6 +11,21 @@
     padding: 10px;
 
     transition: opacity .5s ease 0s;
+    &.skin-vali {
+        background-color: @skin-vali-color;
+        &[m-placement^=top] > .mui-tooltip-arrow {
+            border-top-color: @skin-vali-color;
+        }
+        &[m-placement^=bottom] > .mui-tooltip-arrow {
+            border-bottom-color: @skin-vali-color;
+        }
+        &[m-placement^=right] > .mui-tooltip-arrow {
+            border-right-color: @skin-vali-color;
+        }
+        &[m-placement^=left] > .mui-tooltip-arrow {
+            border-left-color: @skin-vali-color;
+        }
+    }
     & > .mui-tooltip-content {
         font-size: 13px;
         line-height: 1.4;

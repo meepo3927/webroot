@@ -1,9 +1,7 @@
 <template>
 <div class="comp-ztree">
     <div class="loading-1" v-if="loading"></div>
-    <ul class="ztree" :id="elemId" 
-        ref="ztree"
-        v-show="treeVisible"></ul>
+    <ul class="ztree" :id="elemId" ref="ztree" v-show="treeVisible"></ul>
 </div>
 </template>
 
@@ -23,7 +21,44 @@ const defaultSetting = {
     view: {},
     callback: {}
 };
-
+const ACTION_EVENTS = [
+    'addNodes',
+    'cancelEditName',
+    'cancelSelectedNode',
+    'checkAllNodes',
+    'checkNode',
+    'copyNode',
+    'destroy',
+    'editName',
+    'expandAll',
+    'expandNode',
+    'getChangeCheckedNodes',
+    'getCheckedNodes',
+    'getNodeByParam',
+    'getNodeByTId',
+    'getNodeIndex',
+    'getNodes',
+    'getNodesByFilter',
+    'getNodesByParam',
+    'getNodesByParamFuzzy',
+    'getSelectedNodes',
+    'hideNode',
+    'hideNodes',
+    'moveNode',
+    'reAsyncChildNodes',
+    'reAsyncChildNodesPromise',
+    'refresh',
+    'removeChildNodes',
+    'removeNode',
+    'selectNode',
+    'setChkDisabled',
+    'setEditable',
+    'showNode',
+    'showNodes',
+    'transformToArray',
+    'transformTozTreeNodes',
+    'updateNode'
+];
 let uuid = 1;
 let methods = {};
 methods.init = function (data) {
@@ -37,7 +72,7 @@ methods.init = function (data) {
     callback.onClick = function (e, treeId, treeNode) {
         self.$emit('click', e, treeNode);
     };
-    
+
     let mySetting = {
         callback
     };
@@ -59,47 +94,12 @@ methods.addNode = function (node, targetNode, position) {
     } else if (position === 'after') {
         index = targetNode.getIndex() + 1;
     }
-
     if (position === 'before' || position === 'after') {
         parent = targetNode.getParentNode();
     } else if (position === 'inside') {
         parent = targetNode;
     }
     return this.ztree.addNodes(parent, index, node);
-};
-methods.move = function (moveNode, targetNode, moveType) {
-    if (this.ztree) {
-        return this.ztree.moveNode(targetNode, moveNode, moveType);
-    }
-    return false;
-};
-methods.updateNode = function (node) {
-    if (this.ztree) {
-        return this.ztree.updateNode(node);
-    }
-    return false;
-};
-methods.updateNodes = function (nodes) {
-    nodes.forEach((node) => {
-        this.ztree.updateNode(node);
-    });
-};
-methods.refresh = function () {
-    if (this.ztree) {
-        return this.ztree.refresh();
-    }
-};
-methods.remove = function (node) {
-    if (this.ztree) {
-        return this.ztree.removeNode(node);
-    }
-    return false;
-};
-methods.getCheckedNodes = function () {
-    if (this.ztree) {
-        return this.ztree.getCheckedNodes();
-    }
-    return [];
 };
 methods.getNodesArray = function () {
     if (this.ztree) {
@@ -108,6 +108,14 @@ methods.getNodesArray = function () {
     }
     return [];
 };
+for (let i = 0; i < ACTION_EVENTS.length; i++) {
+    let action = ACTION_EVENTS[i];
+    methods[action] = function () {
+        if (this.ztree) {
+            return this.ztree[action].apply(this.ztree, arguments);
+        }
+    };
+}
 let computed = {};
 computed.elemId = function () {
     return this.treeId || ('ztree' + this.id);
@@ -124,21 +132,14 @@ computed.treeVisible = function () {
     }
     return true;
 };
-computed.allowDrag = function () {
-    return (this.drag === true || this.drag === 'true');
-};
 let watch = {};
 watch.data = function (o) {
     if (typeof o === 'object' && o) {
         this.init(o);
     }
 };
-const beforeCreate = function () {
-};
-const created = function () {
-};
+const created = function () {};
 const mounted = function () {
-    window.zTree = this;
     if (this.data && typeof this.data === 'object') {
         this.init(this.data);
     }
@@ -152,7 +153,6 @@ const dataFunc = function () {
 };
 export default {
     data: dataFunc,
-    beforeCreate,
     created,
     methods,
     computed,
@@ -167,6 +167,5 @@ export default {
 
 <style scoped lang="less">
 .comp-ztree {
-    
 }
 </style>

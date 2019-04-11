@@ -1,3 +1,12 @@
+/**
+ * options:
+ * -- target 目标elem
+ * -- text 显示文字
+ * -- silent 不响应鼠标事件(mouseenter, mouseleave) 默认false
+ * -- autoShow 是否自动显示 默认false
+ *
+ */
+
 let $ = require('jquery');
 const ARROW_PAD = 12;
 const Tooltip = function (options) {
@@ -280,28 +289,40 @@ proto.setOptions = function (options) {
     this.setText(options.text);
     this.target = options.target;
     this.$target = $(options.target);
+
+    // 沉默
+    if (options.silent === true) {
+        this.silent = true;
+    } else {
+        this.silent = false;
+    }
+
+    this.skin = options.skin;
+    this.makeClassName();
+    if (options.autoShow) {
+        setTimeout(() => {
+            this.show();
+        });
+    }
 };
 proto.bind = function () {
-    this.$target.on('mouseenter', this.onMouseEnter)
-        .on('mouseleave', this.onMouseLeave);
+    if (this.silent === false) {
+        this.$target.on('mouseenter', this.onMouseEnter);
+        this.$target.on('mouseleave', this.onMouseLeave);
+    }
     window.addEventListener('scroll', this.onWindowScroll);
     window.addEventListener('resize', this.onWindowResize);
 };
 proto.unbind = function () {
-    this.$target.off('mouseenter', this.onMouseEnter)
-        .off('mouseleave', this.onMouseLeave);
+    this.$target.off('mouseenter', this.onMouseEnter);
+    this.$target.off('mouseleave', this.onMouseLeave);
     window.removeEventListener('scroll', this.onWindowScroll);
     window.removeEventListener('resize', this.onWindowResize);
 };
 proto.update = function (options) {
-    if (this.target !== options.target) {
-        this.target = options.target;
-
-        this.unbind();
-        this.$target = options.$target;
-        this.bind();
-    }
-    this.setText(options.text);
+    this.unbind();
+    this.setOptions(options);
+    this.bind();
 };
 proto.destroy = function () {
     this.unbind();
@@ -326,13 +347,29 @@ proto.makeElem = function () {
     ].join('');
     this.elem = elem;
     this.$elem = $(elem);
-    this.hide();
+    this._hide();
+};
+proto.makeClassName = function () {
+    let className = 'mui-tooltip';
+    if (this.skin) {
+        className += ' skin-' + this.skin;
+    }
+    this.elem.className = className;
 };
 proto.show = function () {
+    this.renderPosition();
+    this._show();
+    this.elemVisible = true;
+};
+proto.hide = function () {
+    this._hide();
+    this.elemVisible = false;
+};
+proto._show = function () {
     //this.$elem.css('visibility', 'visible');
     this.$elem.css('opacity', '1');
 };
-proto.hide = function () {
+proto._hide = function () {
     this.$elem.attr('m-placement', null);
     this.$elem.css({
         opacity: '0',
@@ -341,13 +378,10 @@ proto.hide = function () {
     });
 };
 proto._onMouseEnter = function (e) {
-    this.renderPosition();
     this.show();
-    this.elemVisible = true;
 };
 proto._onMouseLeave = function (e) {
     this.hide();
-    this.elemVisible = false;
 };
 proto._onWindowScroll = function (e) {
     if (this.elemVisible) {
