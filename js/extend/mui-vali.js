@@ -81,6 +81,12 @@ proto.check = function () {
     this.reset();
     let queue = [];
     this.$fm.find(':input').each((i, elem) => {
+        if (elem.disabled) {
+            return;
+        }
+        if ($(elem).filter(':visible').length === 0) {
+            return;
+        }
         if (elem.getAttribute('required') || elem.getAttribute('pattern')) {
             queue.push(elem);
         }

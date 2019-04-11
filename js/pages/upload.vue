@@ -23,7 +23,7 @@
             <div class="mm-row mt20">
                 <label class="col-1">密码:</label>
                 <div class="pl15">
-                    <input type="password" required class="form-control"/>
+                    <input type="password" required class="form-control" disabled/>
                 </div>
             </div>
 
@@ -31,15 +31,15 @@
                 <label class="col-1">性别:</label>
                 <div class="pl15">
                     <label class="m-radio">
-                        <input type="radio" name="gender" /> 男
+                        <input type="radio" name="gender" v-model="gender" value="man"/> 男
                     </label>
                     <label class="m-radio ml20">
-                        <input type="radio" required name="gender" /> 女
+                        <input type="radio" required name="gender" v-model="gender" value="woman" /> 女
                     </label>
                 </div>
             </div>
 
-            <div class="mm-row mt20">
+            <div class="mm-row mt20" v-show="gender === 'woman'">
                 <label for="" class="col-1">城市：</label>
                 <div class="pl15">
                     <select class="form-control" required>
@@ -95,6 +95,11 @@ import Vali from 'extend/mui-vali.js';
 let methods = {};
 methods.submit = function () {
     let result = this.fmVali.check();
+    if (result) {
+        this.$msg('yes');
+    } else {
+
+    }
 };
 let computed = {};
 let watch = {};
@@ -105,7 +110,9 @@ const mounted = function () {
 };
 const beforeDestroy = function () {};
 const dataFunc = function () {
-    let o = {};
+    let o = {
+        gender: ""
+    };
     return o;
 };
 export default {
