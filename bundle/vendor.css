@@ -1147,8 +1147,6 @@ img {
   border-radius: 50%;
 }
 hr {
-  margin-top: 20px;
-  margin-bottom: 20px;
   border: 0;
   border-top: 1px solid #eeeeee;
 }
@@ -9650,6 +9648,13 @@ button.close {
 em.red,
 span.red {
   color: #f00;
+}
+.with-red-star:before {
+  content: '*';
+  color: #f11;
+  position: absolute;
+  margin-left: -0.5em;
+  margin-top: 2px;
 }
 .text-error {
   color: #f00;

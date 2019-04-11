@@ -289,6 +289,21 @@ html.html-100 > body {
   -moz-transition: opacity 0.5s ease 0s;
   transition: opacity 0.5s ease 0s;
 }
+.mui-tooltip.skin-vali {
+  background-color: #f4615c;
+}
+.mui-tooltip.skin-vali[m-placement^=top] > .mui-tooltip-arrow {
+  border-top-color: #f4615c;
+}
+.mui-tooltip.skin-vali[m-placement^=bottom] > .mui-tooltip-arrow {
+  border-bottom-color: #f4615c;
+}
+.mui-tooltip.skin-vali[m-placement^=right] > .mui-tooltip-arrow {
+  border-right-color: #f4615c;
+}
+.mui-tooltip.skin-vali[m-placement^=left] > .mui-tooltip-arrow {
+  border-left-color: #f4615c;
+}
 .mui-tooltip > .mui-tooltip-content {
   font-size: 13px;
   line-height: 1.4;
@@ -412,6 +427,12 @@ html.html-100 > body {
   cursor: pointer;
 }
 .m-checkbox > input[type=checkbox] {
+  vertical-align: -1px;
+}
+.m-radio {
+  cursor: pointer;
+}
+.m-radio > input[type=radio] {
   vertical-align: -1px;
 }
 .loading-1,
