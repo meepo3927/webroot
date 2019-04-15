@@ -7,7 +7,8 @@ const vendors = [
     'jquery',
     'vue',
     'polyfill',
-    'dll_less'
+    'dll_less',
+    'lodash'
 ];
 const DIST_PATH = config.DIST_PATH + '/../bundle';
 const plugins = [
