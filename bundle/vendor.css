@@ -9690,6 +9690,9 @@ iframe.size-100 {
   opacity: 0.5;
   filter: alpha(opacity=50);
 }
+body.iframe-pointer-none iframe {
+  pointer-events: none;
+}
 /**
  * 快捷margin定义
  */
