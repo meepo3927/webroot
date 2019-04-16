@@ -14,6 +14,17 @@
         </div>
     </mui-scroll>
 
+    <mui-scroll class="scroll-test-2 scroll-test" ref="ss2" position="absolute">
+        <div>
+            <ul class="list-1">
+                <li>噢呃噢呃</li>
+                <li v-for="v in list1" v-text="v"></li>
+            </ul>
+
+            <button class="btn btn-default m20" @click="onClick1">Add Item+</button>
+        </div>
+    </mui-scroll>
+    <div class="b-block"></div>
     <div class="pb30"></div>
 </div>
 </template>
@@ -73,6 +84,14 @@ form {
 }
 .scroll-test-1 {
     max-height: 320px;
+}
+.scroll-test-2 {
+    top: 0;
+    right: 0;
+    height: 50vh;
+}
+.b-block {
+    height: 80vh;
 }
 .list-1 {
     padding: 8px;

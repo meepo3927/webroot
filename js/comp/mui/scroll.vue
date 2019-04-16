@@ -1,6 +1,6 @@
 <template>
 <div class="mui-scroll-wrapper" :style="rootStyle">
-    <div class="mui-scroll-inner" ref="inner"
+    <div class="mui-scroll-inner" ref="inner" :style="innerStyle"
         @mouseenter="onMouseEnter"
         @mouseleave="onMouseLeave"
         @mousewheel="onMouseWheel"
@@ -11,26 +11,27 @@
         @mouseenter="onBarMouseEnter"
         @mouseleave="onBarMouseLeave"
         @selectstart.stop.prevent></div>
-    <!-- rail -->
-    <div class="mui-scroll-rail" v-show="railVisible" ref="rail"></div>
 </div>
 </template>
 
 <script>
 const $ = require('jquery');
 const WHEEL_STEP = 20;
+const DEBOUNCE_TIME = 150;
 let methods = {};
 methods.init = function () {
-    this.releaseScroll = false;
 };
 methods.getWrapperHeight = function () {
     return this.$el.clientHeight;
+};
+methods.getInnerHeight = function () {
+    return this.$refs.inner.scrollHeight
 };
 // 重新计算高度，并决定是否隐藏
 methods.renderBar = function () {
     // calculate scrollbar height and make sure it is not too small
     let wrapperHeight = this.getWrapperHeight();
-    let innerHeight = this.$refs.inner.scrollHeight;
+    let innerHeight = this.getInnerHeight();
     // LOG('wrapperHeight:' + wrapperHeight);
     // LOG('innerHeight:' + innerHeight);
 
@@ -41,10 +42,29 @@ methods.renderBar = function () {
     this.needScroll = true;
     let hh = (wrapperHeight / innerHeight) * wrapperHeight;
     this.barHeight = Math.round(hh);
+
+    // 边界检查
+    this.checkBounds();
+};
+methods.checkBounds = function () {
+    if (this.barTop + this.barHeight > this.getWrapperHeight()) {
+        // fix it
+        this.barTop = this.getWrapperHeight() - this.barHeight;
+        this.top = this.getTopValue();
+    }
 };
 methods.handleWheel = function (delta, e) {
-    let barTop = this.barTop + delta * WHEEL_STEP;
-    this.barTop = this.fixBarTopValue(barTop);
+    if (this.needScroll) {
+        let barTop = this.barTop + delta * WHEEL_STEP;
+        this.barTop = this.fixBarTopValue(barTop);
+        this.top = this.getTopValue();
+        e.returnValue = false;
+        e.preventDefault();
+        return false;
+    }
+};
+methods.handleResize = function () {
+    this.renderBar();
 };
 methods.onMouseEnter = function (e) {
     this.isOverPanel = true;
@@ -54,11 +74,11 @@ methods.onMouseLeave = function (e) {
 };
 methods.onMouseWheel = function (e) {
     let delta = -e.wheelDelta / 120;
-    this.handleWheel(delta, e);
+    return this.handleWheel(delta, e);
 };
 methods.onFFMouseWheel = function (e) {
     let delta = e.detail / 3;
-    this.handleWheel(delta, e);
+    return this.handleWheel(delta, e);
 };
 methods.onBarMouseDown = function (e) {
     this.dragging = true;
@@ -74,6 +94,8 @@ methods.onBarMouseLeave = function (e) {
 };
 methods.onWinResize = function (e) {
     // debounce render
+    clearTimeout(this.onWinResizeTimer);
+    this.onWinResizeTimer = setTimeout(this.handleResize, DEBOUNCE_TIME);
 };
 methods.onDocMouseMove = function (e) {
     if (!this.dragging) {
@@ -82,6 +104,8 @@ methods.onDocMouseMove = function (e) {
     // 计算bar的位置
     let offset = (e.pageY - this.barStartY);
     this.barTop = this.fixBarTopValue(this.barStartTop + offset);
+    // 计算top
+    this.top = this.getTopValue();
 };
 methods.onDocMouseUp = function (e) {
     if (!this.dragging) {
@@ -90,6 +114,14 @@ methods.onDocMouseUp = function (e) {
     this.dragging = false;
     this.barStartY = 0;
     this.barStartTop = 0;
+};
+methods.getTopValue = function (offset) {
+    if (offset === undefined) {
+        offset = this.barTop;
+    }
+    let percent = offset / (this.getWrapperHeight() - this.barHeight);
+    let val = percent * (this.getInnerHeight() - this.getWrapperHeight());
+    return -val;
 };
 methods.fixBarTopValue = function (val) {
     if (val < 0) {
@@ -104,6 +136,11 @@ computed.rootStyle = function () {
     let arr = {};
     arr.position = this.position || 'relative';
     return arr;
+};
+computed.innerStyle = function () {
+    return {
+        transform: 'translateY(' + this.top + 'px)'
+    }
 };
 computed.barStyle = function () {
     let style = {};
@@ -136,10 +173,10 @@ const updated = function () {
 };
 const dataFunc = function () {
     let o = {
+        top: 0,
         barTop: 0,
         barHeight: 0,
-        needScroll: false,
-        railVisible: false
+        needScroll: false
     };
     return o;
 };
@@ -159,14 +196,13 @@ export default {
 </script>
 
 <style scoped lang="less">
-@bar-size:  7px;
+@bar-size:  8px;
 .mui-scroll-wrapper {
     overflow: hidden;
 }
 .mui-scroll-inner {
 }
-.mui-scroll-bar,
-.mui-scroll-rail {
+.mui-scroll-bar {
     position: absolute;
     width: @bar-size;
     right: 1px;
@@ -175,11 +211,6 @@ export default {
 .mui-scroll-bar {
     background-color: rgba(0, 0, 0, .2);
     z-index: 10;
-}
-.mui-scroll-rail {
-    height: 100%;
-    top: 0;
-    background-color: rgba(50, 50, 50, .3);
-    z-index: 9;
+    transition: height .3s ease;
 }
 </style>
