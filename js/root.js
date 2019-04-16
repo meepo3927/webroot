@@ -15,6 +15,7 @@ import MUIMsgBox from 'extend/vue.mui-msgbox.js';
 import MUIloading from 'extend/vue.mui-loading.js';
 import MUITooltip from 'extend/vue.mui-tooltip.js';
 import vueCommon from 'extend/vue.common.js';
+import MUIScroll from 'comp/mui/scroll.vue';
 // import centerlayer from 'comp/common/center-layer.vue';
 // import vDate from 'comp/common/date.vue';
 Vue.prototype.$msg = MUIMsg;
@@ -24,6 +25,6 @@ Vue.prototype.$prompt = MUIMsgBox.prompt;
 Vue.prototype.$loading = MUIloading;
 Vue.directive('tooltip', MUITooltip);
 Vue.use(vueCommon);
-
+Vue.component('mui-scroll', MUIScroll);
 // Vue.component('v-date', vDate);
 // Vue.component('center-layer', centerlayer)

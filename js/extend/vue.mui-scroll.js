@@ -2,10 +2,8 @@ const Vue = require('vue');
 const $ = require('jquery');
 
 const defaults = {
-    // width in pixels of the visible scroll area
-    width : 'auto',
     // height in pixels of the visible scroll area
-    height : '250px',
+    height : '100%',
     // width in pixels of the scrollbar and rail
     size : '7px',
     // scrollbar color, accepts any hex/color value
@@ -30,10 +28,6 @@ const defaults = {
     railOpacity : .2,
     // whether we should enable bar dragging
     railDraggable : true,
-    // defautlt CSS class of the rail
-    railClass : 'mui-scroll-rail',
-    // defautlt CSS class of the bar
-    barClass : 'mui-scroll-bar',
     // defautlt CSS class of the wrapper
     wrapperClass : 'mui-scroll-wrapper',
     // check if mousewheel should scroll the window if we reach top/bottom
@@ -49,44 +43,37 @@ const defaults = {
 };
 const minBarHeight = 30;
 const divS = '<div></div>';
-function Scroll(el, options) {
-    this.el = el;
-    if (this.el) {
+function Scroll(wrapper, options) {
+    this.wrapper = wrapper;
+    if (this.wrapper) {
         this.init(options);
     }
 }
 let proto = Scroll.prototype;
 proto.init = function (options) {
     this.releaseScroll = false;
-    var o = this.o = $.extend({}, defaults, options);
-    var $el = this.$el = $(this.el);
+    this.o = $.extend({}, defaults, options);
+    this.$wrapper = $(this.wrapper);
+    this.$el = this.$wrapper.children('div:eq(0)');
+    this.el = this.$el[0];
     // ensure we are not binding it again
-    if ($el.parent().hasClass(o.wrapperClass)) {
+    if (this.$wrapper.hasClass(this.o.wrapperClass)) {
         return this.update(options);
-    } else if (options.destroy === true) {
-        return;
     }
-    // 高度
-    o.height = (o.height === 'auto') ? this.$el.parent().height() : o.height;
     // wrap content
-    this.makeElem();
     this.initElem();
     this.attach();
     // set up initial height
     this.resetBarHeight();
-    this.initPosition();
 };
-proto.makeElem = function () {
+proto.initElem = function () {
     const o = this.o;
-    this.$wrapper = $(divS).addClass(o.wrapperClass).css({
-        position: 'relative',
-        overflow: 'hidden',
-        width: o.width,
-        height: o.height
-    });
-
+    this.$wrapper.addClass(o.wrapperClass).css('overflow', 'hidden');
+    if (this.$wrapper.css('position') === 'static') {
+        this.$wrapper.css('position', 'relative');
+    }
     // create scrollbar rail
-    this.$rail = $(divS).addClass(o.railClass).css({
+    this.$rail = $(divS).addClass('mui-scroll-rail').css({
         'width': o.size,
         'height': '100%',
         'position': 'absolute',
@@ -99,7 +86,7 @@ proto.makeElem = function () {
     });
 
     // create scrollbar
-    this.$bar = $(divS).addClass(o.barClass).css({
+    this.$bar = $(divS).addClass('mui-scroll-bar').css({
         'background': o.color,
         'width': o.size,
         'position': 'absolute',
@@ -109,53 +96,15 @@ proto.makeElem = function () {
         'border-radius' : o.borderRadius,
         'zIndex': 99
     });
-    return {
-        wrapper: this.$wrapper,
-        rail: this.$rail,
-        bar: this.$bar
-    };
-};
-proto.initElem = function () {
-    const o = this.o;
-    // update style for the div
-    this.$el.css({
-        overflow: 'hidden',
-        width: o.width,
-        height: o.height
-    });
     // set position
     var position = (o.position === 'right') ? {right: o.distance} : {left: o.distance};
     this.$rail.css(position);
     this.$bar.css(position);
-    // wrap it
-    this.$el.wrap(this.$wrapper);
-    // append to parent div
-    this.$el.parent().append(this.$bar);
-    this.$el.parent().append(this.$rail);
+    // Append
+    this.$wrapper.append(this.$bar);
+    this.$wrapper.append(this.$rail);
 };
-proto.initPosition = function () {
-    const o = this.o;
-    if (o.start === 'top') {
-        return;
-    }
-    // check start position
-    if (o.start === 'bottom') {
-        // scroll content to bottom
-        this.$bar.css({ top: $el.outerHeight() - this.$bar.outerHeight() });
-        this.scrollContent(0, true);
-        return;
-    }
-    // 滚动到某[子元素]
-    if (o.start && $(o.start).length) {
-        let offset = $(o.start).position().top;
-        // assume jQuery selector
-        this.scrollContent(offset, false, true);
-        // make sure bar stays hidden
-        if (!o.alwaysVisible) {
-            this.$bar.hide();
-        }
-    }
-};
+
 proto.attach = function () {
     const o = this.o;
     // make it draggable
@@ -212,44 +161,43 @@ proto.attach = function () {
     });
 };
 proto.update = function (options) {
+    if (!$.isPlainObject(options)) {
+        return false;
+    }
+    const $wrapper = this.$wrapper;
     const $el = this.$el;
     // start from last bar position
     var offset = $el.scrollTop();
     // find bar and rail
-    this.$bar = $el.siblings('.' + this.o.barClass);
-    this.$rail = $el.siblings('.' + this.o.railClass);
+    this.$bar = $el.siblings('.mui-scroll-bar');
+    this.$rail = $el.siblings('.mui-scroll-rail');
     this.resetBarHeight();
 
-    if ($.isPlainObject(options)) {
-        if (options.destroy === true) {
-            return this.destroy();
-        }
-        // 先设置auto，获取重新计算后的高度
-        if ('height' in options && options.height === 'auto') {
-            $el.parent().css('height', 'auto');
-            $el.css('height', 'auto');
-
-            var height = $el.parent().parent().height();
-            $el.parent().css('height', height);
-            $el.css('height', height);
-
-        } else if ('height' in options) {
-            var h = options.height;
-            $el.parent().css('height', h);
-            $el.css('height', h);
-        }
-
-        if ('scrollTo' in options) {
-            // jump to a static point
-            offset = parseInt(o.scrollTo);
-        } else if ('scrollBy' in options) {
-            // jump by value pixels
-            offset += parseInt(o.scrollBy);
-        }
-
-        // scroll content by the given offset
-        this.scrollContent(offset, false, true);
+    if (options.destroy === true) {
+        return this.destroy();
     }
+    // 先设置auto，获取重新计算后的高度
+    if (options.height === 'auto') {
+        $wrapper.css('height', 'auto');
+        $el.css('height', 'auto');
+        var height = $wrapper.parent().height();
+        $wrapper.css('height', height);
+        $el.css('height', '100%');
+    } else if ('height' in options) {
+        $el.parent().css('height', options.height);
+        $el.css('height', '100%');
+    }
+
+    if ('scrollTo' in options) {
+        // jump to a static point
+        offset = parseInt(o.scrollTo, 10);
+    } else if ('scrollBy' in options) {
+        // jump by value pixels
+        offset += parseInt(o.scrollBy, 10);
+    }
+
+    // scroll content by the given offset
+    this.scrollContent(offset, false, true);
 };
 proto.fixTop = function (v) {
     return Math.min(Math.max(v, 0), this.getMaxTop());
@@ -269,7 +217,6 @@ proto.getWheelPixel = function (y) {
 
     // move bar, make sure it doesn't go out
     delta = this.fixTop(delta);
-
     // if scrolling down, make sure a fractional change to the
     // scroll position isn't rounded away when the scrollbar's CSS is set
     // this flooring of delta would happened automatically when
@@ -343,7 +290,7 @@ proto.showBar = function () {
     this.lastScroll = percentScroll;
 
     // show only when required
-    if(this.barHeight >= this.$el.outerHeight()) {
+    if (this.barHeight >= this.$el.outerHeight()) {
         // allow window scroll
         this.releaseScroll = true;
         return;
@@ -369,7 +316,6 @@ proto.delayHideBar = function () {
         if (this.isOverBar || this.isDragging) {
             return;
         }
-
         this.hideBar();
     }, 600);
 }
@@ -379,7 +325,7 @@ proto.attachWheel = function () {
         this.el.addEventListener('DOMMouseScroll', _onWheel, false);
         this.el.addEventListener('mousewheel', _onWheel, false);
     } else {
-        document.attachEvent("onmousewheel", _onWheel)
+        document.attachEvent("onmousewheel", _onWheel);
     }
 };
 proto.attachDrag = function () {
@@ -440,9 +386,10 @@ proto.onBarMouseDown = function (e) {
     return false;
 };
 proto.destroy = function () {
+    this.destroyed = true;
+
     this.$bar.remove();
     this.$rail.remove();
-    this.$el.unwrap();
 };
 
 module.exports = {

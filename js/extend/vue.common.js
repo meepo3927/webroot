@@ -49,6 +49,9 @@ Plugin.install = function (Vue, options) {
     computed.vSpace = function () {
         return '　';
     };
+    computed.$ = function () {
+        return jQuery;
+    };
     Vue.mixin({
         methods,
         computed
