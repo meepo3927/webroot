@@ -1,8 +1,7 @@
-var Plugin = {};
-var localEnv = !(location.host);
+const Plugin = {};
 Plugin.install = function (Vue, options) {
-    let methods = {};
-    methods.getPageUrl = function (path, param = '') {
+    // 路径封装
+    Vue.$getPageUrl = (path, param = '') => {
         if (localEnv) {
             if (path.charAt(0) === '/') {
                 return '.' + path + '.html' + param;
@@ -15,45 +14,36 @@ Plugin.install = function (Vue, options) {
         }
         return Config.basePath + path + '.html' + param;
     };
-    methods.getImageUrl = function (path) {
-        return this.vImgPath + path;
+    Vue.$getImageUrl = (path) => {
+        if (Config.isProduction) {
+            return Config.basePath + '/images' + path;
+        }
+        const localEnv = !(location.host);
+        if (localEnv) {
+            return './images' + path;
+        }
+        return '/images' + path;
     };
-    methods.vueCreateComponent = function (component, myData) {
-        let Constructor = Vue.extend(component);
-        let instance = new Constructor({
-            data: myData
+    Vue.$newComponent = (component, data, el) => {
+        const Constructor = Vue.extend(component);
+        const instance = new Constructor({
+            data
         });
-        instance.$mount(document.body);
+        instance.$mount(el || document.body);
         return instance;
     };
-    methods.vueDisposeComponent = function (instance) {
-        let $el = instance.$el;
+    Vue.$disposeComponent = (instance) => {
+        const $el = instance.$el;
         if ($el.parentNode) {
             $el.parentNode.removeChild($el);
         }
         instance.$destroy(true);
         return instance;
     };
-    let computed = {};
-    computed.vImgPath = function () {
-        if (localEnv) {
-            return './images';
-        }
-        if (Config.isProduction) {
-            return Config.basePath + '/images';
-        }
-        return '/images';
-    };
-    computed.vSpace = function () {
-        return '　';
-    };
-    computed.$ = function () {
-        return jQuery;
-    };
-    Vue.mixin({
-        methods,
-        computed
-    });
+    Vue.$spaceChar = '　';
+    if (Config.mock) {
+        Vue.prototype.$ = jQuery;
+    }
 };
 
 module.exports = Plugin;
