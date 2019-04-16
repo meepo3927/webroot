@@ -9,6 +9,9 @@ window.LOG = function () {
         }
     }
 };
+window.LOGJ = (a) => {
+    LOG(JSON.parse(JSON.stringify(a)));
+};
 // 扩展库
 import MUIMsg from 'extend/vue.mui-msg.js';
 import MUIMsgBox from 'extend/vue.mui-msgbox.js';
