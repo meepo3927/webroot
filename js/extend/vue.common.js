@@ -23,13 +23,11 @@ Plugin.install = function (Vue, options) {
         let instance = new Constructor({
             data: myData
         });
-
-        instance.vm = instance.$mount();
-        document.body.appendChild(instance.vm.$el);
+        instance.$mount(document.body);
         return instance;
     };
     methods.vueDisposeComponent = function (instance) {
-        let $el = instance.vm.$el;
+        let $el = instance.$el;
         if ($el.parentNode) {
             $el.parentNode.removeChild($el);
         }
