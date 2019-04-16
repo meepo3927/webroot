@@ -82,6 +82,7 @@ methods.onFFMouseWheel = function (e) {
 };
 methods.onBarMouseDown = function (e) {
     this.dragging = true;
+    $(document.body).addClass('iframe-pointer-none');
     // 初始状态
     this.barStartY = e.pageY;
     this.barStartTop = this.barTop;
@@ -111,6 +112,7 @@ methods.onDocMouseUp = function (e) {
     if (!this.dragging) {
         return false;
     }
+    $(document.body).removeClass('iframe-pointer-none');
     this.dragging = false;
     this.barStartY = 0;
     this.barStartTop = 0;
@@ -157,15 +159,15 @@ let watch = {};
 const created = function () {};
 const mounted = function () {
     this.$bar = $(this.$refs.bar);
-    document.documentElement.addEventListener('mousemove', this.onDocMouseMove);
-    document.documentElement.addEventListener('mouseup', this.onDocMouseUp);
+    document.documentElement.addEventListener('mousemove', this.onDocMouseMove, true);
+    document.documentElement.addEventListener('mouseup', this.onDocMouseUp, true);
     window.addEventListener('resize', this.onWinResize);
     this.renderBar();
 };
 const beforeDestroy = function () {
     this.$bar = null;
-    document.documentElement.removeEventListener('mousemove', this.onDocMouseMove);
-    document.documentElement.removeEventListener('mouseup', this.onDocMouseUp);
+    document.documentElement.removeEventListener('mousemove', this.onDocMouseMove, true);
+    document.documentElement.removeEventListener('mouseup', this.onDocMouseUp, true);
     window.removeEventListener('resize', this.onWinResize);
 };
 const updated = function () {
