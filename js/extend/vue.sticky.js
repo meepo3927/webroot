@@ -10,7 +10,7 @@ function Sticky(elem) {
     this.replaceProperties = {
         position: 'fixed',
         top: 0,
-        zIndex: 3000,
+        zIndex: 3,
         marginLeft: 0,
         marginTop: 0
     };

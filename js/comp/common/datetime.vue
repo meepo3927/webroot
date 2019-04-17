@@ -13,7 +13,7 @@ const mounted = function () {
     $(this.$el).datetimepicker({
         language: 'zh-CN',
         format: 'yyyy-mm-dd hh:ii:00',
-        zIndex: '99999999'
+        zIndex: '3'
     }).on('changeDate', (ev) => {
         let val = (ev.target.value);
         this.$emit('input', val);

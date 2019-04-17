@@ -169,7 +169,7 @@ export default {
     position: fixed;
     right: 0;
     top: 0;
-    z-index: 19900420;
+    z-index: 3;
     .x-wrapper-1 {
         height: 100%;
         margin: 0;

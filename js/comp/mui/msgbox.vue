@@ -112,7 +112,6 @@ let watch = {};
 const created = function () {};
 const mounted = function () {
     this.mixMyCover = new Cover({
-        zIndex: 19900420 + 10,
         show: true
     });
     document.addEventListener('keyup', this.onKeyUp);

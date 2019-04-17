@@ -271,7 +271,7 @@ export default {
     overflow-x: hidden;
     overflow-y: auto;
     position: absolute;
-    z-index: 333;
+    z-index: 2;
     width: 100%;
     & > li {
         padding: 8px 12px;

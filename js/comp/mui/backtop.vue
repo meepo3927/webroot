@@ -69,7 +69,7 @@ export default {
     right: 39px;
 
     cursor: pointer;
-    z-index: 300;
+    z-index: 1;
     border-radius: 4px;
     padding: 8px 10px 6px;
     background-color: #ddd;

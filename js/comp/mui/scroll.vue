@@ -210,7 +210,7 @@ export default {
 }
 .mui-scroll-bar {
     background-color: rgba(0, 0, 0, .2);
-    z-index: 10;
+    z-index: 2;
     transition: height .3s ease;
 }
 </style>

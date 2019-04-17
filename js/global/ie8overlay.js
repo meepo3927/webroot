@@ -19,7 +19,7 @@
             width: ${overlayWidth}px;
             height: ${overlayHeight}px;
             background-color: #fff;
-            z-index: 9999999;
+            z-index: 2;
             border: 5px solid #ccc;
         }
         .ie8-overlay.ie-8,
@@ -68,7 +68,7 @@
         }
 
         .ie8-overlay-cover {
-            z-index: 9999995;
+            z-index: 1;
             left: 0;
             top: 0;
             bottom: 0;
