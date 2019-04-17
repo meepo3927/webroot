@@ -2023,7 +2023,7 @@ fieldset[disabled] .btn-danger:focus {
 .loading-circle {
   width: 32px;
   height: 32px;
-  background-image: url(img/loading_50c5e3e.gif);
+  background-image: url(img/circle_50c5e3e.gif);
   background-repeat: no-repeat;
   background-position: center center;
 }

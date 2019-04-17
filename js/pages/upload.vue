@@ -51,6 +51,7 @@
                 </tr>
             </tbody>
         </table>
+
         <table class="table table-striped mt20">
             <thead>
                 <tr>
