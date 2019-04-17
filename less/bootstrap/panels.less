@@ -9,7 +9,7 @@
   background-color: @panel-bg;
   border: 1px solid transparent;
   border-radius: @panel-border-radius;
-  .box-shadow(0 1px 1px rgba(0,0,0,.05));
+  box-shadow: 0 1px 1px rgba(0,0,0,.05);
 }
 
 // Panel contents
@@ -24,9 +24,6 @@
   border-bottom: 1px solid transparent;
   .border-top-radius((@panel-border-radius - 1));
 
-  > .dropdown .dropdown-toggle {
-    color: inherit;
-  }
 }
 
 // Within heading, strip any `h*` tag of its default margins for spacing.
@@ -38,9 +35,7 @@
 
   > a,
   > small,
-  > .small,
-  > small > a,
-  > .small > a {
+  > small > a {
     color: inherit;
   }
 }
@@ -245,6 +240,31 @@
     border-top: 0;
     + .panel-collapse .panel-body {
       border-bottom: 1px solid @panel-inner-border;
+    }
+  }
+}
+
+// Panels
+
+.panel-variant(@border; @heading-text-color; @heading-bg-color; @heading-border) {
+  border-color: @border;
+
+  & > .panel-heading {
+    color: @heading-text-color;
+    background-color: @heading-bg-color;
+    border-color: @heading-border;
+
+    + .panel-collapse > .panel-body {
+      border-top-color: @border;
+    }
+    .badge {
+      color: @heading-bg-color;
+      background-color: @heading-text-color;
+    }
+  }
+  & > .panel-footer {
+    + .panel-collapse > .panel-body {
+      border-bottom-color: @border;
     }
   }
 }

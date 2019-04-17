@@ -1,5 +1,16 @@
 <template>
 <div class="page-index">
+    <ol class="breadcrumb m15">
+        <li>
+            <a href="javascript:;">Home</a>
+        </li>
+        <li>
+            <a href="javascript:;">Library</a>
+        </li>
+        <li class="active">
+            <a href="javascript:;">Meepo</a>
+        </li>
+    </ol>
     <form class="p15" @submit.prevent>
         <input type="text" class="form-control" v-model="name">
         <p v-text="name"></p>

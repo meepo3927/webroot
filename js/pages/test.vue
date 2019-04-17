@@ -3,12 +3,12 @@
     <form class="p15" @submit.prevent>
         <button v-tooltip="tooltipStr" @click="PPP"
             class="btn btn-primary">改变tooltip内容</button>
-
+        
         <div class="mt15">
             <input type="text" class="form-control" v-model="name" />
             <p v-text="name"></p>
         </div>
-        <div>
+        <div class="btn-group">
             <button class="btn btn-default" @click="msg0" type="button">
                 msg 0
             </button>
@@ -21,32 +21,32 @@
             <button class="btn btn-default" @click="msg3" type="button">
                 msg 3
             </button>
-        </button>
         </div>
-        <div class="mt20">
-            <button class="btn btn-default" @click="muiAlert" type="button">
-                MUI-Alert
-            </button>
-            <button class="btn btn-default" @click="muiConfirm" type="button">
-                MUI-Confirm
-            </button>
-            <button class="btn btn-default" @click="muiAlertWarning" type="button">
-                MUI-Warning
-            </button>
-            <button class="btn btn-default" @click="muiPrompt" type="button">
-                MUI-Prompt
-            </button>
-            <button class="btn btn-default" @click="muiloading" type="button">
-                MUI-loading
-            </button>
-            <v-switch v-model="switchValue" />
-            <button class="btn btn-default" style="float: right;"
+        <ul class="nav nav-tabs mt20">
+            <li class="active">
+                <a href="javascript:;"  @click="muiAlert">MUI-Alert</a>
+            </li>
+            <li>
+                <a href="javascript:;"  @click="muiConfirm">MUI-Confirm</a>
+            </li>
+            <li>
+                <a href="javascript:;"  @click="muiAlertWarning">MUI-Warning</a>
+            </li>
+            <li>
+                <a href="javascript:;"  @click="muiPrompt">MUI-Prompt</a>
+            </li>
+            <li>
+                <a href="javascript:;"  @click="muiloading">MUI-loading</a>
+            </li>
+        </ul>
+        <div class="nav-content">
+            <mui-switch v-model="switchValue" />
+            <button class="btn btn-default fr" 
                 v-tooltip="tooltipStr"
                 @click="onTooltipTestClick">
                 测试tooltip
             </button>
         </div>
-        
     </form>
     <mui-layer v-if="switchValue" @close="layerClose">
         <div slot="header">哈哈哈</div>
@@ -64,37 +64,49 @@
         </div>
     </mui-layer>
 
-    <button class="btn btn-success"
-        v-tooltip="我是猪">MUI Tooltip1</button>
+    <div class="shadow-container m15">
+        <button class="btn btn-success" v-tooltip="我是猪">MUI Tooltip1</button>
 
-    <button class="btn btn-success"
-        v-tooltip="tooltipStr">MUI Tooltip2</button>
+        <button class="btn btn-success"
+            v-tooltip="tooltipStr">MUI Tooltip2</button>
 
 
-    <button class="btn btn-success"
-        v-tooltip="tooltipObj">MUI Tooltip3</button>
+        <button class="btn btn-success"
+            v-tooltip="tooltipObj">MUI Tooltip3</button>
 
-    <mui-alertspan type="success">
-        Heads up! This alert needs your attention, but it's not super important.
-    </mui-alertspan>
-    <br />
-    <div class="alert alert-warning mt15">
+        <alert-span type="success">
+            Heads up! This alert needs your attention, but it's not super important.
+        </alert-span>
+    </div>
+    <hr>
+    <div class="alert alert-warning m15">
         Heads up! This alert needs your attention, but it's not super important.
     </div>
-    
+
     <mui-slider v-model="sliderValue" min="1000" max="10000" />
-    <input type="text" v-model="sliderValue" />
-    
-    <div class="mt30">
-        <mui-select :options="o2" class="m-sel-1" ref="muiS" 
+    <div class="input-box mt15 ml15">
+        <input type="text" v-model="sliderValue" class="form-control" />
+        <select class="form-control mt20">
+            <option>请选择</option>
+        </select>
+
+        <textarea class="form-control mt20"></textarea>
+
+        <mui-select :options="o2" class="m-sel-1 mt20" ref="muiS" 
             v-model="s2" />
         <p v-text="s2"></p>
     </div>
+
 </div>
 </template>
 
 <script>
 import 'root';
+import MUISwitch from 'comp/mui/switch.vue';
+import MUILayer from 'comp/mui/center-layer.vue';
+import MUIAlertSpan from 'comp/mui/alert-span.vue';
+import MUISlider from 'comp/mui/slider.vue';
+import MUISelect from 'comp/mui/select.vue';
 
 const duration = 999999999;
 const longMsg = '一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十';
@@ -207,25 +219,24 @@ export default {
     mixins: [],
     beforeDestroy,
     components: {
-        'v-switch': require('comp/mui/switch.vue'),
-        'mui-layer': require('comp/mui/center-layer.vue'),
-        'mui-alertspan': require('comp/mui/alert-span.vue'),
-        'mui-slider': require('comp/mui/slider.vue'),
-        'mui-select': require('comp/mui/select.vue')
+        'mui-switch': MUISwitch,
+        'mui-layer': MUILayer,
+        'alert-span': MUIAlertSpan,
+        'mui-slider': MUISlider,
+        'mui-select': MUISelect
     }
 };
 </script>
 
 <style scoped lang="less">
+@import "../../less/bootstrap/bootstrap.less";
 .page-test {
     
 }
-textarea {
-    width: 600px;
-    height: 400px;
+.input-box {
+    width: 30vw;
 }
 .mui-select.m-sel-1 {
-    width: 25%;
-    //width: 60%;
+    width: 60%;
 }
 </style>

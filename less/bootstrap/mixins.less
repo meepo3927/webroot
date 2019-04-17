@@ -1,40 +1,112 @@
 // Mixins
 // --------------------------------------------------
+// Opacity
 
-// Utilities
-@import "mixins/hide-text.less";
-@import "mixins/opacity.less";
-@import "mixins/image.less";
-@import "mixins/labels.less";
-@import "mixins/reset-filter.less";
-@import "mixins/resize.less";
-@import "mixins/responsive-visibility.less";
-@import "mixins/size.less";
-@import "mixins/tab-focus.less";
-@import "mixins/reset-text.less";
-@import "mixins/text-emphasis.less";
-@import "mixins/text-overflow.less";
-@import "mixins/vendor-prefixes.less";
+.opacity(@opacity) {
+  opacity: @opacity;
+  // IE8 filter
+  @opacity-ie: (@opacity * 100);
+  filter: ~"alpha(opacity=@{opacity-ie})";
+}
+// Reset filters for IE
+//
+// When you need to remove a gradient background, do not forget to use this to reset
+// the IE filter for IE9 and below.
 
-// Components
-@import "mixins/alerts.less";
-@import "mixins/buttons.less";
-@import "mixins/panels.less";
-@import "mixins/pagination.less";
-@import "mixins/list-group.less";
-@import "mixins/nav-divider.less";
-@import "mixins/forms.less";
-@import "mixins/progress-bar.less";
-@import "mixins/table-row.less";
+.reset-filter() {
+  filter: e(%("progid:DXImageTransform.Microsoft.gradient(enabled = false)"));
+}
+// WebKit-style focus
+.tab-focus() {
+  outline: 5px auto -webkit-focus-ring-color;
+  outline-offset: -2px;
+}
+// Typography
 
-// Skins
-@import "mixins/background-variant.less";
-@import "mixins/border-radius.less";
-@import "mixins/gradients.less";
+.text-emphasis-variant(@color) {
+  color: @color;
+  a&:hover,
+  a&:focus {
+    color: darken(@color, 10%);
+  }
+}
 
-// Layout
-@import "mixins/clearfix.less";
-@import "mixins/center-block.less";
-@import "mixins/nav-vertical-align.less";
-@import "mixins/grid-framework.less";
-@import "mixins/grid.less";
+.bg-variant(@color) {
+  background-color: @color;
+  a&:hover,
+  a&:focus {
+    background-color: darken(@color, 10%);
+  }
+}
+
+
+.border-top-radius(@radius) {
+  border-top-right-radius: @radius;
+   border-top-left-radius: @radius;
+}
+.border-right-radius(@radius) {
+  border-bottom-right-radius: @radius;
+     border-top-right-radius: @radius;
+}
+.border-bottom-radius(@radius) {
+  border-bottom-right-radius: @radius;
+   border-bottom-left-radius: @radius;
+}
+.border-left-radius(@radius) {
+  border-bottom-left-radius: @radius;
+     border-top-left-radius: @radius;
+}
+
+.reset-text() {
+  font-family: @font-family-base;
+  // We deliberately do NOT reset font-size.
+  font-style: normal;
+  font-weight: normal;
+  letter-spacing: normal;
+  line-break: auto;
+  line-height: @line-height-base;
+  text-align: left; // Fallback for where `start` is not supported
+  text-align: start;
+  text-decoration: none;
+  text-shadow: none;
+  text-transform: none;
+  white-space: normal;
+  word-break: normal;
+  word-spacing: normal;
+  word-wrap: normal;
+}
+
+// Vendor Prefixes
+// Animations
+.animation(@animation) {
+  -webkit-animation: @animation;
+       -o-animation: @animation;
+          animation: @animation;
+}
+
+// Placeholder text
+.placeholder(@color: @input-color-placeholder) {
+  // Firefox
+  &::-moz-placeholder {
+    color: @color;
+    opacity: 1; // Override Firefox's unusual default opacity; see https://github.com/twbs/bootstrap/pull/11526
+  }
+  &:-ms-input-placeholder { color: @color; } // Internet Explorer 10+
+  &::-webkit-input-placeholder  { color: @color; } // Safari and Chrome
+}
+
+// Transitions
+.transition(@transition) {
+  -webkit-transition: @transition;
+       -o-transition: @transition;
+          transition: @transition;
+}
+
+// User select
+// For selecting text on the page
+.user-select(@select) {
+  -webkit-user-select: @select;
+     -moz-user-select: @select;
+      -ms-user-select: @select; // IE10+
+          user-select: @select;
+}
