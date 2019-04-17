@@ -1,15 +1,5 @@
-// @import "bootstrap/variables.less";
-// @import "bootstrap/mixins.less";
-@import "global/config";
-@import "global/layout";
-@import "global/mui";
-
-@import "components/center-layer";
-@import "components/form";
-@import "components/loading";
-@import "components/placeholder";
-@import "components/table";
-// @import "components/mdate";
-// @import "components/datetimepicker";
-@import "pages/common";
+@import (reference) "bootstrap/variables";
+@import "global/common";
+// @import "global/auto-complete";
+// @import "global/contextmenu";
 @import "pages/index";

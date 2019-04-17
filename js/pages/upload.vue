@@ -24,7 +24,50 @@
             <button class="btn btn-default m20" @click="onClick1">Add Item+</button>
         </div>
     </mui-scroll>
-    <div class="b-block"></div>
+    <div class="table-wrapper ">
+        <table class="table table-hover mt20">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>用户名</th>
+                    <th>得分</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>111</td>
+                    <td class="success">郭野</td>
+                    <td>123</td>
+                </tr>
+                <tr>
+                    <td>111</td>
+                    <td>郭野</td>
+                    <td>123</td>
+                </tr>
+                <tr>
+                    <td>111</td>
+                    <td>郭野</td>
+                    <td>123</td>
+                </tr>
+            </tbody>
+        </table>
+        <table class="table table-striped mt20">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>用户名</th>
+                    <th>得分</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="v in users" :class="[v.cls]">
+                    <td v-text="v.id"></td>
+                    <td v-text="v.name"></td>
+                    <td v-text="v.score"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
     <div class="pb30"></div>
 </div>
 </template>
@@ -38,6 +81,31 @@ methods.onClick1 = function () {
     this.list1.push(this.list1.length + '. ' + Math.random() + _.now());
 };
 let computed = {};
+computed.users = function () {
+    return [
+        {id: 111, name: '郭野', score: 123},
+        {id: 111, name: '郭野', score: 123},
+        {id: 111, name: '郭野', score: 123},
+        {id: 111, name: '郭野-active', score: 123, cls: 'active'},
+        {id: 111, name: '郭野', score: 123},
+        {id: 111, name: '郭野', score: 123},
+        {id: 111, name: '郭野', score: 123},
+        {id: 111, name: '郭野', score: 123},
+        {id: 111, name: '郭野', score: 123},
+        {id: 111, name: '郭野-success', score: 123, cls: 'success'},
+        {id: 111, name: '郭野', score: 123},
+        {id: 111, name: '郭野', score: 123},
+        {id: 111, name: '郭野-info', score: 123, cls: 'info'},
+        {id: 111, name: '郭野', score: 123},
+        {id: 111, name: '郭野', score: 123},
+        {id: 111, name: '郭野-warning', score: 123, cls: 'warning'},
+        {id: 111, name: '郭野-danger', score: 123, cls: 'danger'},
+        {id: 111, name: '郭野', score: 123},
+        {id: 111, name: '郭野-active', score: 123, cls: 'active'},
+        {id: 111, name: '郭野', score: 123},
+        {id: 111, name: '郭野', score: 123}
+    ]
+};
 let watch = {};
 const created = function () {};
 const mounted = function () {
@@ -81,6 +149,7 @@ form {
 .scroll-test {
     border: 1px solid #ccc;
     width: 460px;
+    background-color: #fff;
 }
 .scroll-test-1 {
     max-height: 320px;
@@ -89,6 +158,9 @@ form {
     top: 0;
     right: 0;
     height: 50vh;
+}
+.table-wrapper {
+    width: 40vw;
 }
 .b-block {
     height: 80vh;

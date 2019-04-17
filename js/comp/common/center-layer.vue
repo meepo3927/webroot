@@ -164,6 +164,41 @@ export default {
 
 <style scoped lang="less">
 .m-center-layer {
+    bottom: 0;
+    left: 0;
+    position: fixed;
+    right: 0;
+    top: 0;
+    z-index: 19900420;
+    .x-wrapper-1 {
+        height: 100%;
+        margin: 0;
+    }
+    .x-wrapper-1:after{
+        content: "&nbsp;";
+        display: inline-block;
+        font-size: 0;
+        height: 100%;
+        margin-left: -99%;
+        vertical-align: middle;
+        width: 1px;
+    }
+    .x-wrapper-2 {
+        display: inline-block;
+        vertical-align: middle;
+        text-align: center;
+        width: 100%;
+    }
+    .x-wrapper-3 {
+        height: 100%;
+        display: inline-block;
+        margin: auto;
+        text-align: left;
+        position: relative;
+        & > div {
+            height: 100%;
+        }
+    }
 }
 .close-btn {
     position: absolute;

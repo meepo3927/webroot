@@ -229,7 +229,6 @@ export default {
 </script>
 
 <style scoped lang="less">
-@import "../../less/bootstrap/bootstrap.less";
 .page-test {
     
 }

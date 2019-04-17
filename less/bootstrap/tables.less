@@ -1,126 +1,44 @@
 //
 // Tables
 // --------------------------------------------------
-
+@table-bg-accent:               #f9f9f9;
+@table-bg-hover:                #f5f5f5;
+@table-border-color:            #ddd;
 
 table {
-    background-color: @table-bg;
-}
-caption {
-    padding-top: @table-cell-padding;
-    padding-bottom: @table-cell-padding;
-    color: @text-muted;
-    text-align: left;
+    background-color: transparent;
 }
 th {
     text-align: left;
 }
-
 // Baseline styles
-
 .table {
     width: 100%;
     max-width: 100%;
     // Cells
-    > thead,
-    > tbody,
-    > tfoot {
-        > tr {
-            > th,
-            > td {
-                padding: @table-cell-padding;
-                line-height: @line-height-base;
-                vertical-align: middle;
-                border-top: 1px solid @table-border-color;
-            }
-        }
+    tr > th, tr > td {
+        padding: 8px 12px;
+        line-height: @line-height-base;
+        border-top: 1px solid @table-border-color;
+        border: 1px solid @table-border-color;
     }
     // Bottom align for column headings
-    > thead > tr > th {
-        vertical-align: bottom;
-        border-bottom: 1px solid @table-border-color;
-    }
-    // Remove top border from thead by default
-    > caption + thead,
-    > colgroup + thead,
-    > thead:first-child {
-        > tr:first-child {
-            > th,
-            > td {
-                border-top: 0;
-            }
-        }
-    }
-    // Account for multiple tbody instances
-    > tbody + tbody {
-        border-top: 2px solid @table-border-color;
-    }
-
-    // Nesting
-    .table {
-        background-color: @body-bg;
+    tr > th {
+        background-color: #eee;
     }
 }
-
-
-// Condensed table w/ half padding
-
-.table-condensed {
-    > thead,
-    > tbody,
-    > tfoot {
-        > tr {
-            > th,
-            > td {
-                padding: @table-condensed-cell-padding;
-            }
-        }
-    }
-}
-
-
-// Bordered version
-//
-// Add borders all around the table and between all the columns.
-
-.table-bordered {
-    border: 1px solid @table-border-color;
-    > thead,
-    > tbody,
-    > tfoot {
-        > tr {
-            > th,
-            > td {
-                border: 1px solid @table-border-color;
-            }
-        }
-    }
-    > thead > tr {
-        > th,
-        > td {
-            // border-bottom-width: 2px;
-        }
-    }
-}
-
-
 // Zebra-striping
 //
 // Default zebra-stripe styles (alternating gray and transparent backgrounds)
 
 .table-striped {
-    > tbody > tr:nth-of-type(odd) {
+    & > tbody > tr:nth-of-type(even) {
         background-color: @table-bg-accent;
     }
 }
 
-
-// Hover effect
-//
-// Placed here since it has to come after the potential zebra striping
-
 .table-hover {
-    > tbody > tr:hover {
+    & > tbody > tr:hover {
         background-color: @table-bg-hover;
     }
 }
@@ -155,7 +73,7 @@ th {
 }
 
 // Generate the contextual variants
-.table-row-variant(active; @table-bg-active);
+.table-row-variant(active; @state-info-bg);
 .table-row-variant(success; @state-success-bg);
 .table-row-variant(info; @state-info-bg);
 .table-row-variant(warning; @state-warning-bg);

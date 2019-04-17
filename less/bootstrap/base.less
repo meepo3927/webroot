@@ -1,0 +1,163 @@
+/**
+ * 基础通用样式
+ */
+.clearfix {
+    &:after {
+        content: " ";
+        display: table;
+        font-size: 0;
+        clear: both;
+        height: 0;
+    }
+}
+.center-block {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+.fl { float: left; }
+.fr { float: right; }
+.pos-r { position: relative; }
+.pos-a { position: absolute; }
+.ver-top { vertical-align: top; }
+.with-red-star:before {
+    content: '*';
+    color: #f11;
+    position: absolute;
+    margin-left: -.5em;
+    margin-top: 2px;
+}
+.iframe-wrapper-100 {
+    font-size: 0;
+    line-height: 0;
+    & > iframe {
+        width: 100%;
+        height: 100%;
+    }
+}
+.iframe-pointer-none iframe {
+    pointer-events: none;
+}
+html.html-100 {
+    height: 100%;
+    & > body {
+        height: 100%;
+    }
+}
+/**
+ * 快捷margin定义
+ */
+.generate-margins(10);
+.generate-margins(@n, @i: 1) when (@i =< @n) {
+    @val: @i * 5;
+    @px: @val * 1px;
+    .m@{val} {margin: @px !important;}
+    .mt@{val} {margin-top: @px !important;}
+    .mb@{val} {margin-bottom: @px !important;}
+    .mr@{val} {margin-right: @px !important;}
+    .ml@{val} {margin-left: @px !important;}
+    .generate-margins(@n, (@i + 1));
+}
+
+/**
+ * 快捷padding定义
+ */
+.generate-paddings(10);
+.generate-paddings(@n, @i: 1) when (@i =< @n) {
+    @val: @i * 5;
+    @px: @val * 1px;
+    .p@{val} {padding: @px !important;}
+    .pt@{val} {padding-top: @px !important;}
+    .pb@{val} {padding-bottom: @px !important;}
+    .pr@{val} {padding-right: @px !important;}
+    .pl@{val} {padding-left: @px !important;}
+    .generate-paddings(@n, (@i + 1));
+}
+// Rounded corners
+.img-rounded { border-radius: @border-radius-large; }
+// Perfect circle
+.img-circle { border-radius: 50%; }
+// Alignment
+.text-left           { text-align: left; }
+.text-right          { text-align: right; }
+.text-center         { text-align: center; }
+.text-justify        { text-align: justify; }
+.text-nowrap         { white-space: nowrap; }
+.text-overflow {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.text-wrap {
+    word-wrap: break-word;
+    word-break: break-all;
+}
+// Contextual colors
+.text-muted   { color: #777; }
+.text-primary { .text-emphasis-variant(@brand-primary); }
+.text-success { .text-emphasis-variant(@state-success-text); }
+.text-info    { .text-emphasis-variant(@state-info-text); }
+.text-warning { .text-emphasis-variant(@state-warning-text); }
+.text-danger  { .text-emphasis-variant(@state-danger-text); }
+// 
+// background-color
+// 
+.bg-primary {
+    color: #fff;
+    .bg-variant(@brand-primary);
+}
+.bg-success {
+    .bg-variant(@state-success-bg);
+}
+.bg-info {
+    .bg-variant(@state-info-bg);
+}
+.bg-warning {
+    .bg-variant(@state-warning-bg);
+}
+.bg-danger {
+    .bg-variant(@state-danger-bg);
+}
+/**
+ * 横向布局
+ */
+.m-row-mix() {
+    display: table;
+    & > div, & > label {
+        display: table-cell;
+    }
+    & > div.v-top, & > label.v-top {
+        vertical-align: top;
+    }
+    & > div.v-mid, & > label.v-mid {
+        vertical-align: middle;
+    }
+}
+.m-row {
+    .m-row-mix();
+    width: 100%;
+    & > div, & > label {
+        vertical-align: middle;
+    }
+}
+.mm-row {
+    .m-row;
+    width: auto;
+}
+.m-row-t {
+    .m-row-mix();
+    & > div, & > label {
+        vertical-align: top;
+    }
+}
+.m-row-auto {
+    .m-row-mix();
+    width: auto;
+}
+.m-row-auto-t {
+    .m-row-auto;
+    & > div, & > label {
+        vertical-align: top;
+    }
+}
+

@@ -1,20 +1,20 @@
 .context-menu {
+    @my-border-color: #e2e2e2;
     position:absolute;
-    top:0;
+    top: 0;
     text-align: left;
     padding: 2px;
-    z-index: 99998;
-    @borderColor: #e2e2e2;
-    ul {
-        border: 1px solid @borderColor;
+    z-index: 99;
+    & > ul {
+        border: 1px solid @my-border-color;
         border-top: none;
         box-shadow: 0 0 3px #ccc;
     }
-    ul li {
+    & > ul > li {
         padding: 8px 16px;
         background-color: #fff;
         background: linear-gradient(to bottom, #f4f4f4, #fff);
-        border-top: 1px solid @borderColor;
+        border-top: 1px solid @my-border-color;
         font-size: 13px;
         cursor: pointer;
         &:hover {

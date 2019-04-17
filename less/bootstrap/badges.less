@@ -1,6 +1,14 @@
 //
 // Badges
 // --------------------------------------------------
+@badge-color:                 #fff;
+@badge-link-hover-color:      #fff;
+@badge-bg:                    #777;
+@badge-active-bg:             #fff;
+
+@badge-font-weight:           bold;
+@badge-line-height:           1;
+@badge-border-radius:         10px;
 
 // Base class
 .badge {
@@ -42,13 +50,6 @@
             text-decoration: none;
             cursor: pointer;
         }
-    }
-
-    // Account for badges in navs
-    .list-group-item.active > &,
-    .nav-pills > .active > a > & {
-        color: @badge-active-color;
-        background-color: @badge-active-bg;
     }
 
     .list-group-item > & {
