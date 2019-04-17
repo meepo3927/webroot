@@ -32,7 +32,7 @@ var alias = {
     config$: JS_DIR + '/global/config.js',
     tool$: JS_DIR + '/util/tool.js',
     root$: JS_DIR + '/root.js',
-    dll_less$: JS_DIR + '/dll_less.js'
+    vendorless$: JS_DIR + '/vendorless.js'
 };
 
 module.exports = {

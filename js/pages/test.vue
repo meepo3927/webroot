@@ -229,6 +229,7 @@ export default {
 </script>
 
 <style scoped lang="less">
+@import "../ref";
 .page-test {
     
 }
