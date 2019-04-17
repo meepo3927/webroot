@@ -51,7 +51,6 @@ methods.getFixedValue = function () {
         oValue = n;
     }
 
-
     if (this.min !== undefined && oValue < this.min) {
         oValue = this.min;
     }
@@ -80,7 +79,12 @@ export default {
     methods,
     computed,
     watch,
-    props: ['value', 'numType', 'min', 'max'],
+    props: {
+        value: Number,
+        numType: String,
+        min: Number,
+        max: Number
+    },
     mounted,
     mixins: [],
     beforeDestroy,

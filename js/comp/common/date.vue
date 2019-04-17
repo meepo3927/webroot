@@ -53,7 +53,5 @@ export default {
 </script>
 
 <style scoped lang="less">
-.vue-input-date {
-    
-}
+
 </style>

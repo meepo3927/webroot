@@ -9,7 +9,7 @@
 
 <script>
 import echarts from 'echarts';
-import vueCharts from 'comp/common/ECharts.vue';
+import vueCharts from 'comp/common/echarts.vue';
 
 var methods = {};
 var computed = {};

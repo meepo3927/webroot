@@ -1,23 +1,22 @@
 <template>
 <span class="v-file-upload">
-    <!-- for click -->
+    <!-- 文件名 -->
     <label class="v-file-name" :for="elemId" >
-        <div v-text="file" :title="file"></div>
+        <div v-text="fileName" :title="fileName"></div>
     </label>
-    <!-- for click -->
-    <label class="v-file-label ml10" title="选择要上传的文件"
-        :for="elemId" 
+    <!-- 选择文件 -->
+    <label class="choose-btn" title="选择文件" :for="elemId" 
         v-show="selectBtnVisible"
-        v-text="myText"></label>
-    <!-- send by hand -->
-    <button class="send-btn" v-show="sendBtnVisible"
-        @click="checkAndSend">上传</button>
-    <!-- Error Msg -->
-    <span class="error-msg ml10" v-show="errmsgVisible" 
+        v-text="labelText"></label>
+    <!-- 上传按钮 -->
+    <label class="send-btn" v-show="sendBtnVisible" :class="{disabled: loading}"
+        @click="checkAndSend">{{loading ? '上传中..' : '上传'}}</label>
+    <!-- 错误信息 -->
+    <span class="error-msg" v-show="errmsgVisible" 
         v-text="errmsg"></span>
-    <!-- Current File -->
-    <a :href="value" class="open-file" target="_blank" v-show="openFileVisible"
-        click-jump >查看文件</a>
+    <!-- 查看文件 -->
+    <a :href="value" class="open-file" target="_blank" v-show="openFileVisible">查看文件</a>
+    <!-- 实际表单 -->
     <form :action="formAction" style="display: none;" ref="form">
         <slot></slot>
     </form>
@@ -25,77 +24,71 @@
 </template>
 
 <script>
-import formAsync from 'util/form_async';
+import formAsync from 'util/form_async.js';
 let uuid = 1;
-let typeExtMap = {
+const TYPE_EXT_MAP = {
     image: 'jpg,png,jpeg,gif',
     excel: 'xlsx,xls'
 };
-let typeTextMap = {
+const TYPE_TEXT_MAP = {
     image: '图片',
     excel: 'Excel'
 };
 const isFilePreviewSupported = (typeof window.FileReader !== 'undefined');
-const getTypeText = (type) => {
+// 类型错误信息
+const getTypeErrMsg = (type) => {
     type = type ? type.toLowerCase() : '';
-    return typeTextMap[type] || type;
+    let text = TYPE_TEXT_MAP[type] || type;
+    return '请选择[' + text + ']类型的文件';
 };
-const getErrmsg = (type) => {
-    return '请选择[' + getTypeText(type) + ']类型的文件';
-};
-const valiFileObjectType = (allowType, type) => {
+// HTML5类型判断
+const HTML5ValiType = (allowType, type) => {
     if (!type) {
-        return {ok: false, errmsg: getErrmsg(allowType)};
+        return getTypeErrMsg(allowType);
     }
-    var arr = type ? type.split('/') : [];
+    const arr = type ? type.split('/') : [];
     if (arr.length === 0) {
-        return {
-            ok: false,
-            errmsg: getErrmsg(allowType)
-        };
+        return getTypeErrMsg(allowType);
     }
-
     if (arr[0] === allowType) {
-        return {ok: true};
+        return true;
     }
-    return {
-        ok: false,
-        errmsg: getErrmsg(allowType)
-    };
+    return getTypeErrMsg(allowType);
 };
+// 校验扩展名
 const valiFileExtension = (allowType, fileName) => {
-    var ok = {ok: true};
-    var err = {ok: false, errmsg: getErrmsg(allowType)};
+    // 没有扩展名
     if (fileName.indexOf('.') === -1) {
-        return err;
+        return getTypeErrMsg(allowType);
     }
-    var ext = fileName.split('.').pop();
+    // 没有扩展名
+    const ext = fileName.split('.').pop();
     if (!ext) {
-        return err;
+        return getTypeErrMsg(allowType);
     }
-    var allowExtentions = (typeExtMap[allowType] || '').toLowerCase().split(',');
+    const allowExtentions = (TYPE_EXT_MAP[allowType] || '').toLowerCase().split(',');
     if (allowExtentions.indexOf(ext) >= 0) {
-        return ok;
+        return true;
     }
-    return err;
+    return getTypeErrMsg(allowType);
 };
-const valiType = (el, filetype, fileName) => {
-    let r = {ok: true};
+// 校验类型
+const valiFileType = (el, filetype, fileName) => {
     if (!filetype) {  // 没有type限制
-        return r;
+        return true;
     }
     if (el.files && el.files.length === 0) { // 没有选中文件
-        return r;
+        return true;
     }
     var fileInstance = el.files && el.files[0];
     if (fileInstance) {
-        // return valiFileObjectType(filetype, fileInstance.type);
+        // return HTML5ValiType(filetype, fileInstance.type);
     }
     // 校验扩展名
     return valiFileExtension(filetype, fileName);
 };
 
-var methods = {};
+let methods = {};
 methods.removeFileInput = function () {
     let $file = $(this.$refs.form).children('.v-file');
     if ($file.length) {
@@ -106,7 +99,7 @@ methods.makeFileInput = function () {
     let $file = $('<input type="file" class="v-file" />');
     $file.css('display', 'none');
     $file.attr('id', this.elemId);
-    $file.attr('name', this.myElemName);
+    $file.attr('name', this.inputName);
     $file.on('change', (e) => {
         this.change(e);
     });
@@ -122,17 +115,13 @@ methods.reset = function () {
     this.removeFileInput();
     this.makeFileInput();
 };
+// 检查文件类型
 methods.checkType = function (el) {
     el = el || this.getFileInputElem();
     if (!el) {
         return true;
     }
-    var r = valiType(el, this.filetype, this.file);
-    if (r.ok) {
-        return true;
-    } else {
-        return r.errmsg;
-    }
+    return valiFileType(el, this.filetype, this.file);
 };
 methods.change = function (e) {
     var elem = e.target || e.currentTarget;
@@ -209,6 +198,7 @@ methods.checkAndSend = function () {
     if (this.loading) {
         return false;
     }
+    this.errmsg = '';
     // 文件为空
     if (!this.filePath) {
         this.errmsg = '请选择文件';
@@ -246,21 +236,17 @@ var computed = {};
 computed.elemId = function () {
     return 'v_file_upload_' + this.id;
 };
-computed.myText = function () {
-    if (this.loading) {
-        return '上传中..';
-    }
-    return this.labelText || '选择文件';
+computed.labelText = function () {
+    return this.label || '选择文件';
 };
-computed.myElemName = function () {
-    return this.elemName || 'file';
+computed.inputName = function () {
+    return this.inputname || 'file';
 };
-computed.file = function () {
+computed.fileName = function () {
     if (!this.filePath) {
         return '';
     }
     var list = this.filePath.split('\\').pop();
-
     return list.split('/').pop();
 };
 computed.formAction = function () {
@@ -285,13 +271,7 @@ computed.selectBtnVisible = function () {
     return !this.sendBtnVisible;
 };
 computed.sendBtnVisible = function () {
-    if (this.loading) {
-        return false;
-    }
-    if (this.filePath) {
-        return true;
-    }
-    return false;
+    return this.filePath ? true : false;
 };
 const mounted = function () {
     this.makeFileInput();
@@ -299,9 +279,8 @@ const mounted = function () {
 const beforeDestroy = function () {};
 export default {
     data: function () {
-        const id = (uuid++);
         return {
-            id,
+            id: (uuid++),
             fileValue: '',
             filePath: '',
             errmsg: '',
@@ -310,10 +289,17 @@ export default {
     },
     methods,
     computed,
-    props: [
-        'labelText', 'elemName', 'filetype',
-        'silent', 'action', 'sendOnSelect',
-        'value'],
+    props: {
+        label: String,
+        inputname: String,
+        filetype: String,
+        slient: Boolean,
+        action: String,
+        sendOnSelect: Boolean,
+        value: {
+            validator: function () {return true}
+        }
+    },
     mounted,
     beforeDestroy
 };
@@ -321,67 +307,70 @@ export default {
 
 <style scoped lang="less">
 @height:                32px;
+@line-height:           @height - 2px;
 @border-radius:         3px;
 @border-color:          #eee;
-@color:                 #333;
 @background-color:      #eee;
+@send-btn-back-color:   #5faee3;
 .v-file-upload {
     display: table;
     table-layout: fixed;
-    
     & > label {
         display: table-cell;
         vertical-align: middle;
         height: @height;
-        line-height: @height;
+        line-height: @line-height;
     }
-    & > em {
-        display: table-cell;
-        width: 8px;
-    }
-    .error-msg {
-        color: #ee0000;
-        line-height: @height;
+    & > span {
+        vertical-align: middle;
     }
 }
 .v-file-name {
     min-width: 200px;
     padding-right: 10px;
+    margin-right: 10px;
     & > div {
         height: @height;
         padding-left: 8px;
         padding-right: 8px;
         overflow: hidden;
         text-overflow: ellipsis;
-        
-        display: block;
+        background-color: @background-color;
+        color: #333;
+        cursor: pointer;
+        white-space: nowrap;
+        border-radius: @border-radius;
     }
 }
-.v-file-name > div,
-.v-file-label,
-.send-btn {
+.choose-btn, .send-btn {
     border: 1px solid @border-color;
+    border-radius: @border-radius;
     background-color: @background-color;
-    color: @color;
-    
+    color: #fff;
     cursor: pointer;
     white-space: nowrap;
-    border-radius: @border-radius;
-}
-.v-file-label,
-.send-btn {
-    border: 1px solid @border-color;
     width: 90px;
     text-align: center;
+    height: @height;
+    line-height: @line-height;
+    font-size: 14px;
+}
+.choose-btn {
     background-color: #aaa;
-    color: #fff;
 }
 .send-btn {
-    height: @height;
-    background-color: #5faee3;
+    background-color: @send-btn-back-color;
     border-color: #49a3df;
+    &.disabled {
+        cursor: default;
+        background-color: lighten(@send-btn-back-color, 15%);
+    }
 }
-
+.error-msg {
+    margin-left: 12px;
+    color: #ee0000;
+    line-height: @line-height;
+}
 .open-file {
     margin-left: 12px;
     line-height: @height;

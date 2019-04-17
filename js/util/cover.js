@@ -3,7 +3,7 @@
  */
 
 define([], function () {
-    var zIndex = 3;
+    var zIndex = 2;
     var opacity = 0.6;
     function Cover(options = {}) {
         var elem = document.createElement('div');

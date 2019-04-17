@@ -4,8 +4,7 @@
         <div class="x-wrapper-2" ref="w2" @click.self="onCoverClick">
             <div class="x-wrapper-3" ref="w3">
                 <slot></slot>
-                <a href="javascript:;" class="close-btn" v-if="close"
-                    @click="$emit('close')">
+                <a href="javascript:;" class="close-btn" @click="$emit('close')">
                     <i class="fa fa-times-circle"></i>
                 </a>
             </div>
@@ -18,46 +17,18 @@
 import $ from 'jquery';
 import Cover from 'util/cover.js';
 
-let isPercent = function (str) {
-    if (!str || !str.charAt) {
-        return false;
-    }
-    str = str.trim();
-    return str.charAt(str.length - 1) === '%';
-};
-const animDuration = 350;
+const ANIM_DURATION = 350;
 const noop = function () {};
-
-var methods = {};
+const methods = {};
 methods.onCoverClick = function () {
     this.$emit('cover-click');
 };
-methods.fullMode = function (callback) {
-    this.full = true;
-    let o = {};
-    if (callback) {
-        o.complete = callback;
-    }
-    this.render(o);
-};
-methods.restoreMode = function (callback) {
-    this.full = false;
-    let o = {};
-    if (callback) {
-        o.complete = callback;
-    }
-    this.render(o);
-};
 methods.renderWidth = function (options = {}) {
     let val = this.width || 'auto';
-    if (this.full) {
-        val = '100%';
-    }
-
     let complete = options.complete || noop;
     var $w3 = $(this.$refs.w3);
     if (this.isAnim && val !== 'auto') {
-        $w3.stop().animate({width: val}, animDuration, complete);
+        $w3.stop().animate({width: val}, ANIM_DURATION, complete);
     } else {
         $w3.css('width', val);
         setTimeout(complete);
@@ -65,31 +36,27 @@ methods.renderWidth = function (options = {}) {
 };
 methods.renderHeight = function (options = {}) {
     let val = this.height || 'auto';
-    if (this.full) {
-        val = '100%';
-    }
     let complete = options.complete || noop;
     var $w2 = $(this.$refs.w2);
     if (this.isAnim && val !== 'auto') {
-        $w2.stop().animate({'height': val}, animDuration, complete);
+        $w2.stop().animate({height: val}, ANIM_DURATION, complete);
     } else {
         $w2.css('height', val);
         setTimeout(complete);
     }
 };
-methods.render = function (options = {}) {
+methods.render = function (complete = noop) {
     let completeCount = 0;
-    let allComplete = options.complete || noop;
     let wComplete = () => {
         completeCount++;
         if (completeCount >= 2) {
-            allComplete();
+            return complete();
         }
     };
     let hComplete = () => {
         completeCount++;
         if (completeCount >= 2) {
-            allComplete();
+            return complete();
         }
     };
     this.renderWidth({complete: wComplete});
@@ -99,17 +66,8 @@ var computed = {};
 computed.isAnim = function () {
     return this.anim === 'true' || this.anim === true;
 };
-computed.withCover = function () {
-    if (this.cover === false || this.cover === 'false') {
-        return false;
-    }
-    return true;
-};
 computed.rootClass = function () {
-    let arr = [];
-    if (this.withCover) {
-        arr.push('with-cover');
-    }
+    let arr = ['with-cover'];
     return arr;
 };
 
@@ -121,17 +79,11 @@ watch.height = function () {
     this.$nextTick(this.renderHeight);
 };
 const mounted = function () {
-    if (this.withCover) {
-        this.coverInstance = new Cover({
-            show: true,
-            onClick: this.onCoverClick
-        });
-    }
-    this.render({
-        complete: () => {
-            this.$emit('ready');
-        }
+    this.coverInstance = new Cover({
+        show: true,
+        onClick: this.onCoverClick
     });
+    this.render(() => {this.$emit('ready');});
 };
 const beforeDestroy = function () {
     if (this.coverInstance) {
@@ -145,7 +97,6 @@ const destroyed = function () {
 };
 const dataFunc = function () {
     var o = {
-        full: false
     };
     return o;
 };
@@ -154,7 +105,7 @@ export default {
     methods,
     watch,
     computed,
-    props: ['width', 'height', 'anim', 'cover', 'close'],
+    props: ['width', 'height', 'anim'],
     mounted,
     beforeDestroy,
     destroyed,
@@ -213,9 +164,10 @@ export default {
         color: #1296DB;
     }
 }
-.m-center-layer.with-cover .close-btn {
-    i {
-        color: #fff;
-    }
+.m-center-layer.without-close .close-btn {
+    display: none;
+}
+.m-center-layer.with-cover .close-btn i {
+    color: #fff;
 }
 </style>

@@ -21,6 +21,7 @@
             <button class="btn btn-default" @click="msg3" type="button">
                 msg 3
             </button>
+            <button class="btn btn-primary" @click="msg4">msg 4</button>
         </div>
         <ul class="nav nav-tabs mt20">
             <li class="active">
@@ -97,6 +98,15 @@
         <p v-text="s2"></p>
     </div>
 
+    <center-layer v-if="layerVisible1" @close="layerClose1">
+        <div class="center-layer-inner">
+            <p>ohohohohohohohohohohoekkkkkkkkkkkkkkkkkk</p>
+            <p>ohohohohohohohohohohoekkkkkkkkkkkkkkkkkk</p>
+            <p>ohohohohohohohohohohoekkkkkkkkkkkkkkkkkk</p>
+            <p>ohohohohohohohohohohoekkkkkkkkkkkkkkkkkk</p>
+            <p>ohohohohohohohohohohoekkkkkkkkkkkkkkkkkk</p>
+        </div>
+    </center-layer>
 </div>
 </template>
 
@@ -131,6 +141,12 @@ methods.msg2 = function () {
 };
 methods.msg3 = function () {
     this.$msg.error(longMsg);
+};
+methods.msg4 = function () {
+    this.layerVisible1 = true;
+};
+methods.layerClose1 = function () {
+    this.layerVisible1 = false;
 };
 methods.muiAlert = function () {
     let text = 'ae' + longMsg;
@@ -201,7 +217,7 @@ const dataFunc = function () {
         tooltipObj: {
             text: 'Yep'
         },
-
+        layerVisible1: false,
         sliderValue: 6000,
 
         s2: ['472', '400', 'aaa']

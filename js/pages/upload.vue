@@ -1,7 +1,8 @@
 <template>
 <div class="test-upload">
     <h4>oh yeah</h4>
-
+    <file-upload />
+    <input-file />
     <!-- 滚动测试 -->
     <mui-scroll class="scroll-test-1 scroll-test" ref="ss1" >
         <div>

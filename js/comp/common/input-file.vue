@@ -46,7 +46,9 @@ export default {
     methods,
     computed,
     watch,
-    props: ['inputName'],
+    props: {
+        inputName: String
+    },
     mounted,
     mixins: [],
     beforeDestroy,
