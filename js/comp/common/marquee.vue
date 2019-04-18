@@ -145,11 +145,9 @@ export default {
 </script>
 
 <style scoped lang="less">
-
 .text-marquee {
     white-space: nowrap;
     overflow: hidden;
 }
-.t2 {
-}
+
 </style>
