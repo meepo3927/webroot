@@ -6,11 +6,11 @@
     </label>
     <!-- 选择文件 -->
     <label class="choose-btn" title="选择文件" :for="elemId" 
-        v-show="selectBtnVisible"
+        v-show="chooseBtnVisible"
         v-text="labelText"></label>
     <!-- 上传按钮 -->
     <label class="send-btn" v-show="sendBtnVisible" :class="{disabled: loading}"
-        @click="checkAndSend">{{loading ? '上传中..' : '上传'}}</label>
+        @click="onSendClick">{{loading ? '上传中..' : '上传'}}</label>
     <!-- 错误信息 -->
     <span class="error-msg" v-show="errmsgVisible" 
         v-text="errmsg"></span>
@@ -34,6 +34,10 @@ const TYPE_TEXT_MAP = {
     image: '图片',
     excel: 'Excel'
 };
+const TYPE_HTML5_NAME = {
+    image: 'image',
+    excel: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+};
 const isFilePreviewSupported = (typeof window.FileReader !== 'undefined');
 // 类型错误信息
 const getTypeErrMsg = (type) => {
@@ -43,14 +47,13 @@ const getTypeErrMsg = (type) => {
 };
 // HTML5类型判断
 const HTML5ValiType = (allowType, type) => {
-    if (!type) {
-        return getTypeErrMsg(allowType);
+    const HTML5_TYPE = TYPE_HTML5_NAME[allowType];
+    // LOG('HTML5ValiType:' + allowType + ':' + type);
+    if (type === HTML5_TYPE) {
+        return true;
     }
-    const arr = type ? type.split('/') : [];
-    if (arr.length === 0) {
-        return getTypeErrMsg(allowType);
-    }
-    if (arr[0] === allowType) {
+    // ---> image/png, image/jpeg
+    if (type.split('/')[0] === HTML5_TYPE) {
         return true;
     }
     return getTypeErrMsg(allowType);
@@ -72,165 +75,113 @@ const valiFileExtension = (allowType, fileName) => {
     }
     return getTypeErrMsg(allowType);
 };
-// 校验类型
-const valiFileType = (el, filetype, fileName) => {
-    if (!filetype) {  // 没有type限制
-        return true;
-    }
-    if (el.files && el.files.length === 0) { // 没有选中文件
-        return true;
-    }
-    var fileInstance = el.files && el.files[0];
-    if (fileInstance) {
-        // return HTML5ValiType(filetype, fileInstance.type);
-    }
-    // 校验扩展名
-    return valiFileExtension(filetype, fileName);
-};
 
 let methods = {};
 methods.removeFileInput = function () {
-    let $file = $(this.$refs.form).children('.v-file');
-    if ($file.length) {
-        $file.remove();
-    }
+    this.$form.children('.v-file').remove();
 };
 methods.makeFileInput = function () {
     let $file = $('<input type="file" class="v-file" />');
     $file.css('display', 'none');
     $file.attr('id', this.elemId);
-    $file.attr('name', this.inputName);
-    $file.on('change', (e) => {
-        this.change(e);
-    });
-    $(this.$refs.form).append($file);
+    $file.attr('name', this.myInputName);
+    $file.on('change', (e) => {this.onChange(e);});
+    this.$form.append($file);
 };
 methods.getFileInputElem = function () {
-    return $(this.$refs.form).children('.v-file')[0];
+    return this.$form.children('.v-file')[0];
 };
 methods.reset = function () {
-    this.fileValue = '';
     this.filePath = '';
-    this.errmsg = '';
+    this.cleanErrMsg();
     this.removeFileInput();
     this.makeFileInput();
 };
 // 检查文件类型
-methods.checkType = function (el) {
+methods.checkFileType = function (el) {
     el = el || this.getFileInputElem();
-    if (!el) {
+    if (!this.filetype) {  // 没有type限制
         return true;
     }
-    return valiFileType(el, this.filetype, this.file);
-};
-methods.change = function (e) {
-    var elem = e.target || e.currentTarget;
-    var value = elem.value;
-    this.filePath = value;
-
-    let result = this.checkType(elem);
-    if (result !== true) {
-        this.fileValue = '';
-        this.errmsg = result;
-        return false;
-    }
-
-    // this.preview(elem.files);
-
-    // 没有选择文件
-    if (!value) {
-        return false;
-    }
-
-    this.fileValue = value;
-    if (this.checkNull()) {
-        this.errmsg = '';
-        if (this.sendOnSelect) {
-            // Send request to server
-            this.send();
+    if (el && el.files) {
+        if (el.files.length === 0) {
+            // 没有选中文件
+            return true;
         }
-    } else {
+        return HTML5ValiType(this.filetype, el.files[0].type);
     }
+    // 校验扩展名
+    return valiFileExtension(this.filetype, this.fileName);
+};
+methods.onChange = function (e) {
+    var elem = e.target || e.currentTarget;
+    this.filePath = elem.value;
+    // 没有选择文件
+    if (!this.filePath) {
+        return false;
+    }
+    // 类型不对
+    let result = this.checkFileType(elem);
+    if (result !== true) {
+        return this.setErrMsg(result);
+    }
+    this.cleanErrMsg();
+    // 预览
+    this.preview(elem.files);
+};
+methods.setErrMsg = function (msg) {
+    this.errmsg = msg;
+    return false;
+};
+methods.cleanErrMsg = function () {
+    this.errmsg = '';
 };
 methods.preview = function (files) {
-    if (!files) {
-        return false;
-    }
-    var file = files[0];
-    if (!file) {
-        return false;
-    }
-    if (!isFilePreviewSupported) {
+    if (!isFilePreviewSupported || !files || !files[0]) {
         return false;
     }
     var reader = new window.FileReader();
     reader.onload = () => {
         this.$emit('preview', reader.result);
     }
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(files[0]);
 };
-methods.checkNull = function () {
-    if (!this.fileValue) {
-        return '请上传文件';
-    }
-    return true;
-};
-methods.check = function () {
-    if (this.silent) {
-        return true;
-    }
-    // 类型不对
-    let r = this.checkType();
-    if (r !== true) {
-        this.errmsg = r;
-        return false;
-    }
-    // 没有上传文件
-    r = this.checkNull();
-    if (r !== true) {
-        this.errmsg = r;
-        return false;
-    }
-    this.errmsg = '';
-    return true;
-};
-methods.checkAndSend = function () {
+// 点击-上传
+methods.onSendClick = function () {
     if (this.loading) {
-        return false;
+        return;
     }
-    this.errmsg = '';
+    this.cleanErrMsg();
     // 文件为空
     if (!this.filePath) {
-        this.errmsg = '请选择文件';
-        return false;
+        return this.setErrMsg('请选择文件');
     }
     // 类型不对
-    let r = this.checkType();
-    if (r !== true) {
-        this.errmsg = r;
-        return false;
+    const result = this.checkFileType();
+    if (result !== true) {
+        return this.setErrMsg(result);
     }
-    return this.send();
-
+    this.sendForm();
 };
-methods.send = function () {
+// 发送数据
+methods.sendForm = function () {
     this.loading = true;
-    var fa = formAsync(this.$refs.form, {
-        success: (json) => {
-            this.loading = false;
-            this.$emit('success', json);
-            if (json.success) {
-                this.$emit('input', json.data);
-            }
-        },
-        error: () => {
-            this.loading = false;
-            this.fileValue = '';
-            this.errmsg = '上传失败';
-            // LOG('upload error');
+    const onSuccess = (json) => {
+        this.loading = false;
+        if (json.success) {
+            this.$emit('input', json.data);
         }
+        this.$emit('success', json);
+    };
+    const onError = (e) => {
+        this.loading = false;
+        this.setErrMsg('上传失败');
+    };
+    const fa = formAsync(this.$refs.form, {
+        success: onSuccess,
+        error: onError
     });
-    fa.send();
+    return fa.send();
 };
 var computed = {};
 computed.elemId = function () {
@@ -239,14 +190,14 @@ computed.elemId = function () {
 computed.labelText = function () {
     return this.label || '选择文件';
 };
-computed.inputName = function () {
+computed.myInputName = function () {
     return this.inputname || 'file';
 };
 computed.fileName = function () {
     if (!this.filePath) {
         return '';
     }
-    var list = this.filePath.split('\\').pop();
+    const list = this.filePath.split('\\').pop();
     return list.split('/').pop();
 };
 computed.formAction = function () {
@@ -267,13 +218,14 @@ computed.openFileVisible = function () {
     }
     return true;
 };
-computed.selectBtnVisible = function () {
+computed.chooseBtnVisible = function () {
     return !this.sendBtnVisible;
 };
 computed.sendBtnVisible = function () {
     return this.filePath ? true : false;
 };
 const mounted = function () {
+    this.$form = $(this.$refs.form);
     this.makeFileInput();
 };
 const beforeDestroy = function () {};
@@ -281,7 +233,6 @@ export default {
     data: function () {
         return {
             id: (uuid++),
-            fileValue: '',
             filePath: '',
             errmsg: '',
             loading: false
@@ -293,12 +244,8 @@ export default {
         label: String,
         inputname: String,
         filetype: String,
-        slient: Boolean,
         action: String,
-        sendOnSelect: Boolean,
-        value: {
-            validator: function () {return true}
-        }
+        value: [String, Object]
     },
     mounted,
     beforeDestroy
