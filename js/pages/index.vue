@@ -30,10 +30,10 @@
 
 <script>
 import 'root';
-
 let methods = {};
 methods.msg = function () {
     this.$msg(Config.env + '-' + Math.random());
+
 };
 methods.alert = function () {
     //let ld = this.$loading();
