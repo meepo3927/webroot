@@ -76,7 +76,14 @@ computed.menuList = function () {
         {
             name: '用户研究中心',
             children: [
-                {name: '用户研究'},
+                {
+                    name: '用户研究',
+                    children: [
+                        {name: '测试菜单000'},
+                        {name: '测试菜单000'},
+                        {name: '测试菜单000'}
+                    ]
+                },
                 {name: '动态标签训练'},
                 {name: '标签使用日志'},
                 {
@@ -88,7 +95,13 @@ computed.menuList = function () {
                 }
             ]
         },
-        {name: '预约下线'},
+        {
+            name: '预约下线',
+            children: [
+                {name: '测试表单111'},
+                {name: '测试表单222'}
+            ]
+        },
         {name: '营销资源中心'},
         {name: '模型视窗'}
     ]

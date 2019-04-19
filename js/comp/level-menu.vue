@@ -4,10 +4,10 @@
     @mouseleave="onRootMouseLeave">
     <li v-for="item in list">
         <!-- 子菜单 -->
-        <level-menu v-if="hasChildren(item)" :list="item.children" 
-            @enter="onChildrenEnter"
-            v-show="currentActive === item"
-            :level="childlv" />
+        <level-menu v-if="hasChildren(item)" v-show="isChildrenVisible(item)"
+            :list="item.children" 
+            :level="childlv"
+            @enter="onChildrenEnter" />
         <!-- 菜单项 -->
         <a href="javascript:;"
             @mouseenter="onMouseEnter(item)"
@@ -59,9 +59,13 @@ methods.onMouseEnter = function (item) {
 };
 methods.onMouseLeave = function (item) {
 };
+methods.isChildrenVisible = function (item) {
+    return (this.currentActive === item);
+};
 methods.hasChildren = function (item) {
     return (item.children && item.children.length);
 };
+
 let computed = {};
 computed.dataReady = function () {
     return Array.isArray(this.list) && (this.list.length > 0);
@@ -113,6 +117,16 @@ export default {
 @text-color:  #5f6281;
 @icon-color:  #cacad2;
 @active-color: #22b9ff;
+@keyframes fade-in {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
 .leave-menu {
     position: absolute;
     padding: 5px 0px;
@@ -120,6 +134,7 @@ export default {
     box-shadow: 0px 0px 50px 0px rgba(82,63,105,0.15);
     background-color: #fff;
     border-radius: 4px;
+    animation: fade-in .3s ease;
     &.level-sub {
         left: 100%;
         margin-left: 1px;
