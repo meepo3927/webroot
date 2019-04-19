@@ -16,18 +16,10 @@ let basePath = global.basePath || '';
 // 用户信息
 let user = {};
 
-// Ajax请求路径
-if (isProduction) {
-    var ajaxUrlBase = basePath;
-} else {
-    ajaxUrlBase = basePath + '/mock';
-}
-
 module.exports = {
     env,
     basePath,
     user,
-    ajaxUrlBase,
     mock: !isProduction,
     isProduction
 };

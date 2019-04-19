@@ -37,7 +37,10 @@ methods.msg = function () {
 };
 methods.alert = function () {
     //let ld = this.$loading();
-    this.$alert(Config.env + Config.ajaxUrlBase);
+    this.$alert(Config.env + Config.basePath);
+    Request.fetch2('/testAPI').then(() => {
+        
+    });
 };
 let computed = {};
 computed.t1 = function () {

@@ -1,13 +1,22 @@
 /**
  * 请求数据
  */
+const Promise = require('promise');
+const config = require('config');
+const URL = require('util/url');
+const Fetch = require('util/fetch');
+const isProduction = config.isProduction;
+const isMock = !isProduction;
+const useProxy = (URL.query().useProxy === '1');
 
-let Promise = require('promise');
-let config = require('config');
-let URL = require('util/url');
-let Fetch = require('util/fetch');
-let mock = !config.isProduction;
-let ajaxUrlBase = config.ajaxUrlBase;
+// Ajax请求路径
+if (isProduction) {
+    var ajaxUrlBase = Config.basePath;
+} else if (useProxy) {
+    ajaxUrlBase = '/TD-common-web';
+} else {
+    ajaxUrlBase = '/mock';
+}
 
 const handleResult = (result) => {
     if (!result || result.success === false) {
@@ -33,10 +42,10 @@ const baseFetch = (url, data) => {
     });
 };
 const fetch1 = (path, param) => {
-    if (mock) {
-        return baseFetch(ajaxUrlBase + `${path}.json`, param);
+    if (isProduction || useProxy) {
+        return baseFetch(ajaxUrlBase + `${path}.do`, param);
     }
-    return baseFetch(ajaxUrlBase + `${path}.do`, param);
+    return baseFetch(ajaxUrlBase + `${path}.json`, param);
 };
 const fetch2 = (path, param) => {
     return fetch1(path, param).then((result) => {
