@@ -5,6 +5,8 @@ const util = require('./util.js');
 const ExtractTextPlugin = require('mini-css-extract-plugin');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 
+process.env.NODE_ENV = 'production';
+
 const plugins = [
     new webpack.ProvidePlugin(config.provide),
     new webpack.DllReferencePlugin({

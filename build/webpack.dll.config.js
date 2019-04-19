@@ -2,6 +2,7 @@ const webpack = require('webpack');
 const path = require('path');
 const config = require('./config.js');
 const ExtractTextPlugin = require('mini-css-extract-plugin');
+process.env.NODE_ENV = 'production';
 //////////////// 打包文件
 const vendors = [
     'jquery',
