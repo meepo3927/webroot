@@ -5,17 +5,6 @@
     <file-upload filetype="excel" class="mt10" />
     <input-file />
     <!-- 滚动测试 -->
-    <mui-scroll class="scroll-test-1 scroll-test" ref="ss1" >
-        <div>
-            <ul class="list-1">
-                <li>噢呃</li>
-                <li v-for="v in list1" v-text="v"></li>
-            </ul>
-
-            <button class="btn btn-default m20" @click="onClick1">Add Item+</button>
-        </div>
-    </mui-scroll>
-
     <mui-scroll class="scroll-test-2 scroll-test" ref="ss2" position="absolute">
         <div>
             <ul class="list-1">
@@ -26,34 +15,17 @@
             <button class="btn btn-default m20" @click="onClick1">Add Item+</button>
         </div>
     </mui-scroll>
+    <div class="fl">
+        <button class="btn btn-danger" type="button" >Danger</button>
+    </div>
+    <ol class="ol-1 mt10">
+        <li>一二三四五六七</li>
+        <li>一二三四五六七</li>
+        <li>一二三四五六七</li>
+        <li>一二三四五六七</li>
+        <li>一二三四五六七</li>
+    </ol>
     <div class="table-wrapper ">
-        <table class="table table-hover mt20">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>用户名</th>
-                    <th>得分</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>111</td>
-                    <td class="success">郭野</td>
-                    <td>123</td>
-                </tr>
-                <tr>
-                    <td>111</td>
-                    <td>郭野</td>
-                    <td>123</td>
-                </tr>
-                <tr>
-                    <td>111</td>
-                    <td>郭野</td>
-                    <td>123</td>
-                </tr>
-            </tbody>
-        </table>
-
         <table class="table table-striped mt20">
             <thead>
                 <tr>
@@ -71,6 +43,7 @@
             </tbody>
         </table>
     </div>
+    
     <div class="pb30"></div>
 </div>
 </template>
@@ -87,14 +60,7 @@ let computed = {};
 computed.users = function () {
     return [
         {id: 111, name: '郭野', score: 123},
-        {id: 111, name: '郭野', score: 123},
-        {id: 111, name: '郭野', score: 123},
         {id: 111, name: '郭野-active', score: 123, cls: 'active'},
-        {id: 111, name: '郭野', score: 123},
-        {id: 111, name: '郭野', score: 123},
-        {id: 111, name: '郭野', score: 123},
-        {id: 111, name: '郭野', score: 123},
-        {id: 111, name: '郭野', score: 123},
         {id: 111, name: '郭野-success', score: 123, cls: 'success'},
         {id: 111, name: '郭野', score: 123},
         {id: 111, name: '郭野', score: 123},
@@ -105,7 +71,6 @@ computed.users = function () {
         {id: 111, name: '郭野-danger', score: 123, cls: 'danger'},
         {id: 111, name: '郭野', score: 123},
         {id: 111, name: '郭野-active', score: 123, cls: 'active'},
-        {id: 111, name: '郭野', score: 123},
         {id: 111, name: '郭野', score: 123}
     ]
 };
@@ -173,5 +138,10 @@ form {
     li {
         margin: 15px;
     }
+}
+.ol-1 {
+    width: 300px;
+    padding: 20px;
+    border: 1px solid #ddd;
 }
 </style>
