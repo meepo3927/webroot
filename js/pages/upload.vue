@@ -15,16 +15,10 @@
             <button class="btn btn-default m20" @click="onClick1">Add Item+</button>
         </div>
     </mui-scroll>
-    <div class="fl">
-        <button class="btn btn-danger" type="button" >Danger</button>
+    <div class="fl" >
+        <button class="btn btn-danger" type="button" @click="onClick0">Danger</button>
     </div>
-    <ol class="ol-1 mt10">
-        <li>一二三四五六七</li>
-        <li>一二三四五六七</li>
-        <li>一二三四五六七</li>
-        <li>一二三四五六七</li>
-        <li>一二三四五六七</li>
-    </ol>
+    <level-menu :list="menuList" v-if="visible"/>
     <div class="table-wrapper ">
         <table class="table table-striped mt20">
             <thead>
@@ -51,6 +45,9 @@
 <script>
 import 'root';
 let methods = {};
+methods.onClick0 = function () {
+    this.visible = !this.visible;
+};
 methods.onClick1 = function () {
     this.list1.push(this.list1.length + '. ' + Math.random() + _.now());
     this.list1.push(this.list1.length + '. ' + Math.random() + _.now());
@@ -74,6 +71,28 @@ computed.users = function () {
         {id: 111, name: '郭野', score: 123}
     ]
 };
+computed.menuList = function () {
+    return [
+        {
+            name: '用户研究中心',
+            children: [
+                {name: '用户研究'},
+                {name: '动态标签训练'},
+                {name: '标签使用日志'},
+                {
+                    name: '标签管理',
+                    children: [
+                        {name: '标签生命周期管理'},
+                        {name: '标签预下线管理'}
+                    ]
+                }
+            ]
+        },
+        {name: '预约下线'},
+        {name: '营销资源中心'},
+        {name: '模型视窗'}
+    ]
+};
 let watch = {};
 const created = function () {};
 const mounted = function () {
@@ -83,6 +102,7 @@ const beforeDestroy = function () {};
 const dataFunc = function () {
     let o = {
         gender: "",
+        visible: false,
         list1: []
     };
     return o;
@@ -143,5 +163,23 @@ form {
     width: 300px;
     padding: 20px;
     border: 1px solid #ddd;
+}
+ol > li:hover {
+    background-color: yellow;
+}
+.menu-2, .menu-3 {
+    position: absolute;
+    width: 220px;
+    height: 240px;
+    border: 1px solid #eee;
+    left: 320px;
+    z-index: 1;
+    background-color: #fff;
+}
+.menu-2 {
+    top: 220px;
+}
+.menu-3 {
+    top: 250px;
 }
 </style>
