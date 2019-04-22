@@ -17,14 +17,13 @@
         <button class="btn btn-default" @click="msg" type="button">MUI msg</button>
         <button class="btn btn-primary" @click="alert">MUI alert</button>
     </form>
-    <div class="shadow-container" v-tooltip="t1">
-        fuck yeah
-        <v-date />
-    </div>
+    <transition enter-active-class="zoomIn animated"
+        leave-active-class="zoomOut animated">
+        <div class="shadow-container m15" v-tooltip="t1" v-if="visible">
+            fuck yeah
+        </div>
+    </transition>
 
-    <div>
-        
-    </div>
 </div>
 </template>
 
@@ -33,7 +32,7 @@ import 'root';
 let methods = {};
 methods.msg = function () {
     this.$msg(Config.env + '-' + Math.random());
-
+    this.visible = !this.visible;
 };
 methods.alert = function () {
     //let ld = this.$loading();
@@ -52,7 +51,8 @@ const mounted = function () {};
 const beforeDestroy = function () {};
 const dataFunc = function () {
     let o = {
-        name: 'meepo'
+        name: 'meepo',
+        visible: true
     };
     return o;
 };
