@@ -80,15 +80,15 @@ proto.getPosition = function () {
     rect.right = rect.x + rect.width;
     rect.bottom = rect.y + rect.height;
 
-    // 上左
-    let p1 = this.getPositionTopLeft(rect, elemRect);
-    if (checkPosition(p1, elemRect)) {
-        return p1;
-    }
     // 上中
     let p2 = this.getPositionTopCenter(rect, elemRect);
     if (checkPosition(p2, elemRect)) {
         return p2;
+    }
+    // 上左
+    let p1 = this.getPositionTopLeft(rect, elemRect);
+    if (checkPosition(p1, elemRect)) {
+        return p1;
     }
     // 上右
     let p3 = this.getPositionTopRight(rect, elemRect);

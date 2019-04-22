@@ -4,7 +4,7 @@
         <div class="x-wrapper-2" ref="w2" @click.self="onCoverClick">
             <div class="x-wrapper-3" ref="w3">
                 <slot></slot>
-                <a href="javascript:;" class="close-btn" @click="$emit('close')">
+                <a href="javascript:;" class="i-close-btn" @click="$emit('close')">
                     <i class="fa fa-times-circle"></i>
                 </a>
             </div>
@@ -151,7 +151,7 @@ export default {
         }
     }
 }
-.close-btn {
+.i-close-btn {
     position: absolute;
     right: -1px;
     top: -40px;
@@ -164,10 +164,10 @@ export default {
         color: #1296DB;
     }
 }
-.m-center-layer.without-close .close-btn {
+.m-center-layer.without-close .i-close-btn {
     display: none;
 }
-.m-center-layer.with-cover .close-btn i {
+.m-center-layer.with-cover .i-close-btn i {
     color: #fff;
 }
 </style>
