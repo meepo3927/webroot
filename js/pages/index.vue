@@ -8,9 +8,7 @@ import Home from 'pages/home.vue';
 import Test from 'pages/test.vue';
 
 const Upload = (r) => {
-    require.ensure([], () => {
-        r(require('pages/upload.vue'));
-    });
+    require.ensure([], () => r(require('pages/upload.vue')));
 };
 const routes = [
     {path: '/', component: Home},
