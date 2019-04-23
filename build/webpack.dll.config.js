@@ -28,7 +28,7 @@ const rules = [
     {
         test: /\.js$/,
         loader: 'babel-loader',
-        exclude: /node_modules/
+        exclude: /(node_modules|echarts$|jquery$|lodash$)/
     },
     {
         test: /\.(png|jpg|gif|svg)$/,
@@ -64,7 +64,7 @@ module.exports = {
     },
     plugins: plugins,
     module: {
-        noParse: /(jquery|echarts)$/,
+        noParse: /(jquery|echarts|lodash)$/,
         rules: rules
     },
     resolve: {
