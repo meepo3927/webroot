@@ -14,6 +14,7 @@ let rules = [
         loader: 'babel-loader',
         exclude: /(node_modules)|(lib\/)/,
         options: {
+            plugins: ["babel-plugin-syntax-dynamic-import"],
             presets: [["env", {
               "modules": false,
               "targets": {

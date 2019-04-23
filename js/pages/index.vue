@@ -6,14 +6,10 @@
 import Root from 'root';
 import Home from 'pages/home.vue';
 import Test from 'pages/test.vue';
-
-const Upload = (r) => {
-    require.ensure([], () => r(require('pages/upload.vue')));
-};
 const routes = [
     {path: '/', component: Home},
     {path: '/test', component: Test},
-    {path: '/upload', component: Upload}
+    {path: '/upload', component: () => import('pages/upload.vue')}
 ];
 let methods = {};
 let computed = {};
