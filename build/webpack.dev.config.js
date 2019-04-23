@@ -68,9 +68,9 @@ module.exports = {
     },
     optimization: {
         splitChunks: {
-            chunks: 'all',
-            minChunks: 2,
-            name: 'commons'
+            chunks: 'async',
+            minChunks: 1,
+            name: true
         }
     },
     plugins: [

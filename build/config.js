@@ -5,7 +5,7 @@ var DIST_PATH = path.resolve(__dirname, '../dist');
 var SERVER_DIR = path.resolve(__dirname, '..');
 // var DIST_PATH = path.resolve(__dirname, '../../webapp/bigdata/dist');
 // var SERVER_DIR = path.resolve(__dirname, '../../webapp/bigdata/');
-var productionPublicPath = '/wboo/dist/';
+var productionPublicPath = '/webroot/dist/';
 var SERVER_PORT = 8003;
 var alias = {
     // 目录
@@ -20,7 +20,7 @@ var alias = {
     jquery$: 'lib/jquery-2.1.1.min.js',
     vue$: 'lib/vue.min.js',
     vuex$: 'lib/vuex-2.3.1.js',
-    vue_router$: 'lib/vue-router.js',
+    vuerouter$: 'lib/vue-router.js',
     lodash$: 'lib/lodash.min.js',
     // 工具,插件
     promise$: 'lib/promise.js',

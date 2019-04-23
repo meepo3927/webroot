@@ -56,7 +56,7 @@ methods.onClick1 = function () {
 let computed = {};
 computed.users = function () {
     return [
-        {id: 111, name: '郭野', score: 123},
+        {id: 111, name: '郭野', score: 1234},
         {id: 111, name: '郭野-active', score: 123, cls: 'active'},
         {id: 111, name: '郭野-success', score: 123, cls: 'success'},
         {id: 111, name: '郭野', score: 123},

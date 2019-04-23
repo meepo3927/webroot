@@ -74,7 +74,7 @@ module.exports = {
         path: config.DIST_PATH,
         publicPath: config.productionPublicPath,
         filename: '[name].js',
-        chunkFilename: 'chunk.[name].js'
+        chunkFilename: 'chunk.[name]_[chunkhash:8].js'
     },
     plugins: plugins,
     module: {
@@ -83,9 +83,9 @@ module.exports = {
     },
     optimization: {
         splitChunks: {
-            chunks: 'all',
-            minChunks: 2,
-            name: 'commons'
+            chunks: 'async',
+            minChunks: 1,
+            name: true
         }
     },
     resolve: {

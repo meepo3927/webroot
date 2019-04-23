@@ -9,7 +9,8 @@ const vendors = [
     'vue',
     'polyfill',
     'vendorless',
-    'lodash'
+    'lodash',
+    'vuerouter'
 ];
 const DIST_PATH = config.DIST_PATH + '/../bundle';
 const plugins = [
