@@ -11,7 +11,8 @@
  * import Vali from 'mui-vali.js';
  * let formElem = document.getElementById('form1');
  * let fmVali = new Vali(formElem);
- * fmVali.check();
+ * fmVali.check(); // 检查一个
+ * fmVali.check('all'); // 检查全部
  *
  * 支持 required, pattern
  */
@@ -76,7 +77,7 @@ const proto = MUIVali.prototype;
 proto.reset = function () {
     this.nameStackMap = {};
 };
-proto.check = function () {
+proto.check = function (type = 'one') {
     // reset
     this.reset();
     let queue = [];
@@ -91,12 +92,17 @@ proto.check = function () {
             queue.push(elem);
         }
     });
+    let result = true;
     for (let i = 0; i < queue.length; i++) {
         if (this.checkElem(queue[i]) === false) {
-            return false;
+            if (type === 'all') {
+                result = false;
+            } else {
+                return false;
+            }
         }
     }
-    return true;
+    return result;
 };
 //---------- 检查单元素 ----------
 proto.checkElem = function (elem) {
