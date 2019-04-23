@@ -68,9 +68,19 @@ module.exports = {
     },
     optimization: {
         splitChunks: {
-            chunks: 'async',
-            minChunks: 1,
-            name: true
+            cacheGroups: {
+                default: {
+                    chunks: 'async',
+                    minChunks: 1,
+                    name: true
+                },
+                commons: {
+                    name: "commons",
+                    filename: 'commons.js',
+                    chunks: "initial",
+                    minChunks: 1
+                }
+            }
         }
     },
     plugins: [
