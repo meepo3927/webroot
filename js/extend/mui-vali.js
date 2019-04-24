@@ -21,7 +21,10 @@ const Tooltip = require('./mui-tooltip.js');
 const REQUIRED_TAG_MSG_MAP = {
     SELECT: '请在列表中选择一项'
 };
+const IS_IE = !!(document.documentMode);
 function showErrorMsg(elem, text) {
+    // 自动滚动
+    elem.scrollIntoViewIfNeeded();
     // 显示-浮动文字
     let tooltip = new Tooltip({
         target: elem,
@@ -77,7 +80,7 @@ const proto = MUIVali.prototype;
 proto.reset = function () {
     this.nameStackMap = {};
 };
-proto.check = function (type = 'one') {
+proto.check = function () {
     // reset
     this.reset();
     let queue = [];
@@ -92,17 +95,11 @@ proto.check = function (type = 'one') {
             queue.push(elem);
         }
     });
-    let result = true;
     for (let i = 0; i < queue.length; i++) {
         if (this.checkElem(queue[i]) === false) {
-            if (type === 'all') {
-                result = false;
-            } else {
-                return false;
-            }
+            return false;
         }
     }
-    return result;
 };
 //---------- 检查单元素 ----------
 proto.checkElem = function (elem) {

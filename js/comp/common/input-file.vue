@@ -1,8 +1,8 @@
 <template>
 <div class="v-input-file">
     <label :for="id" v-text="text" :title="fileName"></label>
-    <input type="file" ref="file"@change="onChange" 
-        :id="id" 
+    <input type="file" ref="file" @change="onChange" :id="id" v-if="keep"
+        :key="resetCount"
         :name="inputName" />
 </div>
 </template>
@@ -12,6 +12,20 @@ let MAX_LEN = 50;
 let MAX_LEN_HAFT = Math.round(MAX_LEN / 2);
 let uuid = 1;
 let methods = {};
+// 重置
+methods.reset = function () {
+    this.fileName = '';
+    this.$emit('input', '');
+    this.keep = false;
+    this.resetCount++;
+    this.$nextTick(this.delayKeep);
+    
+};
+methods.delayKeep = function () {
+    setTimeout(() => {
+        this.keep = true;
+    }, 80);
+};
 methods.onChange = function (e) {
     let v = this.$refs.file.value;
     this.fileName = v.split('\\').pop();
@@ -36,6 +50,8 @@ const beforeDestroy = function () {
 const dataFunc = function () {
     let o = {
         id: 'vInputFile_' + (uuid++),
+        keep: true,
+        resetCount: 0,
         fileName: ''
     };
     return o;
