@@ -6,6 +6,7 @@
     <input-file />
     <v-date class="form-control date-input" />
     <v-datetime class="form-control date-input" />
+    <laydate class="form-control date-input" type="datetime" v-model="laydateValue" />
     <!-- 滚动测试 -->
     <mui-scroll class="scroll-test-2 scroll-test" ref="ss2" position="absolute">
         <div>
@@ -46,7 +47,7 @@
 
 <script>
 import 'root';
-import datetime from 'comp/common/datetime.vue';
+import laydate from 'comp/common/laydate.vue';
 let methods = {};
 methods.onClick0 = function () {
     this.visible = !this.visible;
@@ -119,7 +120,9 @@ const dataFunc = function () {
     let o = {
         gender: "",
         visible: false,
-        list1: []
+        list1: [],
+
+        laydateValue: undefined
     };
     return o;
 };
@@ -134,7 +137,7 @@ export default {
     mixins: [],
     beforeDestroy,
     components: {
-        'v-datetime': datetime
+        laydate
     }
 };
 </script>
@@ -200,6 +203,6 @@ ol > li:hover {
     top: 250px;
 }
 .date-input {
-    width: 140px;
+    width: 180px;
 }
 </style>
