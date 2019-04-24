@@ -4,7 +4,8 @@
     <file-upload filetype="image" />
     <file-upload filetype="excel" class="mt10" />
     <input-file />
-    <v-datetime class="form-control" />
+    <v-date class="form-control date-input" />
+    <v-datetime class="form-control date-input" />
     <!-- 滚动测试 -->
     <mui-scroll class="scroll-test-2 scroll-test" ref="ss2" position="absolute">
         <div>
@@ -197,5 +198,8 @@ ol > li:hover {
 }
 .menu-3 {
     top: 250px;
+}
+.date-input {
+    width: 140px;
 }
 </style>

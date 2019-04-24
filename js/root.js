@@ -22,7 +22,7 @@ import VueCommon from 'extend/vue.common.js';
 
 import MUIScroll from 'comp/mui/scroll.vue';
 import centerlayer from 'comp/common/center-layer.vue';
-// import vDate from 'comp/common/date.vue';
+import vDate from 'comp/common/date.vue';
 import FileUpload from 'comp/common/file-upload.vue';
 import InputFile from 'comp/common/input-file.vue';
 import InputNumber from 'comp/common/input-number.vue';
@@ -37,7 +37,7 @@ Vue.prototype.$loading = MUIloading;
 Vue.directive('tooltip', MUITooltip);
 
 Vue.component('mui-scroll', MUIScroll);
-// Vue.component('v-date', vDate);
+Vue.component('v-date', vDate);
 Vue.component('file-upload', FileUpload);
 Vue.component('input-file', InputFile);
 Vue.component('input-number', InputNumber);
