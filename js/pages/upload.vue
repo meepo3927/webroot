@@ -4,6 +4,7 @@
     <file-upload filetype="image" />
     <file-upload filetype="excel" class="mt10" />
     <input-file />
+    <v-datetime class="form-control" />
     <!-- 滚动测试 -->
     <mui-scroll class="scroll-test-2 scroll-test" ref="ss2" position="absolute">
         <div>
@@ -44,6 +45,7 @@
 
 <script>
 import 'root';
+import datetime from 'comp/common/datetime.vue';
 let methods = {};
 methods.onClick0 = function () {
     this.visible = !this.visible;
@@ -131,6 +133,7 @@ export default {
     mixins: [],
     beforeDestroy,
     components: {
+        'v-datetime': datetime
     }
 };
 </script>

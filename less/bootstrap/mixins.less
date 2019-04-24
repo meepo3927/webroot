@@ -30,7 +30,12 @@
     color: darken(@color, 10%);
   }
 }
-
+.nav-divider(@color: #e5e5e5) {
+  height: 1px;
+  margin: ((@line-height-computed / 2) - 1) 0;
+  overflow: hidden;
+  background-color: @color;
+}
 .bg-variant(@color) {
   background-color: @color;
   a&:hover,
