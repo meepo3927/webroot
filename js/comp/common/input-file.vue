@@ -42,10 +42,17 @@ computed.text = function () {
     return name || '选择文件';
 };
 let watch = {};
+watch.value = function (val) {
+    this.fileName = val;
+};
 const created = function () {};
 const mounted = function () {};
 const beforeDestroy = function () {
     this.$emit('input', '');
+    // 文件名
+    if (this.value) {
+        this.fileName = this.value;
+    }
 };
 const dataFunc = function () {
     let o = {
@@ -63,7 +70,8 @@ export default {
     computed,
     watch,
     props: {
-        inputName: String
+        inputName: String,
+        value: String
     },
     mounted,
     mixins: [],
