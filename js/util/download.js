@@ -1,6 +1,3 @@
-
-let $ = require('jquery');
-
 let gid = 11111;
 let genUniqueId = () => {
     let id = (gid++);

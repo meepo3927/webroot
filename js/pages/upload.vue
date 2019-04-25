@@ -1,7 +1,8 @@
 <template>
 <div class="test-upload">
     <h4>oh yeah</h4>
-    <file-upload filetype="image" />
+    <file-upload filetype="image" v-model="fileContent" 
+        :action="uploadAction" />
     <!-- 滚动测试 -->
     <mui-scroll class="scroll-test-2 scroll-test" ref="ss2" position="absolute">
         <div>
@@ -45,8 +46,7 @@
 
 <script>
 import 'root';
-import laydate from 'comp/common/laydate.vue';
-import {bind, unbind} from 'lib/focusoutside.js';
+
 let methods = {};
 methods.onClick0 = function () {
     this.visible = true;
@@ -112,6 +112,10 @@ computed.menuList = function () {
         {name: '模型视窗'}
     ]
 };
+computed.uploadAction = function () {
+    // ./mock/fileupload.json
+    return 'http://localhost:8003/a.html';
+};
 let watch = {};
 const created = function () {};
 const mounted = function () {
@@ -123,8 +127,7 @@ const dataFunc = function () {
         gender: "",
         visible: false,
         list1: [],
-
-        laydateValue: undefined
+        fileContent: ''
     };
     return o;
 };
@@ -139,7 +142,6 @@ export default {
     mixins: [],
     beforeDestroy,
     components: {
-        laydate
     }
 };
 </script>

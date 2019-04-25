@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import formAsync from 'util/form_async.js';
+import FormAsync from 'util/form_async.js';
 let uuid = 1;
 const TYPE_EXT_MAP = {
     image: 'jpg,png,jpeg,gif',
@@ -166,22 +166,16 @@ methods.onSendClick = function () {
 // 发送数据
 methods.sendForm = function () {
     this.loading = true;
-    const onSuccess = (json) => {
+    FormAsync(this.$refs.form).send().then((result) => {
         this.loading = false;
-        if (json.success) {
-            this.$emit('input', json.data);
+        if (result.success) {
+            this.$emit('input', result.data);
         }
-        this.$emit('success', json);
-    };
-    const onError = (e) => {
+        this.$emit('complete', result);
+    }).catch(() => {
         this.loading = false;
         this.setErrMsg('上传失败');
-    };
-    const fa = formAsync(this.$refs.form, {
-        success: onSuccess,
-        error: onError
     });
-    return fa.send();
 };
 var computed = {};
 computed.elemId = function () {

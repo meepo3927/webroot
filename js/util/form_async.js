@@ -1,59 +1,63 @@
+import Promise from 'promise';
 
-var $ = require('jquery');
-const noop = $.noop;
-let prefix = 'form-async-prefix-';
-let uuid = 1;
-let defaults = {
-    dataType: 'json'
-};
-function fetchContent(iframe, callback) {
-    if (!iframe) {
-        return null;
+const noop = () => {};
+const PREFIX = 'form-async-prefix-';
+/**
+ * 用法：
+ * FormAsync(formElem).send().then((result) => {});
+ */
+function FormAsync(formElem) {
+    if (!(this instanceof FormAsync)) {
+        return new FormAsync(formElem);
     }
-    callback = callback || function () {};
-    if (callback.is_iframe_fetch_callback) {
-        var call = callback;
-    } else {
-        call = function (result) {
-            if (call.called) {
+    this.form = formElem;
+    this.form.setAttribute('enctype', 'multipart/form-data');
+}
+FormAsync.UUID = 1000;
+FormAsync.fetch = (iframe, callback) => {
+    if (!iframe) {
+        throw Error('FormAsync.fetch [iframe] param error');
+    }
+    if (typeof callback !== 'function') {
+        throw Error('FormAsync.fetch [callback] param error');
+    }
+    // 包装回调
+    if (!callback.IS_IFRAME_FETCH_CALLBACK) {
+        var myCallFunc = (result) => {
+            if (myCallFunc.IS_CALLED) { // 防止重复执行
                 return;
             }
-            call.called = true;
-            iframe.onload = null;
+            myCallFunc.IS_CALLED = true;
+            iframe.onload = undefined;
+            if (result === undefined || result === null) {
+                return callback(false, result);
+            }
             if (result instanceof Error) {
-                return callback('', result);
+                return callback(false, result);
             }
             try {
                 var o = JSON.parse(result);
+                return callback(true, o);
             } catch(e) {
-                o = null;
+                return callback(false, result);
             }
-            return callback(result, o);
         };
-        call.is_iframe_fetch_callback = true;
+        myCallFunc.IS_IFRAME_FETCH_CALLBACK = true;
+    } else {
+        myCallFunc = callback;
     }
-    var runNext = function () {
-        return fetchContent.call(null, iframe, call);
+    const loop = () => {
+        setTimeout(() => {FormAsync.fetch(iframe, myCallFunc)}, 300);
     };
-    var next = function () {
-        return setTimeout(runNext, 100);
-    };
-    var getContent = function () {
+    const getContent = () => {
         try {
-            var win = iframe.contentWindow;
-            var doc = win.document;
-            if (!doc) {
+            if (!iframe.contentWindow) {
                 return false;
             }
-            if (doc.readyState === 'uninitialized') {
-                return false;
-            }
-            // 正在loading
-            if (doc.readyState === 'loading') {
-                return false;
-            }
-            // 文档 not ready
-            if (doc.body === null) {
+            const doc = iframe.contentWindow.document;
+            if (!doc || (doc.readyState === 'uninitialized')
+                || (doc.readyState === 'loading')
+                || (doc.body === null)) {
                 return false;
             }
             return doc.body.textContent || doc.body.innerText;
@@ -61,85 +65,62 @@ function fetchContent(iframe, callback) {
             return e;
         }
     };
-    iframe.onload = function () {
-        call(getContent());
-    };
-    var content = getContent();
-    if (content) {
-        return call(content);
+    const theContent = getContent();
+    if (theContent) {
+        return myCallFunc(theContent);
+    } else {
+        iframe.onload = () => {
+            myCallFunc(getContent());
+        };
     }
-    return next();
-}
-function FormAsync($form, options = {}) {
-    this.$form = $form;
-    this.options = $.extend(true, {}, defaults, options);
-}
+    loop();
+};
 var proto = FormAsync.prototype;
-proto.init = function () {
-    this.$form.attr({
-        //'method': 'POST',
-        'enctype': 'multipart/form-data'
-    });
+proto.makeIframe = function () {
+    this.removeIframe();
+    const name = PREFIX + (FormAsync.UUID++);
+    const parent = this.form.parentNode || this.form.parentElement;
+    if (!parent) {
+        return;
+    }
+    try {
+        var iframe = document.createElement(`<iframe name="${name}"></iframe>`);
+    } catch (e) {
+        iframe = document.createElement('iframe');
+        iframe.name = name;
+    }
+    iframe.src = 'about:blank';
+    iframe.style.display = 'none';
+    parent.insertBefore(iframe, this.form);
+    this.form.setAttribute('target', name);
+    this.iframe = iframe;
+};
+proto.removeIframe = function () {
+    if (this.iframe) {
+        let p = this.iframe.parentNode || this.iframe.parentElement;
+        if (p) {
+            p.removeChild(this.iframe);
+        }
+        this.iframe = null;
+    }
 };
 proto.send = function () {
     this.makeIframe();
-    this.$form.submit();
-    this.startFetch();
-};
-proto.handleContent = function (html, obj) {
-    if (!html) {
-        return this.handleError(obj);
-    }
-    const onSuccess = this.options.success || noop;
-    const onError = this.options.error || noop;
-    if (this.options.dataType === 'json') {
-        if (html && obj) {
-            onSuccess(obj);
-        } else {
-            onError(obj);
-        }
-    } else {
-        html ? onSuccess(html) : onError(obj);
-    }
-};
-// 跨域
-proto.handleError = function (o) {
-    const onError = this.options.error || noop;
-    onError(o);
-};
-proto.makeIframe = function () {
-    this.removeIframe();
-    let name = prefix + (uuid++);
-    this.$iframe = $(`<iframe name="${name}" src="about:blank" style="display: none;"></iframe>`);
-    this.$iframe.insertAfter(this.$form);
-    this.$form.attr('target', name);
-};
-proto.removeIframe = function () {
-    if (this.$iframe) {
-        this.$iframe.remove();
-        this.$iframe = null;
-    }
-};
-proto.startFetch = function () {
-    fetchContent(this.$iframe[0], (str, obj) => {
-        this.handleContent(str, obj);
-        this.removeIframe();
+    this.form.submit();
+    return new Promise((resolve, reject) => {
+        FormAsync.fetch(this.iframe, (bool, result) => {
+            LOG('fetch:' + bool, result);
+            // handle result
+            bool ? resolve(result) : reject(result);
+            // clean
+            this.removeIframe();
+        });
     });
 };
-
 proto.isPending = function () {
-    if (this.$iframe) {
+    if (this.iframe) {
         return true;
     }
     return false;
 };
-module.exports = function (form, options) {
-    let fa;
-    if (form.jquery) {
-        fa = new FormAsync(form, options);
-    } else {
-        fa = new FormAsync($(form), options);
-    }
-    fa.init();
-    return fa;
-};
+export default FormAsync;
