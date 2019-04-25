@@ -98,15 +98,6 @@
         <p v-text="s2"></p>
     </div>
 
-    <center-layer v-if="layerVisible1" @close="layerClose1">
-        <div class="center-layer-inner">
-            <p>ohohohohohohohohohohoekkkkkkkkkkkkkkkkkk</p>
-            <p>ohohohohohohohohohohoekkkkkkkkkkkkkkkkkk</p>
-            <p>ohohohohohohohohohohoekkkkkkkkkkkkkkkkkk</p>
-            <p>ohohohohohohohohohohoekkkkkkkkkkkkkkkkkk</p>
-            <p>ohohohohohohohohohohoekkkkkkkkkkkkkkkkkk</p>
-        </div>
-    </center-layer>
 </div>
 </template>
 
@@ -117,6 +108,7 @@ import MUILayer from 'comp/mui/center-layer.vue';
 import MUIAlertSpan from 'comp/mui/alert-span.vue';
 import MUISlider from 'comp/mui/slider.vue';
 import MUISelect from 'comp/mui/select.vue';
+import Ajax from 'util/ajax.js';
 
 const duration = 999999999;
 const longMsg = '一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十';
@@ -143,11 +135,14 @@ methods.msg3 = function () {
     this.$msg.error(longMsg);
 };
 methods.msg4 = function () {
-    this.layerVisible1 = true;
+    Ajax.jsonp('./jsonp.html', 'a=1').then((data) => {
+        LOG(data);
+    }).catch((e) => {
+        this.$msg('error');
+        LOG(e);
+    });
 };
-methods.layerClose1 = function () {
-    this.layerVisible1 = false;
-};
+
 methods.muiAlert = function () {
     let text = 'ae' + longMsg;
     this.$alert(text);
@@ -217,7 +212,7 @@ const dataFunc = function () {
         tooltipObj: {
             text: 'Yep'
         },
-        layerVisible1: false,
+
         sliderValue: 6000,
 
         s2: ['472', '400', 'aaa']

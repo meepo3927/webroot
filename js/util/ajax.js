@@ -1,232 +1,191 @@
 /**
  * 轻量级AJAX库
  */
+import Promise from 'promise';
+// 空函数
+const noop = () => {};
 
- (function (name, factory) {
-     if (typeof define === 'function' && (define.amd || define.cmd)) {
-         define([], factory);
-     } else {
-         window[name] = factory();
-     }
- }('UtilAjax', function () {
-     "use strict";
+// 将字符串解析为对象
+const parseJSON = (str) => {
+    const funcStr = 'return (' + str + ')';
+    try {
+        var obj = (new Function(funcStr))();
+    } catch (e) {
+        obj = null;
+    }
+    return obj;
+};
+// 获取XMLHttpRequest对象
+const getXhr = () => {
+    if (window.XMLHttpRequest) {
+        return new XMLHttpRequest();
+    } else if (window.ActiveXObject) {
+        return new ActiveXObject('Microsoft.XMLHttp');
+    }
+};
 
-     /**
-      * 空函数
-      */
-     var noop = function () {};
+const getIEVersion = () => {
+    const versions = {
+        objectobject: 7, //IE7-8
+        objectundefined: 6, //IE6
+        undefinedfunction: 0, // other modern browsers
+        undefinedobject: 0
+    };
+    return document.documentMode || versions[typeof document.all + typeof XMLHttpRequest];
+};
 
-     /**
-      * 将字符串解析为对象
-      * @param  {string} str JSON字符串
-      * @return {Object}
-      */
-     var parseJSON = function (str) {
-         var obj;
-         try {
-             obj = (
-                 new Function(
-                     'return (' + str + ')'
-                 )
-             )();
-         } catch (e) {
-             obj = null;
-         }
-         return obj;
-     };
+const IE = getIEVersion();
 
-     /**
-      * 获取XMLHttpRequest对象
-      * @return {XMLHttpRequest}
-      */
-     var getXhr = function () {
-         if (window.XMLHttpRequest) {
-             return new XMLHttpRequest();
-         } else if (window.ActiveXObject) {
-             return new ActiveXObject('Microsoft.XMLHttp');
-         } else {
-             return null;
-         }
-     };
+// 加载JavaScript
+const loadJS = (url, onSuccess = noop, onError = noop) => {
+    const head = document.head || document.getElementsByTagName('head')[0] || document.documentElement;
+    let script = document.createElement('script');
+    script.async = 'async';
+    script.src = url;
+    script.onerror = () => {
+        script.onload = script.onreadystatechange = script.onerror = null;
+        onError();
+    };
+    script.onload = script.onreadystatechange = (event) => {
+        event = event || window.event;
+        if (event.type === "load" || (/loaded|complete/.test(script.readyState) && (!IE || IE < 9))) {
+            // Handle memory leak in IE
+            script.onload = script.onreadystatechange = script.onerror = null;
+            if (head && script.parentNode) {
+                head.removeChild(script);
+            }
+            // Dereference the script
+            script = undefined;
+            if (onSuccess) {
+                setTimeout(onSuccess, 1);
+            }
+        }
+    };
+    head.appendChild(script);
+    return script;
+};
 
-     var getIEVersion = function () {
-         var versions = {
-             objectobject: 7, //IE7-8
-             objectundefined: 6, //IE6
-             undefinedfunction: 0, // other modern browsers
-             undefinedobject: 0
-         };
-         return document.documentMode || versions[typeof document.all + typeof XMLHttpRequest];
-     };
-     var IE = getIEVersion();
+const buildParamStr = (param) => {
+    if (!param) {
+        return '';
+    }
+    if (typeof param === 'string') {
+        return param;
+    }
 
-     var loadJS = function (url, callback) {
-         var head = document.head || document.getElementsByTagName("head")[0] || document.documentElement;
-         var script = document.createElement("script");
-         script.async = "async";
-         script.src = url;
-         script.onerror = function () {
-             script.onload = script.onreadystatechange = script.onerror = null;
-         };
-         script.onload = script.onreadystatechange = function(event) {
-             event = event || window.event;
-             if (event.type === "load" || (/loaded|complete/.test(script.readyState) && (!IE || IE < 9))) {
-                 // Handle memory leak in IE
-                 script.onload = script.onreadystatechange = script.onerror = null;
-                 if (head && script.parentNode) {
-                     head.removeChild(script);
-                 }
-                 // Dereference the script
-                 script = undefined;
-                 if (callback) {
-                     setTimeout(callback, 1);
-                     callback = null;
-                 }
-             }
-         };
-         head.appendChild(script);
-     };
+    if (typeof param !== 'object') {
+        return param + '';
+    }
 
-     function getRequestData(data) {
-         if (!data) {
-             return '';
-         }
+    const arr = [];
+    for (let i in param) {
+        if (param.hasOwnProperty(i)) {
+            arr.push(encodeURIComponent(i) + '=' + encodeURIComponent(param[i]))
+        }
+    }
+    return arr.join('&');
+};
 
-         if (typeof data === 'string') {
-             return data;
-         }
+/**
+ * url      请求链接
+ * param    {a: 1, b: 2} 或者 'a=1&b=2'
+ * type     'GET' or 'POST'
+ * dataType 'json' or 'html'
+ */
+const fetch = (url, param = {}, type = 'GET', dataType = 'json') => {
+    if (!url) {
+        return Promise.reject();
+    }
+    const xhr = getXhr();
+    if (!xhr) {
+        throw Error('get XMLHttpRequest Fail');
+    }
+    type = type.toUpperCase();
+    dataType = dataType.toLowerCase();
+    const p = new Promise((resolve, reject) => {
+        xhr.onreadystatechange = () => {
+            if (xhr.readyState !== 4) {
+                return;
+            }
+            if (dataType === 'json') {
+                const result = parseJSON(xhr.responseText);
+                if (result) {
+                    return resolve(result);
+                } else {
+                    return reject(xhr)
+                }
+            }
+            return xhr.responseText ? resolve(xhr.responseText) : reject(xhr);
+        };
+    });
+    if (type === 'POST') {
+        xhr.open('POST', url, true);
+        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.send(buildParamStr(param));
+    } else {
+        const paramStr = buildParamStr(param);
+        if (paramStr) {
+            url += (url.indexOf('?') >= 0) ? '&' : '?';
+            url += paramStr;
+        }
+        xhr.open('GET', url, true);
+        xhr.send();
+    }
+    return p;
+};
 
-         if (typeof data !== 'object') {
-             return data + '';
-         }
+// POST请求
+const post = (url, param) => {
+    return fetch(url, param, 'POST');
+};
 
-         var arr = [];
-         for (var i in data) {
-             if (!data.hasOwnProperty(i)) {
-                 continue;
-             }
+// JSONP相关
+let JSONP_CALLBACK_ID = 1000;
+const getJSONPCallbackId = () => {
+    var a = (++JSONP_CALLBACK_ID);
+    var b = (new Date()).getTime() + '';
+    var c = parseInt(Math.random() * 9999999, 10) + '';
+    // return 'jsonp_callback';
+    return 'jsonp_callback_' + a + b + c;
+};
+// JSONP请求
+const jsonp = (url, param) => {
+    if (!url) {
+        return Promise.resolve();
+    }
+    const myId = getJSONPCallbackId();
+    const paramStr = buildParamStr(param);
+    url += (url.indexOf('?') >= 0) ? '&' : '?';
+    url += paramStr + '&callback=' + myId;
+    let called = false;
+    let timer;
+    const p = new Promise((resolve, reject) => {
+        window[myId] = function (result) {
+            if (called) { // 防止重复执行
+                return;
+            }
+            called = true;
+            clearTimeout(timer);
+            if (result === undefined || result === null) {
+                return reject(result);
+            } else {
+                return resolve(result);
+            }
+        };
+        const onTimeout = () => { // 超时了
+            reject();
+        };
+        const onload = () => {
+            timer = setTimeout(onTimeout, 800);
+        };
+        loadJS(url, onload, reject);
+    });
+    return p;
+};
 
-             arr.push(
-                 encodeURIComponent(i)
-                 + '='
-                 + encodeURIComponent(data[i])
-             );
-         }
-         return arr.join('&');
-     }
-
-     /**
-      * Main
-      * 
-      * @param  {string}   url
-      * @param  {Object=}  options
-      *         options.callback: Function
-      *         options.success: Function
-      *         options.error: Function
-      *         options.type: 'GET'|'POST'
-      *         options.data: 'a=1&b=2'
-      *         options.dataType: 'json'
-      * @return void
-      */
-     var exports = function (url, options) {
-         var xhr = getXhr();
-         if (!url || !xhr) {
-             return;
-         }
-         options = options || {};
-         var dataType = options.dataType ? (options.dataType.toLowerCase()) : 'json';
-         var onCallback = options.callback || noop;
-         var onSucc = options.success || noop;
-         var onError = options.error || noop;
-
-         /**
-          * 状态发生改变时
-          */
-         xhr.onreadystatechange = function () {
-             if (xhr.readyState !== 4) {
-                 return;
-             }
-             var text = xhr.responseText || '';
-             var status = xhr.status || 0;
-             if (dataType === 'json') {
-                 // JSON形式的callback逻辑不同
-                 var obj = parseJSON(text || '');
-                 onCallback(obj, status, xhr);
-
-                 if (obj && obj.status === 0) {
-                     onSucc(obj.data || {});
-                 } else {
-                     onError(obj);
-                 }
-             } else {
-                 onCallback(text, status, xhr);
-             }
-         };
-
-         if (options.type && options.type.toLowerCase() === 'post') {
-             xhr.open('POST', url, true);
-             xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-             xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-             xhr.send(getRequestData(options.data));
-         } else {
-             url += (url.indexOf('?') >= 0) ? '&' : '?';
-             url += getRequestData(options.data);
-             xhr.open('GET', url, true);
-             xhr.send();
-         }
-         return xhr;
-     };
-
-     /**
-      * POST请求
-      * @param  {string} url     请求URL
-      * @param  {Object} options 参数配置
-      */
-     exports.post = function (url, options) {
-         options = options || {};
-         options.type = 'post';
-         return exports(url, options);
-     };
-     var callbackId = 1000;
-     var getCallbackId = function () {
-         var p = (++callbackId);
-         var d = (new Date()).getTime() + '';
-         var r = parseInt(Math.random() * 9999999, 10) + '';
-         return 'jsonp_callback_' + p + d + r;
-     };
-
-     /**
-      * JSONP请求
-      * @param  {string} url      请求URL
-      * @param  {Object} options
-      *                  options.data    参数
-      *                  options.success 成功
-      */
-     exports.jsonp = function (url, options) {
-         if (url === undefined || url === null) {
-             return;
-         }
-         url = url || location.href;
-         options = options || {};
-
-         var success = options.success || noop;
-         var id = getCallbackId();
-         var called = false;
-         window[id] = function () {
-             if (called) {
-                 return;
-             }
-             called = true;
-             var args = Array.prototype.slice.call(arguments);
-             success.apply(null, args);
-             window[id] = null;
-         };
-
-         url += (url.indexOf('?') >= 0) ? '&' : '?';
-         url += getRequestData(options.data) + '&callback=' + id;
-
-         loadJS(url);
-     };
-
-     return exports;
- }));
+export default {
+    fetch,
+    post,
+    jsonp
+}
