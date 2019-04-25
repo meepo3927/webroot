@@ -60,7 +60,7 @@ function removeClass(el, cls) {
     }
 
     if (!el.classList) {
-        el.className = trim(curClass);
+        el.className = curClass.trim();
     }
 };
 

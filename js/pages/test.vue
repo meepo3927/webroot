@@ -5,7 +5,9 @@
             class="btn btn-primary">改变tooltip内容</button>
         
         <div class="mt15">
-            <input type="text" class="form-control" v-model="name" />
+            <input type="text" class="form-control" v-model="name" 
+                placeholder="abcdddd" v-placeholder />
+            <input type="text" :placeholder="name" v-placeholder class="form-control" />
             <p v-text="name"></p>
         </div>
         <div class="btn-group">

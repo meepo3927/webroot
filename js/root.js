@@ -20,7 +20,6 @@ import MUITooltip from 'extend/vue.mui-tooltip.js';
 import VueRouter from 'vuerouter';
 import VueCommon from 'extend/vue.common.js';
 import VueClickOut from 'extend/vue.clickout.js';
-
 import MUIScroll from 'comp/mui/scroll.vue';
 import centerlayer from 'comp/common/center-layer.vue';
 import vDate from 'comp/common/date.vue';
