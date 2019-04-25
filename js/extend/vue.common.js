@@ -41,6 +41,43 @@ Plugin.install = function (Vue, options) {
         return instance;
     };
     Vue.$spaceChar = '　';
+    const mounted = function () {
+        this.$promiseHolder = {};
+    };
+    const methods = {};
+    methods.$setPromise = function (name, p) {
+        if (this.$promiseHolder[name]) {
+            this.$promiseHolder[name].cancel();
+            this.$promiseHolder[name] = undefined;
+        }
+        this.$promiseHolder[name] = p;
+        return p;
+    };
+    methods.$cancelPromise = function (name) {
+        if (this.$promiseHolder[name]) {
+            this.$promiseHolder[name].cancel();
+            this.$promiseHolder[name] = undefined;
+        }
+    };
+    methods.$cleanPromise = function () {
+        for (let i in this.$promiseHolder) {
+            if (this.$promiseHolder.hasOwnProperty(i)) {
+                let p = this.$promiseHolder[i];
+                if (p && p.cancel) {
+                    p.cancel();
+                }
+            }
+        }
+        this.$promiseHolder = {};
+    };
+    const beforeDestroy = function () {
+        this.$cleanPromise();
+    };
+    Vue.mixin({
+        mounted,
+        methods,
+        beforeDestroy
+    });
     if (Config.mock) {
         Vue.prototype.$ = jQuery;
     }
