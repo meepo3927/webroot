@@ -1,5 +1,5 @@
 <template>
-<ul class="leave-menu" v-if="dataReady" :class="rootClass"
+<ul class="level-menu" v-if="dataReady" :class="rootClass"
     @mouseenter="onRootMouseEnter"
     @mouseleave="onRootMouseLeave">
     <li v-for="item in list">
@@ -127,7 +127,7 @@ export default {
         transform: translateX(0);
     }
 }
-.leave-menu {
+.level-menu {
     position: absolute;
     padding: 5px 0px;
     width: 260px;
