@@ -40,7 +40,7 @@ Plugin.install = function (Vue, options) {
         instance.$destroy(true);
         return instance;
     };
-    Vue.$spaceChar = '　';
+    Vue.SPACE_CHAR = '　';
     const mounted = function () {
         this.$promiseHolder = {};
     };

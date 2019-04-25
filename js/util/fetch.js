@@ -3,12 +3,12 @@
  * @用法  fetch(url, data)
  */
 
-var $ = require('jquery');
-var Promise = require('promise');
+const $ = require('jquery');
+const Promise = require('promise');
 
-let fetch = (url, data = {}, method = 'GET', dataType = 'json') => {
+const fetch = (url, data = {}, method = 'GET', dataType = 'json') => {
     return new Promise((resolve, reject) => {
-        let p = {
+        const p = {
             url, dataType, data, type: method
         };
         return $.ajax(p).success((json) => {
