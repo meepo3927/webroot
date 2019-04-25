@@ -2,11 +2,6 @@
 <div class="test-upload">
     <h4>oh yeah</h4>
     <file-upload filetype="image" />
-    <file-upload filetype="excel" class="mt10" />
-    <input-file />
-    <v-date class="form-control date-input" />
-    <v-datetime class="form-control date-input" />
-    <laydate class="form-control date-input" type="datetime" v-model="laydateValue" />
     <!-- 滚动测试 -->
     <mui-scroll class="scroll-test-2 scroll-test" ref="ss2" position="absolute">
         <div>
@@ -18,10 +13,13 @@
             <button class="btn btn-default m20" @click="onClick1">Add Item+</button>
         </div>
     </mui-scroll>
-    <div class="fl" >
+    <div v-clickout="onClickOut">
         <button class="btn btn-danger" type="button" @click="onClick0">Danger</button>
+        <level-menu :list="menuList" v-if="visible" />
     </div>
-    <level-menu :list="menuList" v-if="visible"/>
+
+
+
     <div class="table-wrapper ">
         <table class="table table-striped mt20">
             <thead>
@@ -48,9 +46,13 @@
 <script>
 import 'root';
 import laydate from 'comp/common/laydate.vue';
+import {bind, unbind} from 'lib/focusoutside.js';
 let methods = {};
 methods.onClick0 = function () {
-    this.visible = !this.visible;
+    this.visible = true;
+};
+methods.onClickOut = function () {
+    this.visible = false;
 };
 methods.onClick1 = function () {
     this.list1.push(this.list1.length + '. ' + Math.random() + _.now());
@@ -187,20 +189,13 @@ form {
 ol > li:hover {
     background-color: yellow;
 }
-.menu-2, .menu-3 {
+
+.focus-child {
+    background-color: #ddd;
+    height: 200px;
+    width: 120px;
     position: absolute;
-    width: 220px;
-    height: 240px;
-    border: 1px solid #eee;
-    left: 320px;
-    z-index: 1;
-    background-color: #fff;
-}
-.menu-2 {
-    top: 220px;
-}
-.menu-3 {
-    top: 250px;
+    
 }
 .date-input {
     width: 180px;

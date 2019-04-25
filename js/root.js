@@ -19,6 +19,7 @@ import MUIloading from 'extend/vue.mui-loading.js';
 import MUITooltip from 'extend/vue.mui-tooltip.js';
 import VueRouter from 'vuerouter';
 import VueCommon from 'extend/vue.common.js';
+import VueClickOut from 'extend/vue.clickout.js';
 
 import MUIScroll from 'comp/mui/scroll.vue';
 import centerlayer from 'comp/common/center-layer.vue';
@@ -35,7 +36,7 @@ Vue.prototype.$confirm = MUIMsgBox.confirm;
 Vue.prototype.$prompt = MUIMsgBox.prompt;
 Vue.prototype.$loading = MUIloading;
 Vue.directive('tooltip', MUITooltip);
-
+Vue.directive('clickout', VueClickOut);
 Vue.component('mui-scroll', MUIScroll);
 Vue.component('v-date', vDate);
 Vue.component('file-upload', FileUpload);
