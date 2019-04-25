@@ -6,8 +6,6 @@
  * -- autoShow 是否自动显示 默认false
  *
  */
-
-let $ = require('jquery');
 const ARROW_PAD = 12;
 const Tooltip = function (options) {
     this.onWindowScroll = (e) => {this._onWindowScroll(e)};
@@ -61,11 +59,9 @@ proto.getElemRect = function () {
 proto.renderPosition = function () {
     let p = this.getPosition();
     // LOG('position:', p);
-    this.$elem.attr('m-placement', p.placement);
-    this.$elem.css({
-        top: Math.round(p.top) + 'px',
-        left: Math.round(p.left) + 'px'
-    });
+    this.elem.setAttribute('m-placement', p.placement);
+    this.elem.style.top = Math.round(p.top) + 'px';
+    this.elem.style.left = Math.round(p.left) + 'px';
 };
 proto.getPosition = function () {
     // Number
@@ -288,7 +284,6 @@ proto.setText = function (text) {
 proto.setOptions = function (options) {
     this.setText(options.text);
     this.target = options.target;
-    this.$target = $(options.target);
 
     // 沉默
     if (options.silent === true) {
@@ -307,15 +302,15 @@ proto.setOptions = function (options) {
 };
 proto.bind = function () {
     if (this.silent === false) {
-        this.$target.on('mouseenter', this.onMouseEnter);
-        this.$target.on('mouseleave', this.onMouseLeave);
+        this.target.addEventListener('mouseenter', this.onMouseEnter);
+        this.target.addEventListener('mouseleave', this.onMouseLeave);
     }
     window.addEventListener('scroll', this.onWindowScroll);
     window.addEventListener('resize', this.onWindowResize);
 };
 proto.unbind = function () {
-    this.$target.off('mouseenter', this.onMouseEnter);
-    this.$target.off('mouseleave', this.onMouseLeave);
+    this.target.removeEventListener('mouseenter', this.onMouseEnter);
+    this.target.removeEventListener('mouseleave', this.onMouseLeave);
     window.removeEventListener('scroll', this.onWindowScroll);
     window.removeEventListener('resize', this.onWindowResize);
 };
@@ -326,16 +321,21 @@ proto.update = function (options) {
 };
 proto.destroy = function () {
     this.unbind();
-    this.$elem.remove();
+    let p = this.elem.parentNode || this.elem.parentElement;
+    LOG('parentNode:', p);
+    this.elem.setAttribute('removed', '123123');
+    if (p) {
+        p.removeChild(this.elem);
+    }
 };
 proto.renderText = function () {
-    if (!this.$elem) {
+    if (!this.elem) {
         return;
     }
-    this.$elem.css('width', 'auto');
-    this.$elem.children('.mui-tooltip-content').html(this.text);
+    this.elem.style.width = 'auto';
+    this.elem.children[0].innerHTML = this.text;
     let rect = this.getElemRect();
-    this.$elem.css('width', rect.width + 'px');
+    this.elem.style.width = rect.width + 'px';
 };
 proto.makeElem = function () {
     let elem = document.createElement('div');
@@ -346,7 +346,6 @@ proto.makeElem = function () {
         '<div class="mui-tooltip-arrow"></div>'
     ].join('');
     this.elem = elem;
-    this.$elem = $(elem);
     this._hide();
 };
 proto.makeClassName = function () {
@@ -366,16 +365,14 @@ proto.hide = function () {
     this.elemVisible = false;
 };
 proto._show = function () {
-    //this.$elem.css('visibility', 'visible');
-    this.$elem.css('opacity', '1');
+    //this.elem.css('visibility', 'visible');
+    this.elem.style.opacity = '1';
 };
 proto._hide = function () {
-    this.$elem.attr('m-placement', null);
-    this.$elem.css({
-        opacity: '0',
-        top: '-99999px',
-        left: '-99999px'
-    });
+    this.elem.removeAttribute('m-placement');
+    this.elem.style.opacity = '0';
+    this.elem.style.top = '-99999px';
+    this.elem.style.left = '-99999px';
 };
 proto._onMouseEnter = function (e) {
     this.show();

@@ -42,14 +42,14 @@
         </ul>
         <div class="nav-content">
             <mui-switch v-model="switchValue" />
-            <button class="btn btn-default fr" 
+            <button class="btn btn-default fr" v-if="switchValue"
                 v-tooltip="tooltipStr"
                 @click="onTooltipTestClick">
                 测试tooltip
             </button>
         </div>
     </form>
-    <mui-layer v-if="switchValue" @close="layerClose">
+    <mui-layer v-if="switchVa" @close="layerClose">
         <div slot="header">哈哈哈</div>
         <div style="min-width: 400px;">
             <div class="m-row-mid">
