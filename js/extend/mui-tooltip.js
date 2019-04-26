@@ -322,7 +322,7 @@ proto.update = function (options) {
 proto.destroy = function () {
     this.unbind();
     let p = this.elem.parentNode || this.elem.parentElement;
-    LOG('parentNode:', p);
+
     this.elem.setAttribute('removed', '123123');
     if (p) {
         p.removeChild(this.elem);
