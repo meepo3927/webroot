@@ -1,7 +1,12 @@
 <template>
 <div class="test-upload">
     <h4>oh Sub</h4>
-    <div class="h-block"></div>
+    <div class="h-block">
+        <button class="btn btn-default pos-r" @click="test1"
+            :style="{left: btnLeft + 'px'}">TEST1</button>
+        <br />
+        <button class="btn btn-default pos-r" ref="btn2">TEST2</button>
+    </div>
     <form ref="fm">
         <div class="mm-row">
             <label for="" class="col-1">UserName:</label>
@@ -29,13 +34,23 @@
         </div>
     </form>
     <div class="h-block"></div>
+    <backtop />
 </div>
 </template>
 
 <script>
 import 'root';
 import Vali from 'extend/mui-vali.js';
+import Animate from 'util/animate.js';
+import backtop from 'comp/mui/backtop.vue';
 let methods = {};
+methods.test1 = function () {
+    Animate.run({from:0, to: 100}, (v) => {
+        this.btnLeft = v;
+    });
+    $(this.$refs.btn2).css('left', '10em');
+    $(this.$refs.btn2).animate({left: '100px'}, {duration: 400});
+};
 methods.submit = function () {
     this.$msg(this.formVali.check());
 };
@@ -49,6 +64,7 @@ const mounted = function () {
 const beforeDestroy = function () {};
 const dataFunc = function () {
     let o = {
+        btnLeft: 0,
         file1: ''
     };
     return o;
@@ -64,6 +80,7 @@ export default {
     mixins: [],
     beforeDestroy,
     components: {
+        backtop
     }
 };
 </script>
@@ -81,7 +98,7 @@ form {
     }
 }
 .h-block {
-    height: 110vh;
+    height: 80vh;
 }
 
 </style>

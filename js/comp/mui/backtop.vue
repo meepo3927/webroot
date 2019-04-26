@@ -6,20 +6,23 @@
 </template>
 
 <script>
-import $ from 'jquery';
+import Animate from 'util/animate.js';
 const getScrollTop = () => {
     return document.documentElement.scrollTop
         || document.body.scrollTop;
 };
 let methods = {};
 methods.onClick = function () {
-    let $html = $(document.documentElement);
-    let $body = $(document.body);
-    $html.animate({
-        scrollTop: 0
-    });
-    $body.animate({
-        scrollTop: 0
+    const html = document.documentElement;
+    const body = document.body;
+    let scrollElem = html;
+    let scrollTop = html.scrollTop;
+    if (body.scrollTop) {
+        scrollElem = body;
+        scrollTop = body.scrollTop;
+    }
+    Animate.run({from: scrollTop, to: 0}, (val) => {
+        scrollElem.scrollTop = val;
     });
 };
 methods.onScroll = function () {
@@ -33,12 +36,12 @@ computed.vhidden = function () {
 let watch = {};
 const created = function () {};
 const mounted = function () {
-    window.vBacktop = this;
+    // window.vBacktop = this;
     this.bodyScrollTop = getScrollTop();
-    $(window).on('scroll', this.onScroll);
+    window.addEventListener('scroll', this.onScroll);
 };
 const beforeDestroy = function () {
-    $(window).off('scroll', this.onScroll);
+    window.removeEventListener('scroll', this.onScroll);
 };
 const dataFunc = function () {
     let o = {

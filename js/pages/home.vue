@@ -12,7 +12,7 @@
         </li>
     </ol>
     <form class="p15" @submit.prevent>
-        <input type="text" class="form-control" v-model="name">
+        <input type="text" class="form-control my-input" v-model="name" />
         <p v-text="name"></p>
         <button class="btn btn-default" @click="msg" type="button">MUI msg</button>
         <button class="btn btn-primary" @click="alert">MUI alert</button>
@@ -75,5 +75,7 @@ export default {
 <style scoped lang="less">
 
 .page-index {}
+.my-input {
 
+}
 </style>

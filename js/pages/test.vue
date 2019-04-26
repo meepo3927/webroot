@@ -7,7 +7,9 @@
         <div class="mt15">
             <input type="text" class="form-control" v-model="name" 
                 placeholder="abcdddd" v-placeholder />
-            <input type="text" :placeholder="name" v-placeholder class="form-control" />
+            <!-- IE9 placeholder -->
+            <input type="text" :placeholder="name" v-placeholder 
+                class="form-control ie9-p" />
             <p v-text="name"></p>
         </div>
         <div class="btn-group">
@@ -251,5 +253,23 @@ export default {
 }
 .mui-select.m-sel-1 {
     width: 60%;
+}
+input.ie9-p {
+    width: 200px;
+    margin: 50px;
+}
+input.ie9-p:before {
+
+    content: 'AAbaa';
+    font-size: 18px;
+    line-height: 1.4;
+    left: 10px;
+    top: 40px;
+    font-family: 'Microsoft Yahei';
+    width: 50px;
+    height: 50px;
+    background-color: #eee;
+    position: absolute;
+    color: #f00;
 }
 </style>
