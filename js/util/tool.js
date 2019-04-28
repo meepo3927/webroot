@@ -366,5 +366,20 @@
         return arr.join('')
     };
 
+    exports.winopen = (url, params = {}) => {
+        var width = params.width || 1024;
+        var height = params.height || 768;
+        window.open(url, '', [
+            'toolbar=no',
+            'menubar=no',
+            'status=no',
+            'location=yes',
+            'scrollbars=yes',
+            'resizable=yes',
+            'width=' + (width + 'px'),
+            'height=' + (height + 'px')
+        ].join(','));
+    };
+
     return exports;
 }));
