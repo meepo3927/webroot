@@ -161,8 +161,9 @@
         var promise = this;
         //根据Promise规范,必须异步执行存储好的回调
         nextTick(function () {
-            // 已中断(取消)
+            // 已取消, 清空队列
             if (promise.state === CANCELED) {
+                promise.deferred.length = 0;
                 return;
             }
             // 确保状态是从pending -> resloved/rejected

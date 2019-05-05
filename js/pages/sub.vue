@@ -5,7 +5,7 @@
         <button class="btn btn-default pos-r" @click="test1"
             :style="{left: btnLeft + 'px'}">TEST1</button>
         <br />
-        <button class="btn btn-default pos-r" ref="btn2">TEST2</button>
+        <button class="btn btn-default btn-2" ref="btn2" v-sticky>TEST2</button>
     </div>
     <form ref="fm">
         <div class="mm-row">
@@ -90,6 +90,9 @@ export default {
     padding-top: 15px;
     padding-left: 15px;
 }
+button.btn-2 {
+    width: 45vw;
+}
 form {
     border: 1px solid #eee;
     padding: 12px;
@@ -99,6 +102,7 @@ form {
 }
 .h-block {
     height: 80vh;
+    width: 780px;
 }
 
 </style>

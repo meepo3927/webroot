@@ -1,20 +1,7 @@
-
-const $ = require('jquery');
-
-const isFirefox = navigator.userAgent.match(/Firefox\/([\d.]+)/);
-const MY_CLASSNAME = 'v-sticky';
-const BLOCK_CLASSNAME = 'v-sticky-block';
+const BLOCK_CLASSNAME = 'vue-sticky-block';
 
 function Sticky(elem) {
-    this.originValues = {};
-    this.replaceProperties = {
-        position: 'fixed',
-        top: 0,
-        zIndex: 3,
-        marginLeft: 0,
-        marginTop: 0
-    };
-    this.$elem = $(elem);
+    this.elem = elem;
     this.onWindowScroll = (e) => {
         this._onWindowScroll(e);
     };
@@ -26,95 +13,95 @@ function Sticky(elem) {
 }
 var proto = Sticky.prototype;
 proto.bind = function () {
-    $(window).on('scroll', this.onWindowScroll)
-        .on('resize', this.onWindowResize);
+    window.addEventListener('scroll', this.onWindowScroll);
+    window.addEventListener('resize', this.onWindowResize);
 };
 proto.unbind = function () {
-    $(window).off('scroll', this.onWindowScroll)
-        .off('resize', this.onWindowResize);
+    window.removeEventListener('scroll', this.onWindowScroll);
+    window.removeEventListener('resize', this.onWindowResize);
 };
 proto.dispose = function () {
     this.unbind();
-    this.restore();
+    this.detach();
 };
 proto.getOffset = function () {
-    var $block = this.$elem.next('.' + BLOCK_CLASSNAME);
-    if ($block.length) {
-        return $block.offset();
+    if (this.holder) {
+        return this.holder.getBoundingClientRect();
     }
-    return this.$elem.offset();
+    return this.elem.getBoundingClientRect();
 };
-proto.saveOrigin = function () {
-    for (var i in this.replaceProperties) {
-        if (this.replaceProperties.hasOwnProperty(i)) {
-            this.originValues[i] = this.$elem.css(i);
+proto.renderPosition = function () {
+    let offset = this.getOffset();
+    this.elem.style.left = offset.left + 'px';
+};
+proto.makeHolder = function () {
+    if (!this.holder) {
+        this.holder = document.createElement('div');
+        let p = this.elem.parentNode || this.elem.parentElement;
+        if (p) {
+            p.insertBefore(this.holder, this.elem);
         }
     }
+    return this.holder;
 };
-proto.makeBlock = function () {
-    if (!this.$block || this.$block.length === 0) {
-        this.$block = $('<div class="' + BLOCK_CLASSNAME + '"></div>');
-        this.$block.insertAfter(this.$elem);
+proto.removeHolder = function () {
+    if (this.holder) {
+        const p = this.holder.parentNode || this.holder.parentElement;
+        if (p) {
+            p.removeChild(this.holder);
+        }
+        this.holder = null;
     }
-    return this.$block;
 };
-proto.make = function (offset) {
-    var $elem = this.$elem;
+proto.getStickyStyleText = function () {
+    return [
+        'position: fixed',
+        'top: 0',
+        'margin: 0'
+    ].join(';');
+};
+proto.attach = function () {
     // 保存原状态
-    this.saveOrigin();
-    var elemWidth = $elem.width();
-    var elemHeight = $elem.height();
-    var $block = this.makeBlock();
-    $block.css({
-        width: elemWidth + 'px',
-        height: elemHeight + 'px'
-    });
+    this.oldCSSText = this.elem.style.cssText;
 
-    for (var i in this.replaceProperties) {
-        $elem.css(i, this.replaceProperties[i]);
-    }
-    $elem.css({
-        left: offset.left + 'px'
-    });
-    $elem.addClass(MY_CLASSNAME);
+    const elemWidth = this.elem.clientWidth;
+    const elemHeight = this.elem.clientHeight;
+    const holder = this.makeHolder();
+    // 设置holder的宽高
+    holder.style.width = elemWidth + 'px';
+    holder.style.height = elemHeight + 'px';
+    // make it float
+    this.elem.style.cssText = (this.oldCSSText || '') + this.getStickyStyleText();
+    this.renderPosition();
+    this.elem.IS_STICKY_ATTACHED = true;
 };
-proto.restore = function () {
-    var $elem = this.$elem;
-    for (var i in this.originValues) {
-        if (this.originValues.hasOwnProperty(i)) {
-            $elem.css(i, this.originValues[i]);
-        }
-    }
-    $elem.removeClass(MY_CLASSNAME);
-    if (this.$block) {
-        this.$block.remove();
-        this.$block = null;
-    }
+proto.detach = function () {
+    // 还原
+    this.elem.style.cssText = this.oldCSSText;
+    this.elem.IS_STICKY_ATTACHED = false;
+    this.oldCSSText = undefined;
+    this.removeHolder();
 };
 proto._onWindowScroll = function () {
     var offset = this.getOffset();
-    var offsetTop = offset.top;
-
-    var winScrollTop = $(window).scrollTop();
-    if (winScrollTop > offsetTop && !this.$elem.hasClass(MY_CLASSNAME)) {
+    if (offset.top < 0 && !this.elem.IS_STICKY_ATTACHED) {
         // Change position to `fixed`, and make a block replace it.
-        this.make(offset);
-    } else if (winScrollTop < offsetTop && this.$elem.hasClass(MY_CLASSNAME)) {
-        // restore the status
-        this.restore();
+        this.attach();
+    } else if (offset.top > 0 && this.elem.IS_STICKY_ATTACHED) {
+        this.detach();
+    } else if (this.elem.IS_STICKY_ATTACHED) {
+        this.renderPosition();
     }
 };
 proto._onWindowResize = function () {
-    if (this.$elem.hasClass(MY_CLASSNAME)) {
-        let offset = this.getOffset();
-        this.$elem.css({
-            left: offset.left + 'px'
-        });
+    // fix position
+    if (this.elem.IS_STICKY_ATTACHED) {
+        this.renderPosition();
     }
 };
 // End Class define
 
-module.exports = {
+export default {
     // Vue.directive('sticky', require('extend/vue.sticky.js'));
     bind (el, binding, vnode) {
         el.__vueSticky__ = new Sticky(el);

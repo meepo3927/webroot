@@ -64,8 +64,19 @@ function removeClass(el, cls) {
     }
 };
 
+function insertAfter(newElement, targetElement) {
+    const parent = targetElement.parentNode || targetElement.parentElement;
+    const sibling = targetElement.nextSibling;
+    if (sibling) {
+        return parent.insertBefore(newElement, sibling);
+    } else {
+        return parent.appendChild(newElement);
+    }
+}
+
 export default {
     hasClass,
     addClass,
-    removeClass
+    removeClass,
+    insertAfter
 }
