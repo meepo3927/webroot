@@ -64,8 +64,8 @@ proto.attach = function () {
     // 保存原状态
     this.oldCSSText = this.elem.style.cssText;
 
-    const elemWidth = this.elem.clientWidth;
-    const elemHeight = this.elem.clientHeight;
+    const elemWidth = this.elem.offsetWidth;
+    const elemHeight = this.elem.offsetHeight;
     const holder = this.makeHolder();
     // 设置holder的宽高
     holder.style.width = elemWidth + 'px';

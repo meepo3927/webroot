@@ -1,173 +1,223 @@
 /**
- * 依赖
- * 1. jquery
- * 2. mui-tooltip
- * 用法
- *
+ * 依赖 mui-tooltip
+ * 用法：
  * <form id="form1">
  *     <input type="text" required />
+ *     <input type="radio" required value="11" name="radioMustHave" />
+ *     <input type="checkbox" required value="22" name="checkboxMustHave" />
+ *     <input type="password" pattern="[a-zA-Z0-9_]{12,36}" />
+ *     <textarea required></textarea>
+ *     <select required>
+ *          <option>SomeValue</option>
+ *     </select>
+ *     <label required mui-value="aaa">自定义元素</label>
  * </form>
  *
  * import Vali from 'mui-vali.js';
- * let formElem = document.getElementById('form1');
- * let fmVali = new Vali(formElem);
- * fmVali.check(); // 检查一个
- * fmVali.check('all'); // 检查全部
+ * const formElem = document.getElementById('form1');
+ * const formVali = new Vali(formElem);
+ * formVali.check(); // 检查 报一个错
+ * formVali.checkAll(); // 检查 报所有错
  *
- * 支持 required, pattern
+ * 仅支持 required, pattern
  */
-const $ = require('jquery');
-const Tooltip = require('./mui-tooltip.js');
-const REQUIRED_TAG_MSG_MAP = {
-    SELECT: '请在列表中选择一项'
+import ErrMsg from './mui-errmsg.js';
+const $ = undefined;
+const ERRMSG_MAP = {
+    VALUE_REQUIRED: '请填写此字段',
+    VALUE_PATTERN: '请填写符合格式要求的内容',
+    SELECT: '请在列表中选择一项',
+    GROUP: '请从这些选项中选择一个'
 };
-const IS_IE = !!(document.documentMode);
-function showErrorMsg(elem, text) {
-    // 自动滚动
-    elem.scrollIntoViewIfNeeded();
-    // 显示-浮动文字
-    let tooltip = new Tooltip({
-        target: elem,
-        text: text,
-        silent: true,
-        autoShow: true,
-        skin: 'vali'
-    });
-    var destroy = () => {
-        if (tooltip) {
-            tooltip.destroy();
-            tooltip = null;
-        }
-        if (clickOutSide) {
-            document.removeEventListener('click', clickOutSide);
-            clickOutSide = null;
-        }
-        if (timer) {
-            clearTimeout(timer);
-            timer = null;
-        }
-    };
-    // 点击其他区域，自动消失
-    var clickOutSide = (e) => {
-        if (tooltip.elem.contains(e.target)) {
-            return false;
-        }
-        destroy();
-    };
-    setTimeout(() => {
-        document.addEventListener('click', clickOutSide);
-    }, 100);
-    var timer = setTimeout(destroy, 4600);
-}
 function showRequiredMsg(elem, text) {
     return showErrorMsg(elem, elem.getAttribute('required-errmsg') || text);
 }
 function showPatternMsg(elem, text) {
     return showErrorMsg(elem, elem.getAttribute('pattern-errmsg') || text);
 }
+const isElemVisible = (elem) => {
+    return (elem.offsetWidth > 0 && elem.offsetHeight > 0) || (elem.getClientRects().length > 0);
+};
+/**
+ * Constructor 构造方法
+ */
 function MUIVali(formElem) {
     if (!formElem) {
         throw Error('Param Form Element Error.');
     }
-    if (formElem.jquery && formElem[0]) {
-        this.$fm = $(formElem[0]);
-    } else {
-        this.$fm = $(formElem);
-    }
-    this.reset();
+    this.form = formElem;
 }
 const proto = MUIVali.prototype;
 proto.reset = function () {
     this.nameStackMap = {};
+    if (this.err) {
+        this.err.dispose();
+        this.err = null;
+    }
+    if (this.errs) {
+        this.errs.forEach(e => e.dispose());
+        this.errs.length = 0;
+    }
+    this.errs = [];
 };
-proto.check = function () {
-    // reset
-    this.reset();
-    let queue = [];
-    this.$fm.find(':input').each((i, elem) => {
+// 所有带required, pattern的元素
+proto.getInputs = function () {
+    return this.form.querySelectorAll('[required],[pattern]');
+};
+// 所有有效的inputs
+proto.getAvailableInputs = function () {
+    const list = this.getInputs();
+    const inputs = [];
+    for (let i = 0; i < list.length; i++) {
+        let elem = list[i];
+        if (!isElemVisible(elem)) { // 不可见
+            continue;
+        }
         if (elem.disabled) {
-            return;
+            continue;
         }
-        if ($(elem).filter(':visible').length === 0) {
-            return;
-        }
-        if (elem.getAttribute('required') || elem.getAttribute('pattern')) {
-            queue.push(elem);
-        }
-    });
-    for (let i = 0; i < queue.length; i++) {
-        if (this.checkElem(queue[i]) === false) {
-            return false;
+        inputs.push(elem);
+    }
+    return inputs;
+};
+// 检查 pop one
+proto.check = function () {
+    this.reset();
+    const inputs = this.getAvailableInputs();
+    const queue = [];
+    for (let i = 0; i < inputs.length; i++) {
+        let result = this.checkElem(inputs[i]);
+        result && queue.push(result);
+    }
+    if (queue.length === 0) {
+        return true;
+    }
+    let first = queue[0];
+    first.elem.scrollIntoViewIfNeeded();
+    const dataMsg = first.elem.getAttribute(first.errtype + '-errmsg');
+    this.err = new ErrMsg(first.elem, dataMsg || first.errmsg);
+    return false;
+};
+// 检查 pop all
+proto.checkAll = function () {
+    this.reset();
+    const inputs = this.getAvailableInputs();
+    for (let i = 0; i < inputs.length; i++) {
+        let result = this.checkElem(inputs[i]);
+        if (result) {
+            let dataMsg = result.elem.getAttribute(result.errtype + '-errmsg');
+            this.errs.push(new ErrMsg(result.elem, dataMsg || result.errmsg));
         }
     }
+    if (this.errs.length === 0) {
+        return true;
+    }
+    return false;
 };
-//---------- 检查单元素 ----------
+/**
+ * 检查元素
+ * @param {HTMLElement} elemm
+ * @return null or {
+ *    "elem": elem,
+ *    "errtype": "required"|"pattern",
+ *    "errmsg": String
+ * }
+ */
 proto.checkElem = function (elem) {
-    let tagName = elem.tagName.toUpperCase();
-    let type = (elem.getAttribute('type') || '').toLowerCase();
+    const tagName = elem.tagName.toUpperCase();
     if (tagName === 'INPUT') {
+        const type = (elem.getAttribute('type') || '').toLowerCase();
         if (type === 'radio' || type === 'checkbox') {
             return this.checkRadio(elem, type);
         } else {
-            return this.checkValue(elem, tagName);
+            return this.checkValue(elem);
         }
     } else if (tagName === 'SELECT') {
-        return this.checkValue(elem, tagName);
+        return this.checkValue(elem);
     } else if (tagName === 'TEXTAREA') {
-        return this.checkValue(elem, tagName);
+        return this.checkValue(elem);
+    } else {
+        return this.checkAttr(elem, 'mui-value');
     }
 };
-proto.checkValue = function (elem, tagName) {
+//---------- 检查value ----------
+proto.checkValue = function (elem) {
     if (elem.getAttribute('required')) {
-        let val = $(elem).val();
-        if (val === undefined || val === null || (val + '').trim() === '') {
-            showRequiredMsg(elem, REQUIRED_TAG_MSG_MAP[tagName] || '请填写此字段');
-            return false;
+        const value = elem.value;
+        if (value === undefined || value === null || value === '') {
+            return {
+                elem, errtype: 'required', errmsg: ERRMSG_MAP.VALUE_REQUIRED
+            }
         }
     }
     if (elem.getAttribute('pattern')) {
-        let reg = new RegExp(elem.getAttribute('pattern'), 'i');
-        let val = $(elem).val();
+        const reg = new RegExp(elem.getAttribute('pattern'), 'i');
+        const val = elem.value;
         if (!reg.test(val)) {
-            showPatternMsg(elem, '请填写符合格式要求的内容')
-            return false;
+            return {
+                elem, errtype: 'pattern', errmsg: ERRMSG_MAP.VALUE_PATTERN
+            }
         }
     }
-    return true;
+};
+//---------- 检查attribute ----------
+proto.checkAttr = function (elem, attrName) {
+    if (elem.getAttribute('required')) {
+        const value = elem.getAttribute(attrName);
+        if (value === undefined || value === null || value === '') {
+            return {
+                elem, errtype: 'required', errmsg: ERRMSG_MAP.VALUE_REQUIRED
+            }
+        }
+    }
+    if (elem.getAttribute('pattern')) {
+        const reg = new RegExp(elem.getAttribute('pattern'), 'i');
+        const val = elem.getAttribute(attrName);
+        if (!reg.test(val)) {
+            return {
+                elem, errtype: 'pattern', errmsg: ERRMSG_MAP.VALUE_PATTERN
+            }
+        }
+    }
 };
 //---------- 检查radio和checkbox ----------
 proto.checkRadio = function (elem, type) {
     let name = elem.getAttribute('name');
     // 无名不验
     if (!name) {
-        return true;
+        return null;
     }
-    // 同名check过了
-    if (!this.pushInMap(elem, 'input_' + type + '_' + name)) {
-        return true;
+    // 如果入栈失败，说明已经同名check过了，不重复进行
+    if (!this.inNameStack(elem, 'input_' + type + '_' + name)) {
+        return null;
     }
-    // 同名元素
-    let $elems = this.$fm.find(`input[type=${type}][name=${name}]`);
-    if ($elems.filter(':checked').length) {
-        return true;
-    } else {
-        showRequiredMsg(elem, '请从这些选项中选择一个');
-        return false;
+    // 获取同名元素
+    const inputs = this.getSameGroupInputs(type, name);
+    for (let i = 0; i < inputs.length; i++) {
+        if (inputs[i].checked) {
+            return null;
+        }
+    }
+    return {
+        elem, errtype: "required", errmsg: ERRMSG_MAP.GROUP
     }
 };
-proto.pushInMap = function (elem, key) {
+// 将elem按名字入栈
+// 防止同name的<radio />或<checkbox />重复检查
+proto.inNameStack = function (elem, key) {
     if (this.nameStackMap[key]) {
-        for (let i = 0; i < this.nameStackMap[key].length; i++) {
-            if (this.nameStackMap[key] === elem) { // 已存在
-                return false;
-            }
-        }
         this.nameStackMap[key].push(elem);
-        return true;
+        return false;
     } else {
         this.nameStackMap[key] = [elem];
         return true;
     }
 };
-
-module.exports = MUIVali;
+// 获取同组的Inputs
+proto.getSameGroupInputs = function (type, name) {
+    return this.form.querySelectorAll(`input[type=${type}][name=${name}]`);
+};
+proto.dispose = function () {
+    this.reset();
+};
+export default MUIVali;
