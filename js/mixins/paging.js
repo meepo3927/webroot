@@ -1,11 +1,5 @@
-const mounted = function () {
-};
-const beforeDestroy = function () {
-};
-
-let methods = {};
-
-let computed = {};
+const methods = {};
+const computed = {};
 computed.mlist = function () {
     if (!this.olist) {
         return this.olist;
@@ -27,7 +21,6 @@ computed.NUM_PER_PAGE = function () {
     return 20;
 };
 module.exports = {
-    props: [],
     data: function () {
         var o = {
             curPage: 1
@@ -35,7 +28,5 @@ module.exports = {
         return o;
     },
     methods,
-    computed,
-    mounted,
-    beforeDestroy
+    computed
 };
