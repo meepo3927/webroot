@@ -21,6 +21,8 @@
             <label class="col-1">手机号：</label>
             <div>
                 <input type="text" class="form-control" required pattern="\d+"
+                    required-errmsg="请输入手机号啊混蛋"
+                    pattern-errmsg="请输入正确的啊"
                     v-model.trim="mobilePhone" />
             </div>
         </div>
