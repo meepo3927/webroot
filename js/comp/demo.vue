@@ -1,13 +1,12 @@
 <template>
-<div class="my-root">
+<div>
 
 </div>
 </template>
 
 <script>
-let methods = {};
-let computed = {};
-let watch = {};
+const methods = {};
+const computed = {};
 const created = function () {};
 const mounted = function () {};
 const beforeDestroy = function () {};
@@ -20,7 +19,6 @@ export default {
     created,
     methods,
     computed,
-    watch,
     props: [],
     mounted,
     mixins: [],
@@ -30,7 +28,5 @@ export default {
 </script>
 
 <style scoped lang="less">
-.my-root {
-    
-}
+
 </style>

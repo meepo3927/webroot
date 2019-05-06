@@ -1,20 +1,27 @@
 <template>
-<vue-echarts class="my-chart" ref="echart"
+<vue-echarts class="my-chart" ref="vuechart"
     :loading="loading"
     :options="options"
     :theme="myTheme"
     :auto-resize="autoResize"
-    @click="$emit('click', $event)"></vue-echarts>
+    @click="$emit('click', $event)" />
 </template>
 
 <script>
-import echarts from 'echarts';
-import vueCharts from 'comp/common/echarts.vue';
-
-var methods = {};
-var computed = {};
+import VueCharts from 'comp/common/vue-echarts.vue';
+const methods = {};
+methods.getEmptyOption = function () {
+    return {
+        title: {
+            text: '暂无数据',
+            top: 'middle',
+            left: 'center'
+        }
+    };
+};
+const computed = {};
 computed.loading = function () {
-    if (this.o === null || this.o === 'loading') {
+    if (this.o === undefined) {
         return true;
     }
     return false;
@@ -23,14 +30,8 @@ computed.myTheme = function () {
     return this.theme || '';
 };
 computed.options = function () {
-    if (this.o === 'empty') {
-        return {
-            title: {
-                text: '暂无数据',
-                left: 'center',
-                top: 'middle'
-            }
-        };
+    if (this.o === null) {
+        return this.getEmptyOption();
     }
     return this.o;
 };
@@ -41,34 +42,23 @@ computed.autoResize = function () {
     if (this.resize === true || this.resize === 'true') {
         return true;
     }
-    return false;
+    return true;
 };
-var watch = {};
-var mounted = function () {
-};
-let beforeDestroy = function () {};
-let dataFunc = function () {
-    var o = {
-    };
+const mounted = function () {};
+const beforeDestroy = function () {};
+const dataFunc = function () {
+    var o = {};
     return o;
 };
 export default {
     data: dataFunc,
-    watch,
-    mixins: [],
     methods,
     computed,
     props: ['o', 'theme', 'resize'],
     mounted,
     beforeDestroy,
     components: {
-        'vue-echarts': vueCharts
+        'vue-echarts': VueCharts
     }
 };
 </script>
-
-<style scoped lang="less">
-.my-chart {
-    
-}
-</style>

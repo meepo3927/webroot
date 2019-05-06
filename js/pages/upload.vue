@@ -39,14 +39,17 @@
             </tbody>
         </table>
     </div>
-    
+    <div class="chart-1"><my-chart :o="o1" @click="$msg('chart click')"/></div>
+    <button class="btn btn-success" @click="renderChart">图表</button>
+    <button class="btn btn-default" @click="o1 = null">图表NULL</button>
     <div class="pb30"></div>
 </div>
 </template>
 
 <script>
 import 'root';
-
+import MyChart from 'comp/my-chart.vue';
+import EC from 'util/echarts.js';
 let methods = {};
 methods.onClick0 = function () {
     this.visible = true;
@@ -58,6 +61,17 @@ methods.onClick1 = function () {
     this.list1.push(this.list1.length + '. ' + Math.random() + _.now());
     this.list1.push(this.list1.length + '. ' + Math.random() + _.now());
     this.list1.push(this.list1.length + '. ' + Math.random() + _.now());
+};
+methods.renderChart = function () {
+    this.o1 = {
+        tooltip: EC.getPieTooltip(),
+        series: EC.getPieSeries({
+            data: [
+                {value: Math.random(), name: '男'},
+                {value: Math.random(), name: '女'}
+            ]
+        })
+    };
 };
 let computed = {};
 computed.users = function () {
@@ -127,7 +141,9 @@ const dataFunc = function () {
         gender: "",
         visible: false,
         list1: [],
-        fileContent: ''
+        fileContent: '',
+
+        o1: undefined
     };
     return o;
 };
@@ -142,6 +158,7 @@ export default {
     mixins: [],
     beforeDestroy,
     components: {
+        'my-chart': MyChart
     }
 };
 </script>
@@ -201,5 +218,9 @@ ol > li:hover {
 }
 .date-input {
     width: 180px;
+}
+.chart-1 {
+    height: 240px;
+    width: 36vw;
 }
 </style>

@@ -15,6 +15,7 @@
 </template>
 
 <script>
+import Cover from 'util/cover.js';
 let methods = {};
 methods.onCloseClick = function () {
     this.$emit('close');
@@ -22,8 +23,17 @@ methods.onCloseClick = function () {
 let computed = {};
 let watch = {};
 const created = function () {};
-const mounted = function () {};
-const beforeDestroy = function () {};
+const mounted = function () {
+    this.coverInstance = new Cover({
+        show: true
+    });
+};
+const beforeDestroy = function () {
+    if (this.coverInstance) {
+        this.coverInstance.remove();
+        this.coverInstance = null;
+    }
+};
 const dataFunc = function () {
     let o = {};
     return o;
@@ -36,9 +46,7 @@ export default {
     watch,
     props: [],
     mounted,
-    mixins: [
-        require('mixins/with_cover.js')
-    ],
+    mixins: [],
     beforeDestroy,
     components: {}
 };

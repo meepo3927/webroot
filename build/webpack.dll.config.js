@@ -9,6 +9,7 @@ const vendors = [
     'vue',
     'polyfill',
     'vendorless',
+    'echarts',
     'lodash',
     'vuerouter'
 ];
