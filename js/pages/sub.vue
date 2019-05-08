@@ -98,6 +98,7 @@ import 'root';
 import MUIVali from 'extend/mui-vali.js';
 import Animate from 'util/animate.js';
 import backtop from 'comp/mui/backtop.vue';
+import Clip from 'util/clipboard.js';
 let methods = {};
 methods.test1 = function () {
     Animate.run({from:0, to: 100}, (v) => {
@@ -105,6 +106,10 @@ methods.test1 = function () {
     });
     $(this.$refs.btn2).css('left', '10em');
     $(this.$refs.btn2).animate({left: '100px'}, {duration: 400});
+
+    const text = '一二三123abc-' + Math.random();
+    LOG('Clip:' + Clip(text));
+    this.$msg(text);
 };
 methods.autoFill = function () {
     this.userName = 'meepo123';
