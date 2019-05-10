@@ -1,7 +1,10 @@
 const BLOCK_CLASSNAME = 'vue-sticky-block';
-
-function Sticky(elem) {
+/**
+ * options
+ */
+function Sticky(elem, options) {
     this.elem = elem;
+    this.options = options;
     this.onWindowScroll = (e) => {
         this._onWindowScroll(e);
     };
@@ -30,14 +33,20 @@ proto.getOffset = function () {
     }
     return this.elem.getBoundingClientRect();
 };
-proto.renderPosition = function () {
+// 重新计算position and size
+proto.renderElem = function () {
     let offset = this.getOffset();
     this.elem.style.left = offset.left + 'px';
+    if (this.holder) {
+        this.elem.style.width = this.holder.offsetWidth + 'px';
+    }
 };
 proto.makeHolder = function () {
     if (!this.holder) {
-        this.holder = document.createElement('div');
-        let p = this.elem.parentNode || this.elem.parentElement;
+        const deep = (this.options.deep === true) ? true : false;
+        this.holder = this.elem.cloneNode(deep);
+        this.holder.style.visibility = 'hidden';
+        const p = this.elem.parentNode;
         if (p) {
             p.insertBefore(this.holder, this.elem);
         }
@@ -46,7 +55,7 @@ proto.makeHolder = function () {
 };
 proto.removeHolder = function () {
     if (this.holder) {
-        const p = this.holder.parentNode || this.holder.parentElement;
+        const p = this.holder.parentNode;
         if (p) {
             p.removeChild(this.holder);
         }
@@ -63,16 +72,12 @@ proto.getStickyStyleText = function () {
 proto.attach = function () {
     // 保存原状态
     this.oldCSSText = this.elem.style.cssText;
-
     const elemWidth = this.elem.offsetWidth;
     const elemHeight = this.elem.offsetHeight;
-    const holder = this.makeHolder();
-    // 设置holder的宽高
-    holder.style.width = elemWidth + 'px';
-    holder.style.height = elemHeight + 'px';
+    this.makeHolder();
     // make it float
     this.elem.style.cssText = (this.oldCSSText || '') + this.getStickyStyleText();
-    this.renderPosition();
+    this.renderElem();
     this.elem.IS_STICKY_ATTACHED = true;
 };
 proto.detach = function () {
@@ -90,13 +95,13 @@ proto._onWindowScroll = function () {
     } else if (offset.top > 0 && this.elem.IS_STICKY_ATTACHED) {
         this.detach();
     } else if (this.elem.IS_STICKY_ATTACHED) {
-        this.renderPosition();
+        this.renderElem();
     }
 };
 proto._onWindowResize = function () {
     // fix position
     if (this.elem.IS_STICKY_ATTACHED) {
-        this.renderPosition();
+        this.renderElem();
     }
 };
 // End Class define
@@ -104,7 +109,9 @@ proto._onWindowResize = function () {
 export default {
     // Vue.directive('sticky', require('extend/vue.sticky.js'));
     bind (el, binding, vnode) {
-        el.__vueSticky__ = new Sticky(el);
+        el.__vueSticky__ = new Sticky(el, {
+            deep: binding.modifiers.deep
+        });
     },
     update () {
     },
