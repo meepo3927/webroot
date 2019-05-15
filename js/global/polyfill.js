@@ -366,6 +366,18 @@
         };
     }
 
+    if (typeof window.CustomEvent !== "function" ) {
+        // new CustomEvent("click", {})
+        function CustomEvent (event, params) {
+            params = params || {};
+            var evt = document.createEvent('CustomEvent');
+            evt.initCustomEvent(event, params.bubbles || false, params.cancelable || false, params.detail);
+            return evt;
+        }
+        CustomEvent.prototype = window.Event.prototype;
+        window.CustomEvent = CustomEvent;
+    }
+
     window.getIEVersion = function () {
         var versions = {
             objectobject: 7, //IE7-8
