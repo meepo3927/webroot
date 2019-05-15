@@ -41,14 +41,14 @@ const baseFetch = (url, data) => {
         return handleResult(result);
     });
 };
-const fetch1 = (path, param) => {
+const fetchJSON = (path, param) => {
     if (isProduction || useProxy) {
         return baseFetch(ajaxUrlBase + `${path}.do`, param);
     }
     return baseFetch(ajaxUrlBase + `${path}.json`, param);
 };
-const fetch2 = (path, param) => {
-    return fetch1(path, param).then((result) => {
+const fetchJSONData = (path, param) => {
+    return fetchJSON(path, param).then((result) => {
         return handleResult2(result);
     });
 };
@@ -61,8 +61,8 @@ const post = (path, param) => {
 
 
 const exports = {
-    fetch1,
-    fetch2,
+    fetchJSON,
+    fetchJSONData,
     post
 };
 
