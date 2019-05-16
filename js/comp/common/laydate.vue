@@ -4,24 +4,44 @@
 
 <script>
 import laydate from 'lib/laydate.js';
+const lay = laydate.lay;
 let methods = {};
 methods.onChange = function (value, date, endDate) {
     this.$emit('input', value);
-    // this.$instance.hint(value);
+};
+methods.layRender = function () {
+    const options = lay.extend({
+        elem: this.$el,
+        change: this.onChange
+    }, this.options);
+    this.$instance = laydate.render(options);
 };
 let computed = {};
 let watch = {};
+watch.options = {
+    deep: true,
+    handler: function (o) {
+        if (this.$instance) {
+            this.$instance.dispose();
+        }
+        this.$nextTick(this.layRender);
+    }
+};
 const created = function () {};
 const mounted = function () {
-    const options = {
+    // 格式
+    // options.format: yyy-MM-dd HH:mm:ss
+    const options = lay.extend({
         elem: this.$el,
-        type: this.type,
-        change: this.onChange
-    };
-    // 格式yyyy-MM-dd HH:mm:ss
-    if (this.format) {
-        options.format = this.format;
-    }
+        change: this.onChange,
+        onInit: (instance) => {
+            // 初始化值
+            const val = this.$el.value;
+            if (val !== this.value) {
+                this.$emit('input', val);
+            }
+        }
+    }, this.options);
     // 初始值
     if (this.value === undefined) {
         options.value = new Date();
@@ -41,13 +61,7 @@ export default {
     watch,
     props: {
         value: {},
-        type: {
-            type: String,
-            default: 'date'
-        },
-        format: {
-            type: String
-        }
+        options: {}
     },
     mounted,
     mixins: [],
@@ -95,12 +109,8 @@ html #layuicss-laydate{display: none; position: absolute; width: 1989px;}
 .layui-laydate-content td,
 .layui-laydate-list li{transition-duration: .3s; -webkit-transition-duration: .3s;}
 
-@-webkit-keyframes laydate-upbit{ /* 微微往上滑入 */
-  from {-webkit-transform: translate3d(0, 20px, 0); opacity: 0.3;}
-  to {-webkit-transform: translate3d(0, 0, 0);  opacity: 1;}
-}
 @keyframes laydate-upbit{
-  from {transform: translate3d(0, 20px, 0);  opacity: 0.3;}
+  from {transform: translate3d(0, 5px, 0);  opacity: 0.3;}
   to {transform: translate3d(0, 0, 0);  opacity: 1;}
 }
 .layui-laydate{-webkit-animation-name: laydate-upbit; animation-name: laydate-upbit;}

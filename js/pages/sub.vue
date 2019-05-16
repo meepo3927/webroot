@@ -81,11 +81,18 @@
             </div>
         </div>
 
+        <div class="mm-row mt20">
+            <label for="" class="col-1">日期：</label>
+            <div>
+                <laydate class="form-control" v-model="myDate" :options="myDateOptions"
+                    ref="myDate" />
+            </div>
+        </div>
+
         <div class="mt20">
             <button class="btn btn-primary" type="button" @click="submit1" >提交</button>
-            <input type="submit" class="btn btn-success" value="噢呃" @click.prevent="submit2" />
+            <!-- <input type="submit" class="btn btn-success" value="噢呃" @click.prevent="submit2" /> -->
             <input type="button" class="btn btn-default" value="自动" @click="autoFill" />
-            <input type="submit" />
         </div>
     </form>
     <div class="h-block"></div>
@@ -143,7 +150,12 @@ const dataFunc = function () {
         gender: '',
         hobit: [false, false],
         city: undefined,
-        sentence: ''
+        sentence: '',
+        myDate: undefined,
+
+        myDateOptions: {
+            min: '2019-05-01'
+        }
     };
     return o;
 };
