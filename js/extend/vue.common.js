@@ -29,7 +29,11 @@ Plugin.install = function (Vue, options) {
         const instance = new Constructor({
             data
         });
-        instance.$mount(el || document.body);
+        if (el && el !== document.body) {
+            instance.$mount();
+        } else {
+            document.body.appendChild(instance.$mount().$el);
+        }
         return instance;
     };
     Vue.$disposeComponent = (instance) => {

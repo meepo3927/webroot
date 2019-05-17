@@ -34,15 +34,12 @@ methods.showChildren = function (item) {
 };
 methods.cleanTimer = function () {
     if (this.delayTimer) {
-        LOG('cleanTimer');
         clearTimeout(this.delayTimer);
         this.delayTimer = 0;
     }
 };
 methods.delayHide = function () {
-    LOG('start delayHide');
     this.delayTimer = setTimeout(() => {
-        LOG('execute delayHide');
         this.showChildren(null);
     }, DELAY_TIME);
 };
