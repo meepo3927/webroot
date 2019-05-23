@@ -12,6 +12,21 @@ const routes = [
     {path: '/upload', component: () => import('pages/upload.vue')}
 ];
 let methods = {};
+methods.mockEvent = function () {
+    document.body.addEventListener('meepo', function (e) {
+        console.log("meepo123");
+        console.log(e.detail);
+    });
+    if (typeof window.CustomEvent === 'function') {
+        var my = new CustomEvent("meepo", {
+            detail: {number: 123456}
+        });
+    } else {
+        my = document.createEvent("CustomEvent");
+        my.initCustomEvent("meepo", false, false, {number: 777888});
+    }
+    document.body.dispatchEvent(my);
+};
 let computed = {};
 let watch = {};
 const created = function () {};
