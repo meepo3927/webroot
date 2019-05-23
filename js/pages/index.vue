@@ -9,7 +9,8 @@ import Test from 'pages/test.vue';
 const routes = [
     {path: '/', component: Home},
     {path: '/test', component: Test},
-    {path: '/upload', component: () => import('pages/upload.vue')}
+    {path: '/upload', component: () => import('pages/upload.vue')},
+    {path: '/child', component: () => import('pages/child.vue')}
 ];
 let methods = {};
 methods.mockEvent = function () {
