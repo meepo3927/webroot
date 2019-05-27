@@ -6,13 +6,17 @@
 import laydate from 'lib/laydate.js';
 const lay = laydate.lay;
 let methods = {};
-methods.onChange = function (value, date, endDate) {
+methods.onDone = function (value, date, endDate) {
+    if (value === this.value) {
+        return;
+    }
+    // value is changed
     this.$emit('input', value);
 };
 methods.layRender = function () {
     const options = lay.extend({
         elem: this.$el,
-        change: this.onChange
+        done: this.onDone
     }, this.options);
     this.$instance = laydate.render(options);
 };
@@ -33,7 +37,7 @@ const mounted = function () {
     // options.format: yyy-MM-dd HH:mm:ss
     const options = lay.extend({
         elem: this.$el,
-        change: this.onChange,
+        done: this.onDone,
         onInit: (instance) => {
             // 初始化值
             const val = this.$el.value;
