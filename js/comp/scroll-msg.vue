@@ -7,7 +7,7 @@
 <script>
 const H = 20;
 const INTERVAL_FRAME = 20;
-const INTERVAL_LOOP = 2 * 1000;
+const INTERVAL_LOOP = 3 * 1000;
 let methods = {};
 methods.onMouseOver = function () {
     this.paused = true;
