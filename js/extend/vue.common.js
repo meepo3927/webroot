@@ -74,6 +74,26 @@ Plugin.install = function (Vue, options) {
         }
         this.$promiseHolder = {};
     };
+    methods.$HACK_VUE_ROUTER_IE = function () {
+        const versions = {
+            objectobject: 7, //IE7-8
+            objectundefined: 6, //IE6
+            undefinedfunction: NaN, // other modern browsers
+            undefinedobject: NaN
+        };
+        const IE = document.documentMode || versions[typeof document.all + typeof XMLHttpRequest];
+        if (IE) {
+            window.addEventListener('hashchange', () => {
+                if (!this.$route || !this.$router) { // NO VueRouter
+                    return;
+                }
+                var currentPath = window.location.hash.slice(1);
+                if (this.$route.path !== currentPath) {
+                    this.$router.push(currentPath);
+                }
+            }, false);
+        }
+    };
     const beforeDestroy = function () {
         this.$cleanPromise();
     };

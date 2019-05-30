@@ -28,11 +28,13 @@ methods.mockEvent = function () {
     }
     document.body.dispatchEvent(my);
 };
+
 let computed = {};
 let watch = {};
 const created = function () {};
 const mounted = function () {
     window.Index = this;
+    this.$HACK_VUE_ROUTER_IE();
 };
 const beforeDestroy = function () {};
 const dataFunc = function () {

@@ -5,10 +5,10 @@
             <a href="javascript:;">Home</a>
         </li>
         <li>
-            <a href="javascript:;">Library</a>
+            <router-link to="/upload">RouterLink upload</router-link>
         </li>
         <li class="active">
-            <a href="javascript:;">Meepo</a>
+            <a href="#/test">A TEST</a>
         </li>
     </ol>
     <form class="p15" @submit.prevent>
