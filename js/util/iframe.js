@@ -1,10 +1,10 @@
 /**
- * @描述  Iframe通信工具
+ * @描述  iframe通信工具
  * @用法:
- * IframeUtil.on(event, func) event:监听的事件名称, func:回调函数
- * IframeUtil.off(event, func) event:取消监听的事件名称, func:回调函数
- * IframeUtil.send(event, data, target) event:事件名称, data:参数, target:目标Iframe
- * IframeUtil.fire 同 send
+ * iframeUtil.on(event, func) event:监听的事件名称, func:回调函数
+ * iframeUtil.off(event, func) event:取消监听的事件名称, func:回调函数
+ * iframeUtil.send(event, data, target) event:事件名称, data:参数, target:目标iframe
+ * iframeUtil.fire 同 send
  */
 (function (factory) {
     if (typeof define === 'function' && (define.amd || define.cmd)) {
@@ -50,12 +50,12 @@
             try {
                 json = JSON.parse(e.data);
             } catch(e) {
-                log('[IframeUtil onMessage] JSON.parse error', e);
+                log('[iframeUtil onMessage] JSON.parse error', e);
                 return false;
             }
         }
         if (!json) {
-            log('[IframeUtil onMessage] e.data null:', e);
+            log('[iframeUtil onMessage] e.data null:', e);
             return false;
         }
         var event = json.event;
@@ -94,7 +94,7 @@
             };
             return target.postMessage(JSON.stringify(o), '*');
         } else {
-            log('[IframeUtil.Send] There is not postMessage method in target:', target);
+            log('[iframeUtil.Send] There is not postMessage method in target:', target);
             return false;
         }
     };
@@ -134,6 +134,6 @@
     };
 
     bind(window, 'message', onMessage);
-    window.IframeUtil = exports;
+    window.iframeUtil = exports;
     return exports;
 }));
