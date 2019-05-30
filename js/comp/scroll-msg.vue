@@ -1,6 +1,7 @@
 <template>
 <ul class="scroll-msg" @mouseover="onMouseOver" @mouseout="onMouseOut">
     <li v-for="v in list" v-text="v.subject"></li>
+    <li v-if="fakeItem" v-text="fakeItem.subject"></li>
 </ul>
 </template>
 
@@ -50,10 +51,15 @@ computed.maxY = function () {
     if (!this.list) {
         return 0;
     }
-    return (this.list.length - 1) * H;
+    return (this.list.length) * H;
 };
 computed.dataReady = function () {
     return (this.list && this.list.length);
+};
+computed.fakeItem = function () {
+    if (this.list && this.list[0]) {
+        return this.list[0];
+    }
 };
 let watch = {};
 watch.list = function () {
