@@ -1,5 +1,5 @@
 <template>
-    <input type="text" readonly />
+    <input type="text" readonly :value="value"/>
 </template>
 
 <script>
