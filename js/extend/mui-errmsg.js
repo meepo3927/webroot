@@ -43,6 +43,9 @@ proto.bind = function () {
             this.bindRadio();
         } else {
             this.elem.addEventListener('input', this.dispose);
+            if (this.elem.readOnly || this.elem.disabled) {
+                this.elem.addEventListener('click', this.dispose);
+            }
         }
     } else if (this.elemTagName === 'SELECT') {
         this.elem.addEventListener('change', this.dispose);
@@ -58,6 +61,7 @@ proto.bind = function () {
 proto.unbind = function () {
     if (this.elemTagName === 'INPUT') {
         this.elem.removeEventListener('input', this.dispose);
+        this.elem.removeEventListener('click', this.dispose);
     } else if (this.elemTagName === 'SELECT') {
         this.elem.removeEventListener('change', this.dispose);
         this.elem.removeEventListener('click', this.dispose);
