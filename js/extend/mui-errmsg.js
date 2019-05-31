@@ -5,6 +5,7 @@ function MUIErrMsg(elem, errmsg) {
         return;
     }
     this.elem = elem;
+    this.errmsg = errmsg;
     this.tooltip = new Tooltip({
         target: elem,
         text: errmsg,
