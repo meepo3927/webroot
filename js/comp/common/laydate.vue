@@ -47,9 +47,14 @@ const mounted = function () {
         }
     }, this.options);
     // 初始值
-    if (this.value === undefined) {
+    if (this.value && (typeof this.value === 'string')) {
+        options.value = this.value;
+    } else if (this.value instanceof Date) {
+        options.value = this.value;
+    } else if (this.value === null) {
         options.value = new Date();
     }
+
     this.$instance = laydate.render(options);
 };
 const beforeDestroy = function () {};
