@@ -30,7 +30,7 @@ Plugin.install = function (Vue, options) {
             data
         });
         if (el && el !== document.body) {
-            instance.$mount();
+            instance.$mount(el);
         } else {
             document.body.appendChild(instance.$mount().$el);
         }
