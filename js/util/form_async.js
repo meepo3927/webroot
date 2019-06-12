@@ -109,7 +109,7 @@ proto.send = function () {
     this.form.submit();
     return new Promise((resolve, reject) => {
         FormAsync.fetch(this.iframe, (bool, result) => {
-            LOG('fetch:' + bool, result);
+            // LOG('fetch:' + bool, result);
             // handle result
             bool ? resolve(result) : reject(result);
             // clean
