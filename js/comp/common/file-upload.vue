@@ -15,9 +15,10 @@
     <span class="error-msg" v-show="errmsgVisible" 
         v-text="errmsg"></span>
     <!-- 查看文件 -->
-    <a :href="value" class="open-file" target="_blank" v-show="openFileVisible">查看文件</a>
+    <a :href="value" class="open-file" target="_blank" @click.stop
+        v-show="openFileVisible">查看文件</a>
     <!-- 实际表单 -->
-    <form :action="formAction" style="display: none;" ref="form">
+    <form :action="formAction" :method="formMethod" style="display: none;" ref="form">
         <slot></slot>
     </form>
 </span>
@@ -218,6 +219,12 @@ computed.chooseBtnVisible = function () {
 computed.sendBtnVisible = function () {
     return this.filePath ? true : false;
 };
+computed.formMethod = function () {
+    // if (Config.mock) {
+    //     return 'GET';
+    // }
+    return 'POST';
+};
 const mounted = function () {
     this.$form = $(this.$refs.form);
     this.makeFileInput();
@@ -267,7 +274,7 @@ export default {
     }
 }
 .v-file-name {
-    min-width: 200px;
+    min-width: 230px;
     padding-right: 10px;
     margin-right: 10px;
     & > div {
