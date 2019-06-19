@@ -4,7 +4,9 @@
     <div class="h-block">
         <button class="btn btn-default pos-r" @click="test1"
             :style="{left: btnLeft + 'px'}">TEST1</button>
-        <br />
+        <!-- <br /> -->
+        <jigsaw />
+        <p></p>
         <button class="btn btn-default btn-2" ref="btn2" v-sticky>TEST2</button>
     </div>
     <form ref="fm" class="mt20">
@@ -106,6 +108,7 @@ import MUIVali from 'extend/mui-vali.js';
 import Animate from 'util/animate.js';
 import backtop from 'comp/mui/backtop.vue';
 import Clip from 'util/clipboard.js';
+import jigsaw from 'comp/jigsaw.vue';
 let methods = {};
 methods.test1 = function () {
     Animate.run({from:0, to: 100}, (v) => {
@@ -170,7 +173,8 @@ export default {
     mixins: [],
     beforeDestroy,
     components: {
-        backtop
+        backtop,
+        jigsaw
     }
 };
 </script>

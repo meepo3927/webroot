@@ -1,0 +1,301 @@
+<template>
+<div class="slide-jigsaw">
+    <canvas :width="W" :height="H" ref="fillCanvas" 
+        class="fill-canvas"></canvas>
+    <canvas ref="clipCanvas" :height="H" class="clip-canvas"
+        :style="clipStyle"></canvas>
+    <div class="slider-container">
+        <span v-text="slideCenterText"></span>
+        <!-- MASK -->
+        <div class="mask-bar"></div>
+        <!-- 滑块 -->
+        <div class="hand-slider" :style="sliderStyle" :class="sliderClass"
+            @mousedown="onSliderMouseDown">
+            <i class="fa" :class="iconClass"></i>
+        </div>
+    </div>
+
+</div>
+</template>
+
+<script>
+// const MOCK_IMG = 'http://localhost/images/c09.jpg';
+const MOCK_IMG = '/images/c09.jpg';
+const methods = {};
+methods.onSliderMouseDown = function (e) {
+    if (this.checking) {
+        return false;
+    }
+    this.dragging = true;
+    this.startLeft = this.left;
+    this.startX = e.clientX;
+};
+methods.onMouseMove = function (e) {
+    if (!this.dragging) {
+        return;
+    }
+    const distance = e.clientX - this.startX;
+    let left = this.startLeft + distance;
+    // 边界检查
+    const MAX_LEFT = this.W - 40;
+    if (left < 0) {
+        left = 0;
+    } else if (left > MAX_LEFT) {
+        left = MAX_LEFT;
+    }
+    this.left = left;
+};
+methods.onMouseUp = function () {
+    if (!this.dragging) {
+        return;
+    }
+    this.dragging = false;
+    // 检查结果
+    this.checkAction();
+    this.startLeft = undefined;
+    this.startX = undefined;
+};
+methods.checkAction = function () {
+    this.checking = true;
+    if (Math.abs(this.left - this.x) < 10) {
+        this.setStatus('success');
+    } else {
+        this.setStatus('fail');
+    }
+    this.timer = setTimeout(this.reset, 1200);
+};
+methods.reset = function () {
+    clearTimeout(this.timer);
+    this.timer = 0;
+    this.setStatus('default');
+    this.left = 0;
+    this.checking = false;
+};
+methods.setStatus = function (ss) {
+    this.status = ss;
+};
+methods.initImage = function () {
+    this.loadImage(MOCK_IMG, () => {
+        this.drawClip();
+    });
+};
+methods.loadImage = function (src, callback) {
+    const img = new Image();
+    // img.crossOrigin = 'Anonymous';
+    img.onload = () => {
+        callback && callback();
+    };
+    img.onerror = () => {
+        this.status = 'loaderror';
+    };
+    img.src = src;
+    this.img = img;
+};
+// 绘制裁剪
+methods.drawClip = function () {
+    this.x = this.getRandomX()
+    this.y = this.getRandomY();
+    this.drawShape(this.fillCtx, this.x, this.y, 'fill')
+    this.drawShape(this.clipCtx, this.x, this.y, 'clip');
+    this.fillCtx.drawImage(this.img, 0, 0, this.W, this.H);
+    this.clipCtx.drawImage(this.img, 0, 0, this.W, this.H);
+    // 裁剪
+    const y = this.y - this.R * 2 - 1;
+    const ImageData = this.clipCtx.getImageData(
+        this.x - 3, y,
+        this.L, this.L
+    );
+    this.$refs.clipCanvas.width = this.L;
+    this.clipCtx.putImageData(ImageData, 0, y);
+};
+methods.drawShape = function (ctx, x, y, operation) {
+    const l = 42;
+    const r = this.R;
+    const PI = Math.PI;
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.arc(x + l / 2, y - r + 2, r, 0.72 * PI, 2.26 * PI);
+    ctx.lineTo(x + l, y);
+    ctx.arc(x + l + r - 2, y + l / 2, r, 1.21 * PI, 2.78 * PI);
+    ctx.lineTo(x + l, y + l);
+    ctx.lineTo(x, y + l);
+    ctx.arc(x + r - 2, y + l / 2, r + 0.4, 2.76 * PI, 1.24 * PI, true);
+    ctx.lineTo(x, y);
+    ctx.lineWidth = 2;
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+    ctx.stroke();
+    ctx[operation]();
+    // ctx.globalCompositeOperation = isIE ? 'xor' : 'overlay'
+    ctx.globalCompositeOperation = 'overlay';
+    return ctx;
+};
+methods.getRandom = function (start, end) {
+    return Math.round(Math.random() * (end - start) + start);
+};
+methods.getRandomX = function () {
+    return this.getRandom(
+        this.L + 10,
+        this.W - this.L - 10
+    );
+};
+methods.getRandomY = function () {
+    return this.getRandom(
+        11,
+        this.H - this.L - 3
+    );
+};
+methods.bindEvents = function () {
+    const docElem = document.documentElement;
+    docElem.addEventListener('mousemove', this.onMouseMove);
+    docElem.addEventListener('mouseup', this.onMouseUp);
+};
+methods.unbindEvents = function () {
+    const docElem = document.documentElement;
+    docElem.removeEventListener('mousemove', this.onMouseMove);
+    docElem.removeEventListener('mouseup', this.onMouseUp);
+};
+const computed = {};
+computed.W = function () {      // 画布宽
+    return 310;
+};
+computed.H = function () {      // 画布高
+    return 155;
+};
+computed.L = function () {      // 拼图边长
+    return 64;
+};
+computed.R = function () {
+    return 9;
+};
+computed.clipStyle = function () {
+    return {
+        left: this.left + 'px'
+    }
+};
+computed.sliderStyle = function () {
+    return {
+        left: this.left + 'px'
+    }
+};
+computed.sliderClass = function () {
+    return [
+        'status-' + this.status
+    ]
+};
+computed.iconClass = function () {
+    const MAP = {
+        'default': 'fa-arrow-right',
+        'success': 'fa-check',
+        'fail': 'fa-close'
+    };
+    const faClass = MAP[this.status] || MAP['default'];
+    return [faClass]
+};
+computed.slideCenterText = function () {
+    const TEXT_MAP = {
+        'loaderror': '图片加载失败',
+        'success': '验证成功',
+        'fail': '验证失败',
+        'default': '滑动完成拼图'
+    };
+    return TEXT_MAP[this.status] || TEXT_MAP['default'];
+};
+const created = function () {
+    // window.Jigsaw = this;
+};
+const mounted = function () {
+    this.$refs.clipCanvas.width = this.W;
+    this.fillCtx = this.$refs.fillCanvas.getContext('2d');
+    this.clipCtx = this.$refs.clipCanvas.getContext('2d');
+    this.initImage();
+    this.bindEvents();
+};
+const beforeDestroy = function () {
+    this.unbindEvents();
+};
+const dataFunc = function () {
+    let o = {
+        //x, y 是拼图的坐标
+        x: 0,
+        y: 0,
+        left: 0,
+        status: ''
+    };
+    return o;
+};
+export default {
+    data: dataFunc,
+    created,
+    methods,
+    computed,
+    props: [],
+    mounted,
+    mixins: [],
+    beforeDestroy,
+    components: {}
+};
+</script>
+
+<style scoped lang="less">
+@container-width:    310px;
+@slider-height:      40px;
+@active-back-color:  #1991FA;
+@fail-back-color:    #F57A7A;
+@success-back-color: #52CCBA;
+.slide-jigsaw {
+    position: relative;
+}
+.clip-canvas {
+    position: absolute;
+    top: 0;
+}
+.slider-container {
+    width: @container-width;
+    height: @slider-height;
+    line-height: @slider-height;
+    text-align: center;
+    background-color: #f7f9fa;
+    border: 1px solid #e4e7eb;
+    position: relative;
+    user-select: none;
+    & > span {
+        color: #45494c;
+        font-size: 16px;
+    }
+}
+.mask-bar {
+
+}
+.hand-slider {
+    position: absolute;
+    width: @slider-height;
+    height: @slider-height - 2;
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+    top: 0px;
+    text-align: center;
+    line-height: @slider-height;
+    cursor: pointer;
+    transition: background .2s ease;
+    background-color: #fff;
+
+    &.status-default:hover {
+        background-color: @active-back-color;
+        i {
+            color: #fff;
+        }
+    }
+    &.status-success {
+        background-color: @success-back-color;
+        i {color: #fff;}
+    }
+    &.status-fail {
+        background-color: @fail-back-color;
+        i {color: #fff;}
+    }
+    i {
+        font-size: 18px;
+        color: #777;
+    }
+}
+</style>
