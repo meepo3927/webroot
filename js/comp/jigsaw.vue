@@ -7,20 +7,20 @@
     <div class="slider-container">
         <span v-text="slideCenterText"></span>
         <!-- MASK -->
-        <div class="mask-bar"></div>
+        <div class="mask-bar" :style="maskStyle" :class="maskClass"></div>
         <!-- 滑块 -->
         <div class="hand-slider" :style="sliderStyle" :class="sliderClass"
             @mousedown="onSliderMouseDown">
             <i class="fa" :class="iconClass"></i>
         </div>
     </div>
-
 </div>
 </template>
 
 <script>
 // const MOCK_IMG = 'http://localhost/images/c09.jpg';
 const MOCK_IMG = '/images/c09.jpg';
+const BOUND = 10;
 const methods = {};
 methods.onSliderMouseDown = function (e) {
     if (this.checking) {
@@ -57,19 +57,25 @@ methods.onMouseUp = function () {
 };
 methods.checkAction = function () {
     this.checking = true;
-    if (Math.abs(this.left - this.x) < 10) {
+    if (Math.abs(this.left - this.x) < BOUND) {
         this.setStatus('success');
+        this.$emit('success');
     } else {
         this.setStatus('fail');
+        this.$emit('fail');
+        this.timer = setTimeout(this.reset, 1200);
     }
-    this.timer = setTimeout(this.reset, 1200);
 };
 methods.reset = function () {
+    // 清空定时
     clearTimeout(this.timer);
     this.timer = 0;
+    // 恢复状态
     this.setStatus('default');
     this.left = 0;
     this.checking = false;
+    // 重绘拼图位置
+    this.drawClip();
 };
 methods.setStatus = function (ss) {
     this.status = ss;
@@ -93,6 +99,7 @@ methods.loadImage = function (src, callback) {
 };
 // 绘制裁剪
 methods.drawClip = function () {
+    this.cleanCanvas();
     this.x = this.getRandomX()
     this.y = this.getRandomY();
     this.drawShape(this.fillCtx, this.x, this.y, 'fill')
@@ -129,6 +136,11 @@ methods.drawShape = function (ctx, x, y, operation) {
     // ctx.globalCompositeOperation = isIE ? 'xor' : 'overlay'
     ctx.globalCompositeOperation = 'overlay';
     return ctx;
+};
+methods.cleanCanvas = function () {
+    this.fillCtx.clearRect(0, 0, this.W, this.H);
+    this.clipCtx.clearRect(0, 0, this.W, this.H);
+    this.$refs.clipCanvas.width = this.W;
 };
 methods.getRandom = function (start, end) {
     return Math.round(Math.random() * (end - start) + start);
@@ -180,6 +192,17 @@ computed.sliderStyle = function () {
 };
 computed.sliderClass = function () {
     return [
+        'status-' + this.status,
+        this.dragging ? 'in-dragging': ''
+    ]
+};
+computed.maskStyle = function () {
+    return {
+        width: this.left + 'px'
+    }
+};
+computed.maskClass = function () {
+    return [
         'status-' + this.status
     ]
 };
@@ -193,19 +216,21 @@ computed.iconClass = function () {
     return [faClass]
 };
 computed.slideCenterText = function () {
+    if (this.dragging) {
+        return '';
+    }
     const TEXT_MAP = {
         'loaderror': '图片加载失败',
-        'success': '验证成功',
-        'fail': '验证失败',
-        'default': '滑动完成拼图'
+        'success': '',
+        'fail': '',
+        'default': '滑动填充拼图'
     };
-    return TEXT_MAP[this.status] || TEXT_MAP['default'];
+    return TEXT_MAP[this.status];
 };
 const created = function () {
     // window.Jigsaw = this;
 };
 const mounted = function () {
-    this.$refs.clipCanvas.width = this.W;
     this.fillCtx = this.$refs.fillCanvas.getContext('2d');
     this.clipCtx = this.$refs.clipCanvas.getContext('2d');
     this.initImage();
@@ -216,11 +241,12 @@ const beforeDestroy = function () {
 };
 const dataFunc = function () {
     let o = {
+        dragging: false,
         //x, y 是拼图的坐标
         x: 0,
         y: 0,
         left: 0,
-        status: ''
+        status: 'default'
     };
     return o;
 };
@@ -243,6 +269,12 @@ export default {
 @active-back-color:  #1991FA;
 @fail-back-color:    #F57A7A;
 @success-back-color: #52CCBA;
+@mask-default-border-color: #1991FA;
+@mask-success-border-color: #52CCBA;
+@mask-fail-border-color:    #F57A7A;
+@mask-default-back-color:   #D1E9FE;
+@mask-success-back-color:   #D2F4EF;
+@mask-fail-back-color:      #FCE1E1;
 .slide-jigsaw {
     position: relative;
 }
@@ -265,7 +297,23 @@ export default {
     }
 }
 .mask-bar {
-
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transition: background .3s ease;
+    &.status-default {
+        background-color: @mask-default-back-color;
+        border: 1px solid @mask-default-border-color;
+    }
+    &.status-success {
+        background-color: @mask-success-back-color;
+        border: 1px solid @mask-success-border-color;
+    }
+    &.status-fail {
+        background-color: @mask-fail-back-color;
+        border: 1px solid @mask-fail-border-color;
+    }
 }
 .hand-slider {
     position: absolute;
@@ -278,7 +326,7 @@ export default {
     cursor: pointer;
     transition: background .2s ease;
     background-color: #fff;
-
+    &.in-dragging,
     &.status-default:hover {
         background-color: @active-back-color;
         i {
@@ -286,10 +334,12 @@ export default {
         }
     }
     &.status-success {
+        cursor: default;
         background-color: @success-back-color;
         i {color: #fff;}
     }
     &.status-fail {
+        cursor: default;
         background-color: @fail-back-color;
         i {color: #fff;}
     }
