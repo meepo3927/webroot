@@ -100,9 +100,9 @@ methods.loadImage = function (src, callback) {
 // 绘制裁剪
 methods.drawClip = function () {
     this.cleanCanvas();
-    this.x = this.getRandomX()
+    this.x = this.getRandomX();
     this.y = this.getRandomY();
-    this.drawShape(this.fillCtx, this.x, this.y, 'fill')
+    this.drawShape(this.fillCtx, this.x, this.y, 'fill');
     this.drawShape(this.clipCtx, this.x, this.y, 'clip');
     this.fillCtx.drawImage(this.img, 0, 0, this.W, this.H);
     this.clipCtx.drawImage(this.img, 0, 0, this.W, this.H);

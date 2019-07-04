@@ -136,8 +136,7 @@
                 <div class="x-content">
                     <em>尊敬的用户：</em>
                     <p>
-                        您正在使用Internet Explorer ${docMode}，请<span>升级到最新版本</span>，
-                        或下载 <a href="${url}" target="_blank">IE增强插件</a>
+                        您正在使用Internet Explorer ${docMode}，请<span>升级到最新版本</span>
                     </p>
                 </div>
             </div>
