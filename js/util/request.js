@@ -7,7 +7,7 @@ const URL = require('util/url');
 const Fetch = require('util/fetch');
 const isProduction = config.isProduction;
 const isMock = !isProduction;
-const useProxy = (URL.query().useProxy === '1');
+const useProxy = (URL.query().__useProxy === '1');
 
 // Ajax请求路径
 if (isProduction) {
