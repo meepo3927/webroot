@@ -1,15 +1,22 @@
 <template>
-<div class="slide-jigsaw">
-    <canvas :width="W" :height="H" ref="fillCanvas" 
-        class="fill-canvas"></canvas>
-    <canvas ref="clipCanvas" :height="H" class="clip-canvas"
+<div class="slide-jigsaw" :class="rootClass"
+    @mouseenter="onRootMouseEnter"
+    @mouseleave="onRootMouseLeave">
+    <!-- 背景图 -->
+    <canvas class="fill-canvas" ref="fillCanvas"
+        :width="W" :height="H"
+        :class="fillCanvasClass"></canvas>
+    <!-- 滑块图 -->
+    <canvas :height="H" ref="clipCanvas" class="clip-canvas"
         :style="clipStyle"></canvas>
+    <!-- 滑块区域 -->
     <div class="slider-container" :style="containerStyle">
         <span v-text="slideCenterText"></span>
         <!-- MASK -->
         <div class="mask-bar" :style="maskStyle" :class="maskClass"></div>
         <!-- 滑块 -->
         <div class="hand-slider" :style="sliderStyle" :class="sliderClass"
+            @mouseenter="onSliderMouseEnter"
             @mousedown="onSliderMouseDown">
             <i class="fa" :class="iconClass"></i>
         </div>
@@ -19,7 +26,29 @@
 
 <script>
 const BOUND = 10;
+const ENTER_SHOW_DELAY = 450;
 const methods = {};
+methods.onRootMouseEnter = function () {
+    this.enterTimer = setTimeout(() => {
+        this.hovering = true;
+    }, ENTER_SHOW_DELAY);
+};
+methods.onRootMouseLeave = function () {
+    if (this.enterTimer) {
+        clearTimeout(this.enterTimer);
+        this.enterTimer = 0;
+    }
+
+    this.hovering = false;
+};
+methods.onSliderMouseEnter = function () {
+    if (this.enterTimer) {
+        clearTimeout(this.enterTimer);
+        this.enterTimer = 0;
+    }
+    // 立即显示
+    this.hovering = true;
+};
 methods.onSliderMouseDown = function (e) {
     if (this.status === 'loaderror') {
         return false;
@@ -186,14 +215,30 @@ computed.L = function () {      // 拼图边长
 computed.R = function () {
     return 9;
 };
+computed.btnHeight = function () {
+    return 42;
+};
+computed.rootClass = function () {
+    return [
+        this.isModeStatic ? 'mode-static' : 'mode-float',
+        this.dragging ? 'in-dragging': '',
+        this.hovering ? 'hovering' : '',
+        'status-' + this.status,
+    ]
+};
+
 computed.clipStyle = function () {
     return {
         left: this.left + 'px'
     }
 };
 computed.sliderStyle = function () {
+    const height = this.btnHeight - 2;
     return {
-        left: this.left + 'px'
+        left: this.left + 'px',
+        width: this.btnHeight + 'px',
+        height: height + 'px',
+        lineHeight: this.btnHeight + 'px'
     }
 };
 computed.sliderClass = function () {
@@ -235,8 +280,13 @@ computed.slideCenterText = function () {
 };
 computed.containerStyle = function () {
     return {
-        width: this.W + 'px'
+        width: this.W + 'px',
+        height: this.btnHeight + 'px',
+        lineHeight: this.btnHeight + 'px'
     }
+};
+computed.isModeStatic = function () {
+    return (this.mode === 'static');
 };
 const created = function () {
     // window.Jigsaw = this;
@@ -252,6 +302,7 @@ const beforeDestroy = function () {
 };
 const dataFunc = function () {
     let o = {
+        hovering: false,
         dragging: false,
         //x, y 是拼图的坐标
         x: 0,
@@ -266,7 +317,7 @@ export default {
     created,
     methods,
     computed,
-    props: ['imgsrc', 'w'],
+    props: ['imgsrc', 'w', 'mode'],
     mounted,
     mixins: [],
     beforeDestroy,
@@ -275,7 +326,7 @@ export default {
 </script>
 
 <style scoped lang="less">
-@slider-height:      40px;
+@canvas-height:      155px;
 @active-back-color:  #1991FA;
 @fail-back-color:    #F57A7A;
 @success-back-color: #52CCBA;
@@ -288,13 +339,37 @@ export default {
 .slide-jigsaw {
     position: relative;
 }
-.clip-canvas {
-    position: absolute;
-    top: 0;
+// 静态模式
+.slide-jigsaw.mode-static {
+    .clip-canvas {
+        position: absolute;
+        top: 0;
+    }
 }
+// 浮动模式
+.slide-jigsaw.mode-float {
+    .fill-canvas, .clip-canvas {
+        position: absolute;
+        z-index: 3;
+        top: -(@canvas-height + 15px);
+        transition: visibility .3s linear, opacity .5s ease;
+    }
+    // 显示隐藏控制
+    .fill-canvas, .clip-canvas {
+        visibility: hidden;
+        opacity: 0;
+    }
+    &.hovering,
+    &.in-dragging,
+    &.status-fail {
+        .fill-canvas, .clip-canvas {
+            visibility: visible;
+            opacity: 1;
+        }
+    }
+}
+
 .slider-container {
-    height: @slider-height;
-    line-height: @slider-height;
     text-align: center;
     background-color: #f7f9fa;
     border: 1px solid #e4e7eb;
@@ -326,12 +401,9 @@ export default {
 }
 .hand-slider {
     position: absolute;
-    width: @slider-height;
-    height: @slider-height - 2;
     box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
     top: 0px;
     text-align: center;
-    line-height: @slider-height;
     cursor: pointer;
     transition: background .2s ease;
     background-color: #fff;
