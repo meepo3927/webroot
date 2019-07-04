@@ -19,6 +19,7 @@ import MUIloading from 'extend/vue.mui-loading.js';
 import MUITooltip from 'extend/vue.mui-tooltip.js';
 import VueRouter from 'vuerouter';
 import VueCommon from 'extend/vue.common.js';
+import Vuex from 'vuex';
 import VueClickOut from 'extend/vue.clickout.js';
 import MUIScroll from 'comp/mui/scroll.vue';
 import centerlayer from 'comp/common/center-layer.vue';
@@ -30,6 +31,7 @@ import LevelMenu from 'comp/level-menu.vue';
 import Sticky from 'extend/vue.sticky.js';
 import LayDate from 'comp/common/laydate.vue';
 Vue.use(VueRouter);
+Vue.use(Vuex);
 Vue.use(VueCommon);
 Vue.prototype.$msg = MUIMsg;
 Vue.prototype.$alert = MUIMsgBox.alert;
@@ -47,5 +49,6 @@ Vue.component('input-file', InputFile);
 Vue.component('input-number', InputNumber);
 Vue.component('level-menu', LevelMenu);
 export default {
-    VueRouter
+    VueRouter,
+    Vuex
 }

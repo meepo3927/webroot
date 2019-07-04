@@ -5,32 +5,13 @@
 <script>
 import Root from 'root';
 import Home from 'pages/home.vue';
-import Test from 'pages/test.vue';
 const routes = [
     {path: '/', component: Home},
-    {path: '/test', component: Test},
-    {path: '/upload', component: () => import('pages/upload.vue')},
-    {path: '/child', component: () => import('pages/child.vue')}
+    {path: '/test', component: () => import('pages/test.vue')}
 ];
-let methods = {};
-methods.mockEvent = function () {
-    document.body.addEventListener('meepo', function (e) {
-        console.log("meepo123");
-        console.log(e.detail);
-    });
-    if (typeof window.CustomEvent === 'function') {
-        var my = new CustomEvent("meepo", {
-            detail: {number: 123456}
-        });
-    } else {
-        my = document.createEvent("CustomEvent");
-        my.initCustomEvent("meepo", false, false, {number: 777888});
-    }
-    document.body.dispatchEvent(my);
-};
-
-let computed = {};
-let watch = {};
+const methods = {};
+const computed = {};
+const watch = {};
 const created = function () {};
 const mounted = function () {
     window.Index = this;
@@ -38,7 +19,7 @@ const mounted = function () {
 };
 const beforeDestroy = function () {};
 const dataFunc = function () {
-    let o = {};
+    const o = {};
     return o;
 };
 export default {

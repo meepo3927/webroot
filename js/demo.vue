@@ -11,7 +11,7 @@ const created = function () {};
 const mounted = function () {};
 const beforeDestroy = function () {};
 const dataFunc = function () {
-    let o = {};
+    const o = {};
     return o;
 };
 export default {

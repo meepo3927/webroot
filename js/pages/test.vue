@@ -113,10 +113,25 @@ import MUIAlertSpan from 'comp/mui/alert-span.vue';
 import MUISlider from 'comp/mui/slider.vue';
 import MUISelect from 'comp/mui/select.vue';
 import Ajax from 'util/ajax.js';
-
+import store from 'global/xx_store.js';
 const duration = 999999999;
 const longMsg = '一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十';
-let methods = {};
+const methods = {};
+methods.mockEvent = function () {
+    document.body.addEventListener('meepo', function (e) {
+        console.log("meepo123");
+        console.log(e.detail);
+    });
+    if (typeof window.CustomEvent === 'function') {
+        var my = new CustomEvent("meepo", {
+            detail: {number: 123456}
+        });
+    } else {
+        my = document.createEvent("CustomEvent");
+        my.initCustomEvent("meepo", false, false, {number: 777888});
+    }
+    document.body.dispatchEvent(my);
+};
 methods.layerClose = function () {
     this.switchValue = false;
 };
@@ -206,6 +221,7 @@ let watch = {};
 const created = function () {};
 const mounted = function () {
     window.Test = this;
+    store.commit('test', 'test');
 };
 const beforeDestroy = function () {};
 const dataFunc = function () {

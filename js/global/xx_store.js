@@ -1,15 +1,13 @@
-let Vue = require('vue');
-let Vuex = require('vuex');
-// Vue.use(Vuex);
+import Root from 'root';
 
 const mutations = {
     test: function (state, payload) {
-    },
+    }
 }
-let store = new Vuex.Store({
+const store = new Root.Vuex.Store({
     mutations,
     state: {},
     getters: {}
 });
 
-module.exports = store;
+export default store;
