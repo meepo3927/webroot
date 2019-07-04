@@ -4,7 +4,7 @@
         class="fill-canvas"></canvas>
     <canvas ref="clipCanvas" :height="H" class="clip-canvas"
         :style="clipStyle"></canvas>
-    <div class="slider-container">
+    <div class="slider-container" :style="containerStyle">
         <span v-text="slideCenterText"></span>
         <!-- MASK -->
         <div class="mask-bar" :style="maskStyle" :class="maskClass"></div>
@@ -18,11 +18,12 @@
 </template>
 
 <script>
-// const MOCK_IMG = 'http://localhost/images/c09.jpg';
-const MOCK_IMG = '/images/c09.jpg';
 const BOUND = 10;
 const methods = {};
 methods.onSliderMouseDown = function (e) {
+    if (this.status === 'loaderror') {
+        return false;
+    }
     if (this.checking) {
         return false;
     }
@@ -81,7 +82,7 @@ methods.setStatus = function (ss) {
     this.status = ss;
 };
 methods.initImage = function () {
-    this.loadImage(MOCK_IMG, () => {
+    this.loadImage(this.imgsrc, () => {
         this.drawClip();
     });
 };
@@ -169,7 +170,12 @@ methods.unbindEvents = function () {
 };
 const computed = {};
 computed.W = function () {      // 画布宽
-    return 310;
+    const width = Math.round(this.w * 1);
+    if (!width || isNaN(width)) {
+        // 默认宽度
+        return 360;
+    }
+    return width;
 };
 computed.H = function () {      // 画布高
     return 155;
@@ -227,6 +233,11 @@ computed.slideCenterText = function () {
     };
     return TEXT_MAP[this.status];
 };
+computed.containerStyle = function () {
+    return {
+        width: this.W + 'px'
+    }
+};
 const created = function () {
     // window.Jigsaw = this;
 };
@@ -255,7 +266,7 @@ export default {
     created,
     methods,
     computed,
-    props: [],
+    props: ['imgsrc', 'w'],
     mounted,
     mixins: [],
     beforeDestroy,
@@ -264,7 +275,6 @@ export default {
 </script>
 
 <style scoped lang="less">
-@container-width:    310px;
 @slider-height:      40px;
 @active-back-color:  #1991FA;
 @fail-back-color:    #F57A7A;
@@ -283,7 +293,6 @@ export default {
     top: 0;
 }
 .slider-container {
-    width: @container-width;
     height: @slider-height;
     line-height: @slider-height;
     text-align: center;
@@ -293,7 +302,7 @@ export default {
     user-select: none;
     & > span {
         color: #45494c;
-        font-size: 16px;
+        font-size: 14px;
     }
 }
 .mask-bar {
@@ -326,6 +335,9 @@ export default {
     cursor: pointer;
     transition: background .2s ease;
     background-color: #fff;
+    &.status-loaderror {
+        cursor: default;
+    }
     &.in-dragging,
     &.status-default:hover {
         background-color: @active-back-color;
