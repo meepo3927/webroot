@@ -102,6 +102,20 @@
         <p v-text="s2"></p>
     </div>
 
+    <!-- 轮播图 -->
+    <div class="carousel slide" ref="carousel" id="bannerCarousel">
+        <ol class="carousel-indicators">
+            <li data-target="#bannerCarousel" class="active"
+                data-slide-to="0"></li>
+            <li data-target="#bannerCarousel" data-slide-to="1"></li>
+            <li data-target="#bannerCarousel" data-slide-to="2"></li>
+        </ol>
+        <div class="carousel-inner" >
+            <div class="item active">1</div>
+            <div class="item">2</div>
+            <div class="item">3</div>
+        </div>
+    </div>
 </div>
 </template>
 
@@ -114,6 +128,8 @@ import MUISlider from 'comp/mui/slider.vue';
 import MUISelect from 'comp/mui/select.vue';
 import Ajax from 'util/ajax.js';
 import store from 'global/xx_store.js';
+// import 'lib/bootstrap.carousel.js';
+import 'lib/bootstrap.carousel.js';
 const duration = 999999999;
 const longMsg = '一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十';
 const methods = {};
@@ -222,6 +238,9 @@ const created = function () {};
 const mounted = function () {
     window.Test = this;
     store.commit('test', 'test');
+    $(this.$refs.carousel).carousel({
+        interval: 3000
+    });
 };
 const beforeDestroy = function () {};
 const dataFunc = function () {
@@ -287,5 +306,9 @@ input.ie9-p:before {
     background-color: #eee;
     position: absolute;
     color: #f00;
+}
+.carousel {
+    height: 200px;
+    background-color: #ccc;
 }
 </style>
