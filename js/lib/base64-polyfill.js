@@ -3,7 +3,7 @@
   var object =
     typeof exports != 'undefined' ? exports :
     typeof self != 'undefined' ? self : // #8: web workers
-    $.global; // #31: ExtendScript
+    window;
 
   var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
 
