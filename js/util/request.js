@@ -1,11 +1,10 @@
 /**
  * 请求数据
  */
-const Promise = require('promise');
-const config = require('config');
-const URL = require('util/url');
-const Fetch = require('util/fetch');
-const isProduction = config.isProduction;
+import Promise from 'promise';
+import Ajax from 'util/ajax.js';
+// import Fetch from 'util/fetch.js';
+const isProduction = Config.isProduction;
 const isMock = !isProduction;
 const useProxy = (URL.query().__useProxy === '1');
 
@@ -36,34 +35,26 @@ const handleResult2 = (result) => {
     }
     return Promise.reject(result);
 };
-const baseFetch = (url, data) => {
-    return Fetch.getJSON(url, data).then((result) => {
-        return handleResult(result);
-    });
+const baseFetch = (url, param) => {
+    return Ajax.fetch(url, param).then(handleResult);
+    // return Fetch.getJSON(url, param).then(handleResult);
 };
 const fetchJSON = (path, param) => {
     if (isProduction || useProxy) {
-        return baseFetch(ajaxUrlBase + `${path}.do`, param);
+        return baseFetch(ajaxUrlBase + `${path}.action`, param);
     }
     return baseFetch(ajaxUrlBase + `${path}.json`, param);
 };
 const fetchJSONData = (path, param) => {
-    return fetchJSON(path, param).then((result) => {
-        return handleResult2(result);
-    });
+    return fetchJSON(path, param).then(handleResult2);
 };
 const post = (path, param) => {
-    let url = ajaxUrlBase + path + '.do';
-    return Fetch.post(url, param).then((r) => {
-        return handleResult(r);
-    });
+    const url = ajaxUrlBase + path + '.action';
+    return Ajax.post(url, param, {dataType: 'json'}).then(handleResult);
 };
 
-
-const exports = {
+export {
     fetchJSON,
     fetchJSONData,
     post
 };
-
-module.exports = exports;

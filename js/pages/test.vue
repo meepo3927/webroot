@@ -170,12 +170,24 @@ methods.msg3 = function () {
     this.$msg.error(longMsg);
 };
 methods.msg4 = function () {
-    Ajax.jsonp('./jsonp.html', 'a=1').then((data) => {
-        LOG(data);
+
+    Request.fetchJSON('/bad', {a: 1}).then((result) => {
+        LOG('result:', result);
     }).catch((e) => {
-        this.$msg('error');
-        LOG(e);
+        this.$msg.error('fetchJSON error');
+        LOG('fetchJSON error:', e);
     });
+
+    Request.fetchJSONData('/1', {a: 1}).then((data) => {
+        LOG('data:', data);
+    }).catch((xhr) => {
+        this.$msg('fetchJSONData error');
+        LOG('fetchJSONData error:', xhr);
+    });
+
+    Request.post('/pp', {a: 'aa'}).then(() => {}).catch((e) => {
+        LOG('post error:', e);
+    })
 };
 
 methods.muiAlert = function () {

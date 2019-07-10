@@ -85,23 +85,35 @@ const buildParamStr = (param) => {
     }
     return arr.join('&');
 };
-
+const injectHeaders = (xhr, headers) => {
+    if (!headers) {
+        return;
+    }
+    for (let name in headers) {
+        const key = name ? name.trim() : '';
+        if (!key) {
+            continue;
+        }
+        xhr.setRequestHeader(key, headers[name]);
+    }
+};
 /**
  * url      请求链接
  * param    {a: 1, b: 2} 或者 'a=1&b=2'
  * type     'GET' or 'POST'
  * dataType 'json' or 'html'
  */
-const fetch = (url, param = {}, type = 'GET', dataType = 'json') => {
+const fetch = (url, param = {}, options = {}) => {
     if (!url) {
         return Promise.reject();
     }
+    const method = options.method ? (options.method + '').toUpperCase() : 'GET';
+    const dataType = options.dataType ? options.dataType.toLowerCase() : 'json';
+    const headers = options.headers;
     const xhr = getXhr();
     if (!xhr) {
         throw Error('get XMLHttpRequest Fail');
     }
-    type = type.toUpperCase();
-    dataType = dataType.toLowerCase();
     const p = new Promise((resolve, reject) => {
         xhr.onreadystatechange = () => {
             if (xhr.readyState !== 4) {
@@ -118,26 +130,29 @@ const fetch = (url, param = {}, type = 'GET', dataType = 'json') => {
             return xhr.responseText ? resolve(xhr.responseText) : reject(xhr);
         };
     });
-    if (type === 'POST') {
-        xhr.open('POST', url, true);
-        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-        xhr.send(buildParamStr(param));
-    } else {
+    if (method === 'GET') {
         const paramStr = buildParamStr(param);
         if (paramStr) {
             url += (url.indexOf('?') >= 0) ? '&' : '?';
             url += paramStr;
         }
         xhr.open('GET', url, true);
+        injectHeaders(xhr, headers);
         xhr.send();
+    } else {
+        xhr.open(method, url, true);
+        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        injectHeaders(xhr, headers);
+        xhr.send(buildParamStr(param));
     }
     return p;
 };
 
 // POST请求
-const post = (url, param) => {
-    return fetch(url, param, 'POST');
+const post = (url, param, options = {}) => {
+    options.method = 'POST';
+    return fetch(url, param, options);
 };
 
 // JSONP相关
@@ -150,14 +165,15 @@ const getJSONPCallbackId = () => {
     return 'jsonp_callback_' + a + b + c;
 };
 // JSONP请求
-const jsonp = (url, param) => {
+const jsonp = (url, param, options = {}) => {
     if (!url) {
         return Promise.resolve();
     }
+    const jsonpCallback = options.jsonpCallback || 'callback';
     const myId = getJSONPCallbackId();
     const paramStr = buildParamStr(param);
     url += (url.indexOf('?') >= 0) ? '&' : '?';
-    url += paramStr + '&callback=' + myId;
+    url += paramStr + '&' + jsonpCallback + '=' + myId;
     let called = false;
     let timer;
     const p = new Promise((resolve, reject) => {
