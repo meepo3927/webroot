@@ -48,6 +48,7 @@ Vue.component('file-upload', FileUpload);
 Vue.component('input-file', InputFile);
 Vue.component('input-number', InputNumber);
 Vue.component('level-menu', LevelMenu);
+Vue.component('center-layer', centerlayer);
 export default {
     VueRouter,
     Vuex

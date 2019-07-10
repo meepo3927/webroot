@@ -53,7 +53,7 @@
             </button>
         </div>
     </form>
-    <mui-layer v-if="switchVa" @close="layerClose">
+    <mui-layer v-if="switchValue" @close="layerClose">
         <div slot="header">哈哈哈</div>
         <div style="min-width: 400px;">
             <div class="m-row-mid">
@@ -68,6 +68,24 @@
             </div>
         </div>
     </mui-layer>
+
+    <center-layer v-if="centerLayerVisible" @close="centerLayerClose">
+        <div class="center-layer-inner">
+            <div >哈哈哈</div>
+            <div style="min-width: 400px;">
+                <div class="m-row-mid">
+                    <label for="">姓名：</label>
+                    <div>
+                        <input type="text" class="form-control"
+                            v-tooltip="tooltipObj">
+                    </div>
+                </div>
+                <div class="mt15 text-right">
+                    <button class="btn btn-primary" @click="centerLayerClose">确定</button>
+                </div>
+            </div>
+        </div>
+    </center-layer>
 
     <div class="shadow-container m15">
         <button class="btn btn-success" v-tooltip="我是猪">MUI Tooltip1</button>
@@ -154,6 +172,9 @@ methods.layerClose = function () {
 methods.onTooltipTestClick = function () {
     this.tooltipStr = Math.random();
 };
+methods.centerLayerClose = function () {
+    this.centerLayerVisible = false;
+};
 methods.PPP = function () {
     this.tooltipStr = Math.random() + longMsg + longMsg + longMsg;
 };
@@ -170,7 +191,7 @@ methods.msg3 = function () {
     this.$msg.error(longMsg);
 };
 methods.msg4 = function () {
-
+    this.centerLayerVisible = true;
     Request.fetchJSON('/bad', {a: 1}).then((result) => {
         LOG('result:', result);
     }).catch((e) => {
@@ -259,6 +280,7 @@ const dataFunc = function () {
     let o = {
         name: +new Date(),
         switchValue: false,
+        centerLayerVisible: false,
         tooltipStr: 'mmmmmmeepo' + longMsg,
         tooltipObj: {
             text: 'Yep'

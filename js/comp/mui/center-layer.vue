@@ -65,8 +65,8 @@ export default {
     .vx-close-btn {
         color: #777;
         position: absolute;
-        top: 9px;
-        right: 12px;
+        top: 4px;
+        right: 10px;
         padding: 8px;
         i.fa {
             font-size: 24px;
