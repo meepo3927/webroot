@@ -7,14 +7,14 @@ try {
 }
 
 // 运行环境
-let isProduction = (env === 'production');
+const isProduction = (env === 'production');
 
 // 全局Inject变量
-let global = window.global || {};
-let basePath = global.basePath || '';
+const global = window.global || {};
+const basePath = global.basePath || '';
 
 // 用户信息
-let user = {};
+const user = {};
 
 module.exports = {
     env,
