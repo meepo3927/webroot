@@ -1,6 +1,6 @@
 const tool = require('util/tool');
-const planePath = 'path://M1705.06,1318.313v-89.254l-319.9-221.799l0.073-208.063c0.521-84.662-26.629-121.796-63.961-121.491c-37.332-0.305-64.482,36.829-63.961,121.491l0.073,208.063l-319.9,221.799v89.254l330.343-157.288l12.238,241.308l-134.449,92.931l0.531,42.034l175.125-42.917l175.125,42.917l0.531-42.034l-134.449-92.931l12.238-241.308L1705.06,1318.313z';
-const planeColor = '#6C97ED';
+const PLANE_PATH = 'path://M1705.06,1318.313v-89.254l-319.9-221.799l0.073-208.063c0.521-84.662-26.629-121.796-63.961-121.491c-37.332-0.305-64.482,36.829-63.961,121.491l0.073,208.063l-319.9,221.799v89.254l330.343-157.288l12.238,241.308l-134.449,92.931l0.531,42.034l175.125-42.917l175.125,42.917l0.531-42.034l-134.449-92.931l12.238-241.308L1705.06,1318.313z';
+const PLANE_COLOR = '#6C97ED';
 const getTooltipDotHtml = function (color) {
     if (typeof color === 'object' && color.color) {
         color = color.color;
@@ -144,7 +144,7 @@ EC.getChartGeo = function (o, options = {}) {
         },
         itemStyle: {
             normal: {
-                areaColor: options.areaColor || '#667491',
+                areaColor: options.areaColor || '#323C48',
                 borderColor: options.borderColor || '#ffffff'
             },
             emphasis: {
@@ -154,7 +154,7 @@ EC.getChartGeo = function (o, options = {}) {
     }, o)
 };
 // 地图 圆圈波纹
-EC.getGeoCircleBorderOption = function (o, itemColor = '#FF799D') {
+EC.getGeoCircleBorderOption = function (o, options = {}) {
     /*
     o.data = data.map((item) => {
         return {
@@ -165,8 +165,19 @@ EC.getGeoCircleBorderOption = function (o, itemColor = '#FF799D') {
         };
     });
     */
+    let data = undefined;
+    if (options.data) {
+        data = options.data.map((item) => {
+            return {
+                name: item.fromName,
+                value: [item.fromLng, item.fromLat, item.value]
+            }
+        });
+    }
+    const itemColor = options.itemColor || PLANE_COLOR;
     return tool.extend({
         type: 'effectScatter',
+        data: data,
         coordinateSystem: 'geo',
         symbolSize: function (val) {
             let v = val[2];
@@ -205,14 +216,18 @@ EC.getGeoCircleBorderOption = function (o, itemColor = '#FF799D') {
     }, o)
 };
 // 飞机轨迹的尾巴
-EC.getPlaneTrailSeries = function (o, color = planeColor) {
-    /**
-     * var fromCoord = [item.province_clogiitud, item.province_clatitude];
-     * var toCoord = [item.scenery_clogiitud, item.scenery_clatitude];
-     * o.data = [{coord: fromCoord}, {coord: toCoord}];
-     */
+EC.getPlaneTrailSeries = function (o, options = {}) {
+    let data = undefined;
+    if (options.data) {
+        data = options.data.map((item) => {
+            const fromCoord = [item.fromLng, item.fromLat];
+            const toCoord = [item.toLng, item.toLat];
+            return [{coord: fromCoord}, {coord: toCoord}];
+        });
+    }
     return tool.extend({
         type: 'lines',
+        data: data,
         zlevel: 2,
         effect: {
             show: true,
@@ -223,7 +238,7 @@ EC.getPlaneTrailSeries = function (o, color = planeColor) {
         },
         lineStyle: {
             normal: {
-                color,
+                color: options.color || PLANE_COLOR,
                 width: 0,
                 curveness: 0.2
             }
@@ -231,31 +246,109 @@ EC.getPlaneTrailSeries = function (o, color = planeColor) {
     }, o)
 };
 // 飞机轨迹
-EC.getPlaneFlySeries = function (o, color = planeColor) {
-    /**
-     * var fromCoord = [item.province_clogiitud, item.province_clatitude];
-     * var toCoord = [item.scenery_clogiitud, item.scenery_clatitude];
-     * o.data = [{coord: fromCoord}, {coord: toCoord}];
-     */
+EC.getPlaneFlySeries = function (o, options = {}) {
+    let data = undefined;
+    if (options.data) {
+        data = options.data.map((item) => {
+            const fromCoord = [item.fromLng, item.fromLat];
+            const toCoord = [item.toLng, item.toLat];
+            return [{coord: fromCoord}, {coord: toCoord}];
+        });
+    }
     return tool.extend({
         type: 'lines',
+        data: data,
         zlevel: 3,
         effect: {
             show: true,
             period: 6,
             trailLength: 0,
-            symbol: planePath,
+            symbol: PLANE_PATH,
             symbolSize: 15
         },
         lineStyle: {
             normal: {
                 // 飞机和线的颜色
-                color,
+                color: options.color || PLANE_COLOR,
                 width: 1,
                 opacity: 0.4,
                 curveness: 0.2
             }
         }
+    }, o);
+};
+EC.getMapPlaneOption = (o, options = {}) => {
+    /**
+     options.data = list.map(v => {
+        return {
+            value: v.userNum,
+            fromLng: v.province_clogiitud,
+            fromLat: v.province_clatitude,
+            fromName: v.cityDesc,
+            toLng: v.scenery_clogiitud,
+            toLat: v.scenery_clatitude,
+            toName: v.sceneryName
+        }
+     });
+    */
+    const series = [
+        EC.getPlaneTrailSeries({}, {data: options.data}),
+        EC.getPlaneFlySeries({}, {data: options.data}),
+        EC.getGeoCircleBorderOption({}, {data: options.data}),
+        {
+            type: 'bar',
+            data: options.data ? options.data.map(v => v.value) : [],
+            itemStyle: {
+                normal: {
+                    label: {
+                        show: true,
+                        position: 'right'
+                    }
+                }
+            },
+            barWidth: 15
+        }
+    ];
+    return tool.extend({
+        title: {
+            text: '',
+            top: 15,
+            left: 20
+        },
+        backgroundColor: '#404a59',
+        tooltip: {
+            trigger: 'item'
+        },
+        grid: {
+            top: 60,
+            left: 20,
+            width: '40%',
+            height: '84%',
+            containLabel: true
+        },
+        geo: options.geo || EC.getChartGeo(),
+        xAxis: {
+            type: 'value',
+            position: 'top',
+            axisLine: {show: false},
+            axisTick: {show: false},
+            axisLabel: {show: false},
+            splitLine: {show: false}
+        },
+        yAxis: {
+            data: options.data ? options.data.map(v => v.fromName) : [],
+            type: 'category',
+            axisLine: {show: false},
+            axisTick: {show: false},
+            splitLine: {show: false},
+            axisLabel: {
+                interval: 0,
+                textStyle: {
+                    color: '#fff'
+                }
+            }
+        },
+        series: series
     }, o);
 };
 module.exports = EC;
