@@ -158,12 +158,18 @@ EC.getGeoCircleBorderOption = function (o, options = {}) {
     const lnglatMap = {};
     let data = undefined;
     if (options.data) {
+        data = [];
         // 来源地 circle
-        data = options.data.map((item) => {
-            return {
+        options.data.forEach((item) => {
+            const mapkey = item.fromLng + ',' + item.fromLat;
+            if (lnglatMap[mapkey]) {
+                return;
+            }
+            data.push({
                 name: item.fromName,
                 value: [item.fromLng, item.fromLat, item.value]
-            }
+            });
+            lnglatMap[mapkey] = item;
         });
         // 目的地 circle 去重
         options.data.forEach((item) => {
