@@ -130,11 +130,12 @@ EC.getSankeyChartOption = function (o) {
     }, o);
 };
 // 地理
-EC.getChartGeo = function (o) {
+EC.getChartGeo = function (o, options = {}) {
     return tool.extend({
-        top: 40,
-        left: 6,
-        right: 14,
+        map: 'china',
+        top: '12%',
+        left: 20,
+        right: 20,
         roam: true,
         label: {
             emphasis: {
@@ -143,17 +144,27 @@ EC.getChartGeo = function (o) {
         },
         itemStyle: {
             normal: {
-                areaColor: '#667491',
-                borderColor: '#ffffff'
+                areaColor: options.areaColor || '#667491',
+                borderColor: options.borderColor || '#ffffff'
             },
             emphasis: {
-                areaColor: '#2a333d',
+                areaColor: options.hoverAreaColor || '#2a333d',
             }
         }
     }, o)
 };
 // 地图 圆圈波纹
 EC.getGeoCircleBorderOption = function (o, itemColor = '#FF799D') {
+    /*
+    o.data = data.map((item) => {
+        return {
+            name: item.cityDesc,
+            value: [
+                item.province_clogiitud, item.province_clatitude, item.userNum
+            ]
+        };
+    });
+    */
     return tool.extend({
         type: 'effectScatter',
         coordinateSystem: 'geo',
@@ -168,6 +179,11 @@ EC.getGeoCircleBorderOption = function (o, itemColor = '#FF799D') {
             brushType: 'stroke'
         },
         hoverAnimation: true,
+        tooltip: {
+            formatter: (p) => {
+                return p.marker + p.name + '：' + p.value[2];
+            }
+        },
         label: {
             normal: {
                 fontWeight: 'lighter',
@@ -190,6 +206,11 @@ EC.getGeoCircleBorderOption = function (o, itemColor = '#FF799D') {
 };
 // 飞机轨迹的尾巴
 EC.getPlaneTrailSeries = function (o, color = planeColor) {
+    /**
+     * var fromCoord = [item.province_clogiitud, item.province_clatitude];
+     * var toCoord = [item.scenery_clogiitud, item.scenery_clatitude];
+     * o.data = [{coord: fromCoord}, {coord: toCoord}];
+     */
     return tool.extend({
         type: 'lines',
         zlevel: 2,
@@ -211,6 +232,11 @@ EC.getPlaneTrailSeries = function (o, color = planeColor) {
 };
 // 飞机轨迹
 EC.getPlaneFlySeries = function (o, color = planeColor) {
+    /**
+     * var fromCoord = [item.province_clogiitud, item.province_clatitude];
+     * var toCoord = [item.scenery_clogiitud, item.scenery_clatitude];
+     * o.data = [{coord: fromCoord}, {coord: toCoord}];
+     */
     return tool.extend({
         type: 'lines',
         zlevel: 3,
