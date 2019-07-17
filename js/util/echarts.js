@@ -155,23 +155,27 @@ EC.getChartGeo = function (o, options = {}) {
 };
 // 地图 圆圈波纹
 EC.getGeoCircleBorderOption = function (o, options = {}) {
-    /*
-    o.data = data.map((item) => {
-        return {
-            name: item.cityDesc,
-            value: [
-                item.province_clogiitud, item.province_clatitude, item.userNum
-            ]
-        };
-    });
-    */
+    const lnglatMap = {};
     let data = undefined;
     if (options.data) {
+        // 来源地 circle
         data = options.data.map((item) => {
             return {
                 name: item.fromName,
                 value: [item.fromLng, item.fromLat, item.value]
             }
+        });
+        // 目的地 circle 去重
+        options.data.forEach((item) => {
+            const mapkey = item.toLng + ',' + item.toLat;
+            if (lnglatMap[mapkey]) {
+                return;
+            }
+            data.push({
+                name: item.toName,
+                value: [item.toLng, item.toLat, 1]
+            });
+            lnglatMap[mapkey] = item;
         });
     }
     const itemColor = options.itemColor || PLANE_COLOR;
