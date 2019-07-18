@@ -27,7 +27,13 @@ const rules = [
         exclude: /(node_modules)|(lib\/)/,
         options: {
             cacheDirectory: true,
-            plugins: ["babel-plugin-syntax-dynamic-import"],
+            plugins: [
+                "babel-plugin-syntax-dynamic-import",
+                "babel-plugin-transform-runtime",
+                ["babel-plugin-transform-es2015-modules-commonjs", {
+                    loose: true
+                }]
+            ],
             presets: [["env", {
               "modules": false,
               "targets": {
