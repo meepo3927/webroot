@@ -1,6 +1,7 @@
 <template>
 <label>
-    <input type="radio" :name="name" v-model="value" />
+    <input type="radio" :name="name" :checked="checked"
+        ref="radio" />
     <em><i></i></em>
     <span v-text="text" v-if="text"></span>
 </label>
@@ -8,17 +9,73 @@
 
 <script>
 const methods = {};
+// 处理value和input.checked不相同的情况
+// 以input实际状态为准
+methods.syncRealStatus = function () {
+    if (this.isValueTrue !== this.getChecked()) {
+        this.$emit('input', this.getChecked());
+    }
+};
+methods.syncInputWhenNeed = function () {
+    if (this.isValueTrue !== this.getChecked()) {
+        this.$emit('input', this.getChecked());
+    }
+};
+methods.getChecked = function () {
+    return this.$refs.radio.checked;
+};
+methods.setChecked = function (b) {
+    this.$refs.radio.checked = b;
+};
+methods.handleClick = function () {
+    this.$nextTick(this.syncInputWhenNeed);
+};
+methods.handleMouseUp = function () {
+    this.$nextTick(this.syncInputWhenNeed);
+};
 const computed = {};
+computed.isValueTrue = function () {
+    return (this.value === true) || (this.value === 'checked');
+};
+const watch = {};
+watch.value = function (val) {
+    if (val === true || val === 'checked') {
+        this.setChecked(true);
+    } else {
+        this.setChecked(false);
+    }
+};
 const created = function () {};
-const mounted = function () {};
-const beforeDestroy = function () {};
+const mounted = function () {
+    if (this.isValueTrue) {
+        this.setChecked(true);
+    }
+    this.$nextTick(this.syncRealStatus);
+    // 有click, mouseup动作后 同步数据
+    document.documentElement.addEventListener(
+        'click', this.handleClick, true
+    );
+    document.documentElement.addEventListener(
+        'mouseup', this.handleMouseUp, true
+    );
+};
+const beforeDestroy = function () {
+    document.documentElement.removeEventListener(
+        'click', this.handleClick, true
+    );
+    document.documentElement.removeEventListener(
+        'mouseup', this.handleMouseUp, true
+    );
+};
 const dataFunc = function () {
-    const o = {};
+    const o = {
+    };
     return o;
 };
 export default {
     data: dataFunc,
     created,
+    watch,
     methods,
     computed,
     props: ['name', 'text', 'value'],
