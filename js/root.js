@@ -26,6 +26,7 @@ import MUIloading from 'extend/vue.mui-loading.js';
 import MUITooltip from 'extend/vue.mui-tooltip.js';
 import MUIScroll from 'comp/mui/scroll.vue';
 import MUIRadio from 'comp/mui/radio.vue';
+import MUICheckbox from 'comp/mui/checkbox.vue';
 Vue.prototype.$msg = MUIMsg;
 Vue.prototype.$alert = MUIMsgBox.alert;
 Vue.prototype.$confirm = MUIMsgBox.confirm;
@@ -34,6 +35,7 @@ Vue.prototype.$loading = MUIloading;
 Vue.directive('tooltip', MUITooltip);
 Vue.component('mui-scroll', MUIScroll);
 Vue.component('mui-radio', MUIRadio);
+Vue.component('mui-checkbox', MUICheckbox);
 // 指令
 import VueClickOut from 'extend/vue.clickout.js';
 import Sticky from 'extend/vue.sticky.js';

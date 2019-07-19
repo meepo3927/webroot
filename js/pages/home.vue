@@ -1,12 +1,6 @@
 <template>
 <div class="page-home">
     <h1>Home</h1>
-    <div class="profile-box">
-        <mui-radio text="尼玛A" name="nima" v-model="A" />
-        <mui-radio text="尼玛B" name="nima" class="ml20" v-model="B" />
-        <br />
-        <mui-radio text="尼玛C" name="" class="" v-model="C" />
-    </div>
 </div>
 </template>
 
@@ -25,7 +19,12 @@ const dataFunc = function () {
     let o = {
         A: true,
         B: true,
-        C: false
+        C: false,
+
+        C1: '',
+        C2: true,
+        C3: false,
+        C4: 'a4'
     };
     return o;
 };
