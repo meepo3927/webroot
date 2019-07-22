@@ -74,6 +74,9 @@ Plugin.install = function (Vue, options) {
         }
         this.$promiseHolder = {};
     };
+    methods.$IMG = function (path) {
+        return Vue.$getImageUrl(path);
+    };
     methods.$HACK_VUE_ROUTER_IE = function () {
         const versions = {
             objectobject: 7, //IE7-8
