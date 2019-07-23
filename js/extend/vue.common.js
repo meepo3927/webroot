@@ -24,11 +24,13 @@ Plugin.install = function (Vue, options) {
         }
         return '/images' + path;
     };
-    Vue.$newComponent = (component, data, el) => {
+    Vue.$newComponent = (component, data, options = {}) => {
         const Constructor = Vue.extend(component);
         const instance = new Constructor({
-            data
+            data,
+            propsData: options.propsData
         });
+        const el = options.el;
         if (el && el !== document.body) {
             instance.$mount(el);
         } else {
