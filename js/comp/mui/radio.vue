@@ -60,9 +60,6 @@ watch.value = function (val) {
         this.setChecked(false);
     }
 };
-watch.disabled = function (dd) {
-    LOG('ddd:' + dd);
-};
 const created = function () {};
 const mounted = function () {
     if (this.isValueTrue) {
