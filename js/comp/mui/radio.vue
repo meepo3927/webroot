@@ -1,5 +1,5 @@
 <template>
-<label>
+<label :class="rootClass" @click="onClick">
     <input type="radio" :name="name" :checked="checked"
         ref="radio" />
     <em><i></i></em>
@@ -9,6 +9,13 @@
 
 <script>
 const methods = {};
+methods.onClick = function (e) {
+    if (this.isDisabled) {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+    }
+};
 // 处理value和input.checked不相同的情况
 // 以input实际状态为准
 methods.syncRealStatus = function () {
@@ -37,6 +44,14 @@ const computed = {};
 computed.isValueTrue = function () {
     return (this.value === true) || (this.value === 'checked');
 };
+computed.isDisabled = function () {
+    return (this.disabled !== undefined) && (this.disabled !== false);
+};
+computed.rootClass = function () {
+    return [
+        this.isDisabled ? 'status-disabled' : 'status-enabled'
+    ]
+};
 const watch = {};
 watch.value = function (val) {
     if (val === true || val === 'checked') {
@@ -44,6 +59,9 @@ watch.value = function (val) {
     } else {
         this.setChecked(false);
     }
+};
+watch.disabled = function (dd) {
+    LOG('ddd:' + dd);
 };
 const created = function () {};
 const mounted = function () {
@@ -78,7 +96,7 @@ export default {
     watch,
     methods,
     computed,
-    props: ['name', 'text', 'value'],
+    props: ['name', 'text', 'value', 'disabled'],
     mounted,
     mixins: [],
     beforeDestroy,
@@ -87,13 +105,14 @@ export default {
 </script>
 
 <style scoped lang="less">
-@main-color:        #0B88E7;
+@main-color:            #0B88E7;
+@disabled-main-color:   #85C4F3;
 @radio-size:        24px;
 @radio-inner-pad:    4px;
 @radio-border-width: 2px;
 @radio-inner-size:   @radio-size - @radio-inner-pad * 2 - @radio-border-width * 2;
 @font-size:         16px;
-label {
+label.status-enabled {
     cursor: pointer;
 }
 input[type=radio] {
@@ -125,7 +144,7 @@ span {
     vertical-align: middle;
 }
 // HOVER
-label:hover > em {
+label.status-enabled:hover > em {
     border-color: @main-color;
 }
 // 选中
@@ -133,6 +152,21 @@ input[type=radio]:checked ~ em {
     border-color: @main-color;
     & > i {
         background-color: @main-color;
+    }
+}
+// 失效
+label.status-disabled {
+    & > em {
+        border-color: #C7C7C7;
+    }
+    & > span {
+        color: #AAA;
+    }
+    input[type=radio]:checked ~ em {
+        border-color: @disabled-main-color;
+        & > i {
+            background-color: @disabled-main-color;
+        }
     }
 }
 </style>
