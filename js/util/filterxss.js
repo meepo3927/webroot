@@ -1,7 +1,8 @@
 import 'lib/xss.min.js';
 
 const XSS_OPTIONS = {
-    onTagAttr: (tag, name, value, white) => {
+    onTagAttr: (tag, name, value, white) => {},
+    onIgnoreTagAttr: (tag, name, value, white) => {
         // LOG(tag + ' -- ' + name + ' -- ' + value + ' -- ' + white);
         // 允许style属性
         if (name === 'style') {
