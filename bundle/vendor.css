@@ -147,6 +147,9 @@ textarea {
 input::-ms-clear {
   display: none;
 }
+input:-ms-input-placeholder {
+  color: #777;
+}
 button {
   overflow: visible;
 }
@@ -2024,7 +2027,6 @@ fieldset[disabled] .btn-danger:focus {
 .pagination {
   display: inline-block;
   padding-left: 0;
-  margin: 20px 0;
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;
   border-radius: 4px;

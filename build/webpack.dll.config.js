@@ -8,9 +8,9 @@ const vendors = [
     'jquery',
     'vue',
     'polyfill',
-    'vendorless',
-    'echarts',
-    'lodash'
+    'vendorless'
+    // 'echarts',
+    // 'lodash'
 ];
 const DIST_PATH = config.DIST_PATH + '/../bundle';
 const plugins = [
