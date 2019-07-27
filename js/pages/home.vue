@@ -7,12 +7,18 @@
 <script>
 import 'root';
 const methods = {};
+methods.fetchRender = function (url) {
+    Request.baseFetch(url).then((result) => {
+        LOG(url + ':' + JSON.stringify(result));
+    });
+};
 const computed = {};
-
 const watch = {};
 const created = function () {};
 const mounted = function () {
     window.VM = this;
+    this.fetchRender('http://localhost:8107/');
+    this.fetchRender('http://localhost:8107/data');
 };
 const beforeDestroy = function () {};
 const dataFunc = function () {
