@@ -86,6 +86,12 @@ methods.init = function (data) {
         this.$emit('ready', this.ztree);
     });
 };
+methods.dispose = function () {
+    if (this.ztree) {
+        this.ztree.destroy();
+        this.ztree = null;
+    }
+};
 methods.addNode = function (node, targetNode, position) {
     var index = -1;
     var parent = null;
@@ -136,6 +142,8 @@ let watch = {};
 watch.data = function (o) {
     if (typeof o === 'object' && o) {
         this.init(o);
+    } else if (o === undefined || o === null) {
+        this.dispose();
     }
 };
 const created = function () {};
@@ -144,7 +152,9 @@ const mounted = function () {
         this.init(this.data);
     }
 };
-const beforeDestroy = function () {};
+const beforeDestroy = function () {
+    this.dispose();
+};
 const dataFunc = function () {
     let o = {
         id: (uuid++)
