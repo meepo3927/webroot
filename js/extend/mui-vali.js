@@ -19,7 +19,7 @@
  * formVali.check(); // 检查 报一个错
  * formVali.checkAll(); // 检查 报所有错
  *
- * 仅支持 required, pattern
+ * 仅支持 required, pattern, equals
  */
 import ErrMsg from './mui-errmsg.js';
 const $ = undefined;
@@ -62,7 +62,7 @@ proto.reset = function () {
 };
 // 所有带required, pattern的元素
 proto.getInputs = function () {
-    return this.form.querySelectorAll('[required],[pattern]');
+    return this.form.querySelectorAll('[required],[pattern],[equals]');
 };
 // 所有有效的inputs
 proto.getAvailableInputs = function () {
@@ -147,6 +147,13 @@ proto.checkValue = function (elem) {
         if (value === undefined || value === null || value === '') {
             return {
                 elem, errtype: 'required', errmsg: ERRMSG_MAP.VALUE_REQUIRED
+            }
+        }
+    }
+    if (elem.getAttribute('equals')) {
+        if (elem.value !== elem.getAttribute('equals')) {
+            return {
+                elem, errtype: 'equals', errmsg: elem.getAttribute('required-errmsg')
             }
         }
     }
