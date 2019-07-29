@@ -54,6 +54,7 @@ const post = (path, param) => {
 };
 
 export {
+    baseFetch,
     fetchJSON,
     fetchJSONData,
     post
