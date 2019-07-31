@@ -109,7 +109,7 @@ const fetch = (url, param = {}, options = {}) => {
     }
     const method = options.method ? (options.method + '').toUpperCase() : 'GET';
     const dataType = options.dataType ? options.dataType.toLowerCase() : 'json';
-    const headers = options.headers;
+    const headers = options.headers || {};
     const xhr = getXhr();
     if (!xhr) {
         throw Error('get XMLHttpRequest Fail');
@@ -141,8 +141,12 @@ const fetch = (url, param = {}, options = {}) => {
         xhr.send();
     } else {
         xhr.open(method, url, true);
-        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        if (!headers['X-Requested-With']) {
+            xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+        }
+        if (!headers['Content-Type']) {
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        }
         injectHeaders(xhr, headers);
         xhr.send(buildParamStr(param));
     }

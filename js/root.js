@@ -37,7 +37,7 @@ Vue.component('mui-scroll', MUIScroll);
 Vue.component('mui-radio', MUIRadio);
 Vue.component('mui-checkbox', MUICheckbox);
 // 指令
-import VueClickOut from 'extend/vue.clickout.js';
+import VueClickOut from 'extend/vue.clickoutside.js';
 import Sticky from 'extend/vue.sticky.js';
 Vue.directive('clickout', VueClickOut);
 Vue.directive('sticky', Sticky);

@@ -52,6 +52,19 @@ const post = (path, param) => {
     const url = ajaxUrlBase + path + '.action';
     return Ajax.post(url, param, {dataType: 'json'}).then(handleResult);
 };
+const postJSON = (path, param) => {
+    const url = ajaxUrlBase + path;
+    if (typeof param === 'object') {
+        param = JSON.stringify(param);
+    }
+    const options = {
+        dataType: 'json',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    };
+    return Ajax.post(url, param, options).then(handleCodeResult);
+};
 
 export {
     baseFetch,
