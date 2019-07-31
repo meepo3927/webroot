@@ -1,7 +1,6 @@
 ;(function () {
 
   var object =
-    typeof exports != 'undefined' ? exports :
     typeof self != 'undefined' ? self : // #8: web workers
     window;
 
