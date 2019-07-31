@@ -76,13 +76,18 @@ if (ls) {
             }
         }
     };
-
+    Store.remove = function (key) {
+        return ls.removeItem(key);
+    };
 } else {
     Store.get = function () {
         return null;
     };
 
     Store.set = function () {
+        return false;
+    };
+    Store.remove = function () {
         return false;
     };
 }
