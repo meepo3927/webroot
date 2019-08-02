@@ -79,6 +79,11 @@ Plugin.install = function (Vue, options) {
     methods.$IMG = function (path) {
         return Vue.$getImageUrl(path);
     };
+    methods.$CATCH = function (err) {
+        const msg = err ? (err.msg || err.message || err.error) : '';
+        this.$msg(msg || '请求失败');
+        LOG('$CATCH:', err);
+    };
     methods.$HACK_VUE_ROUTER_IE = function () {
         const versions = {
             objectobject: 7, //IE7-8
