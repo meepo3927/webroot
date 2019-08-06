@@ -244,6 +244,29 @@ methods.muiloading = function () {
         ld.remove()
     }, 1500)
 };
+methods.initEditor = function () {
+    const options = {
+        resizeType: 1,
+        loadStyleMode: false,
+        items: [
+            'source', '|', 'undo', 'redo', '|',
+            'preview', 'print', 'template', 'code', 'cut', 'copy', 'paste',
+            'plainpaste', 'wordpaste', '|', 
+            'justifyleft', 'justifycenter', 'justifyright',
+            'justifyfull', 'insertorderedlist', 'insertunorderedlist',
+            'indent', 'outdent', 'subscript', 'superscript',
+            'clearhtml', 'quickformat', 'selectall', '|',
+            'fullscreen', '/',
+            'formatblock', 'fontname', 'fontsize', '|',
+            'forecolor', 'hilitecolor', 'bold','italic', 'underline',
+            'strikethrough', 'lineheight', 'removeformat', '|',
+            // 'image', 'multiimage', 'flash', 'media', 'insertfile',
+            'table', 'hr', 'emoticons', 'pagebreak',
+            'anchor', 'link', 'unlink'
+        ]
+    };
+    this.editor = KindEditor.create(this.$refs.editor, options);
+};
 let computed = {};
 computed.o2 = function () {
     let arr = [
