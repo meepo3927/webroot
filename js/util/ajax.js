@@ -119,12 +119,20 @@ const fetch = (url, param = {}, options = {}) => {
             if (xhr.readyState !== 4) {
                 return;
             }
+            try {
+                var responseJSON = parseJSON(xhr.responseText);
+            } catch(e) {
+                responseJSON = null;
+            }
+            if (xhr.status !== 200) {
+                xhr.responseJSON = responseJSON;
+                return reject(xhr);
+            }
             if (dataType === 'json') {
-                const result = parseJSON(xhr.responseText);
-                if (result) {
-                    return resolve(result);
+                if (responseJSON) {
+                    return resolve(responseJSON);
                 } else {
-                    return reject(xhr)
+                    return reject(xhr);
                 }
             }
             return xhr.responseText ? resolve(xhr.responseText) : reject(xhr);

@@ -124,16 +124,20 @@
     exports.escapeHTML = escapeHTML;
 
     var toStr = Object.prototype.toString;
-
+    var isType = function (obj, type) {
+        return toStr.call(obj) === ('[object ' + type + ']');
+    };
     var isArray = function (o) {
-        return toStr.call(o) === '[object Array]';
+        return isType(o, 'Array');
     };
     var isObject = function (o) {
-        return toStr.call(o) === '[object Object]';
+        return isType(o, 'Object');
     };
     var isFunction = function (f) {
-        return toStr.call(o) === '[object Function]';
+        return isType(f, 'Function');
     };
+    
+    exports.isType = isType;
     exports.isArray = isArray;
     exports.isObject = isObject;
     exports.isFunction = isFunction;
