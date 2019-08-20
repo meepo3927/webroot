@@ -48,4 +48,12 @@ function fileSave(content, fileName) {
         }, 3000);
         return true;
     }
+    /*
+    var evt = new MouseEvent('click', {
+      view: window,
+      bubbles: true,
+      cancelable: false
+    });
+    $a.dispatchEvent(evt);
+    */
 }
