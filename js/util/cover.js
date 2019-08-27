@@ -11,7 +11,7 @@ define([], function () {
         elem.style.display = 'none';
         elem.style.width = '100%';
         elem.style.height = '100%';
-        elem.style.backgroundColor = '#000';
+        elem.style.backgroundColor = options.backgroundColor || '#000';
         elem.style.position = 'fixed';
         elem.style.top = '0';
         elem.style.left = '0';
