@@ -49,8 +49,8 @@
         } else {
             try {
                 json = JSON.parse(e.data);
-            } catch(e) {
-                log('[iframeUtil onMessage] JSON.parse error', e);
+            } catch(err) {
+                log('[iframeUtil onMessage] JSON.parse error', err, e);
                 return false;
             }
         }
