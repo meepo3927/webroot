@@ -29,7 +29,10 @@ methods.setChecked = function (b) {
     this.$refs.checkbox.checked = b;
 };
 methods.handleChange = function () {
-    this.$nextTick(this.syncInput);
+    this.$nextTick(() => {
+        this.syncInput();
+        this.$emit('change');
+    });
 };
 methods.isValueTrue = function (val) {
     return (val === true) || (val === 'checked') || (
@@ -95,7 +98,7 @@ export default {
 
 <style scoped lang="less">
 @main-color:        #0B88E7;
-@input-size:        24px;
+@input-size:        22px;
 @input-inner-pad:    4px;
 @input-border-width: 2px;
 @input-inner-size:   @input-size - @input-inner-pad * 2 - @input-border-width * 2;
