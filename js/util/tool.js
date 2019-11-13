@@ -385,5 +385,9 @@
         ].join(','));
     };
 
+    exports.randStr = () => {
+        return (Math.random().toString(32)).substr(2);
+    };
+
     return exports;
 }));

@@ -44,13 +44,19 @@
      * window.onmessage 回调
      */
     var onMessage = function (e) {
+        var imm = 'setImmediate';
+        // 过滤掉setImmediate Message
+        if (e.target === window && (typeof e.data === 'string')
+            && e.data.substr(0, imm.length) === imm) {
+            return;
+        }
         if (typeof e.data === 'object') {
             var json = e.data;
         } else {
             try {
                 json = JSON.parse(e.data);
             } catch(err) {
-                log('[iframeUtil onMessage] JSON.parse error', err, e);
+                log('[iframeUtil onMessage] JSON.parse error', e, err);
                 return false;
             }
         }

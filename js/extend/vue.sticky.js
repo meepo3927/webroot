@@ -66,7 +66,8 @@ proto.getStickyStyleText = function () {
     return [
         'position: fixed',
         'top: 0',
-        'margin: 0'
+        'margin: 0',
+        'z-index: 30'
     ].join(';');
 };
 proto.attach = function () {
@@ -89,6 +90,10 @@ proto.detach = function () {
 };
 proto._onWindowScroll = function () {
     var offset = this.getOffset();
+    // element hidden
+    if (offset.width === 0 && offset.height === 0) {
+        return this.detach();
+    }
     if (offset.top < 0 && !this.elem.IS_STICKY_ATTACHED) {
         // Change position to `fixed`, and make a block replace it.
         this.attach();
