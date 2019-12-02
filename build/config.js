@@ -25,7 +25,6 @@ var alias = {
     // 工具,插件
     promise$: 'lib/promise.js',
     echarts$: 'lib/echarts-4.0.2.min.js',
-    select2$: 'lib/select2.min.js',
     // 通用
     polyfill$: JS_DIR + '/global/polyfill',
     request$: JS_DIR + '/util/request.js',
