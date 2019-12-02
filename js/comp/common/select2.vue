@@ -16,7 +16,7 @@ methods.onSelectChange = function (e) {
     this.syncInput();
     const elem = e.currentTarget;
     const option = elem.children[elem.selectedIndex];
-    this.$emit('change', this.$select.select2('data'), e, option);
+    this.$emit('change', this.$select.select2('data'), this.$select.val(), e);
 };
 methods.initPlugin = function () {
     // adaptContainerCssClass
@@ -72,7 +72,7 @@ methods.disposePlugin = function () {
     this.$select.select2('destroy');
 };
 methods.syncInput = function () {
-    this.$emit('input', this.$select.select2('data'));
+    this.$emit('input', this.$select.val(), this.$select.select2('data'));
 };
 var computed = {};
 computed.o = function () {
