@@ -18,6 +18,16 @@ methods.onSelectChange = function (e) {
     const option = elem.children[elem.selectedIndex];
     this.$emit('change', this.$select.select2('data'), this.$select.val(), e);
 };
+// <select>与this.value值不一致, 以this.value为准
+methods.fixSelectValue = function () {
+    if (this.value === undefined || this.value === null) {
+        return;
+    }
+    // 当option中存在this.value时，自动选中
+    if (this.$select.find('[value=' + this.value + ']').length) {
+        this.$select.val(this.value);
+    }
+};
 methods.initPlugin = function () {
     // adaptContainerCssClass
     // adaptDropdownCssClass
@@ -93,6 +103,7 @@ computed.o = function () {
 let watch = {};
 // 选项发生变化
 watch.o = function () {
+    this.$nextTick(this.fixSelectValue);
     this.$nextTick(this.initPlugin);
 };
 watch.value = function (val) {
