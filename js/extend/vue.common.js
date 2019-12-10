@@ -48,33 +48,64 @@ Plugin.install = function (Vue, options) {
     };
     Vue.SPACE_CHAR = '　';
     const mounted = function () {
-        this.$promiseHolder = {};
+        this.$_promiseHolder = {};
     };
     const methods = {};
     methods.$setPromise = function (name, p) {
-        if (this.$promiseHolder[name]) {
-            this.$promiseHolder[name].cancel();
-            this.$promiseHolder[name] = undefined;
+        if (this.$_promiseHolder[name]) {
+            this.$_promiseHolder[name].cancel();
+            this.$_promiseHolder[name] = undefined;
         }
-        this.$promiseHolder[name] = p;
+        this.$_promiseHolder[name] = p;
         return p;
     };
     methods.$cancelPromise = function (name) {
-        if (this.$promiseHolder[name]) {
-            this.$promiseHolder[name].cancel();
-            this.$promiseHolder[name] = undefined;
+        if (this.$_promiseHolder[name]) {
+            this.$_promiseHolder[name].cancel();
+            this.$_promiseHolder[name] = undefined;
         }
     };
     methods.$cleanPromise = function () {
-        for (let i in this.$promiseHolder) {
-            if (this.$promiseHolder.hasOwnProperty(i)) {
-                let p = this.$promiseHolder[i];
+        for (let i in this.$_promiseHolder) {
+            if (this.$_promiseHolder.hasOwnProperty(i)) {
+                let p = this.$_promiseHolder[i];
                 if (p && p.cancel) {
                     p.cancel();
                 }
             }
         }
-        this.$promiseHolder = {};
+        this.$_promiseHolder = {};
+    };
+    methods.$newComponent = function (component, data, options = {}) {
+        if (!this.$_componentHolder) {
+            this.$_componentHolder = {};
+        }
+        const t = (new Date).getTime();
+        const name = (Math.random().toString(32)).substr(2) + t;
+        // 不重复生成
+        if (this.$_componentHolder[name]) {
+            return;
+        }
+        const instance = Vue.$newComponent(component, data, options);
+        instance.$once('dispose', () => {
+            this.$disposeComponent(name);
+        });
+        this.$_componentHolder[name] = instance;
+        return instance;
+    };
+    methods.$disposeComponent = function (name) {
+        if (this.$_componentHolder[name]) {
+            Vue.$disposeComponent(this.$_componentHolder[name]);
+            this.$_componentHolder[name] = null;
+        }
+    };
+    methods.$disposeAllComponent = function () {
+        for (let name in this.$_componentHolder) {
+            if (this.$_componentHolder.hasOwnProperty(name)) {
+                this.$disposeComponent(name);
+            }
+        }
+        this.$_componentHolder = {};
     };
     methods.$IMG = function (path) {
         return Vue.$getImageUrl(path);
@@ -106,6 +137,7 @@ Plugin.install = function (Vue, options) {
     };
     const beforeDestroy = function () {
         this.$cleanPromise();
+        this.$disposeAllComponent();
     };
     Vue.mixin({
         mounted,
