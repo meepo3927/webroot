@@ -48,6 +48,7 @@ methods.addPolygon = function (item, options = {}) {
     // 中心点
     // const centerPoint = this.getPolygonCenter(points);
     const o = Tool.extend({
+        map: this.map,
         strokeWeight: 2,
         strokeColor: '#1472CE',
         strokeStyle: 'dashed',
@@ -114,7 +115,7 @@ methods.init = function (AMap) {
     const map = this.map = new AMap.Map(this.$el, {
         esizeEnable: true,
         zoom: 12,
-        center1: [111.672775, 40.822078]
+        center: [111.672775, 40.822078]
     });
     this.map.on('complete', () => {
     });
