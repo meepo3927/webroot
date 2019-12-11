@@ -143,6 +143,48 @@ methods.getPolygonCenter = function (list) {
     y /= list.length;
     return new AMap.LngLat(x, y);
 };
+// 获取当前位置
+methods.getCurrentPosition = function (options, onComplete, onError) {
+    const map = this.map;
+    map.plugin('AMap.Geolocation', function () {
+        const o = Tool.extend({
+            enableHighAccuracy: true,
+            showButton: true,
+            showMarker: true,
+            showCircle: true,
+            panToLocation: false,
+            zoomToAccuracy: false
+        }, options);
+        const geo = new AMap.Geolocation(o);
+        map.addControl(geo);
+        geo.getCurrentPosition();
+        AMap.event.addListener(geo, 'complete', onComplete);
+        AMap.event.addListener(geo, 'error', onError);
+    });
+};
+methods.addInfoWindow = function (elem, point, options) {
+    const p = Tool.extend({
+        closeWhenClickMap: true,
+        isCustom: true,
+        content: elem
+    }, options);
+    const infoWindow = new AMap.InfoWindow(p);
+    infoWindow.open(this.map, point);
+    return infoWindow;
+};
+methods.addCompWindow = function (Comp, CompData, point, options) {
+    const comp = Vue.$newComponent(Comp, CompData);
+    const win = this.addInfoWindow(comp.$el, point, options);
+    // 地图关闭
+    win.on('close', () => {
+        Vue.$disposeComponent(comp);
+    });
+    // 组件关闭
+    comp.$once('close', () => {
+        win.close();
+    });
+    return {comp, win};
+};
 const computed = {};
 const created = function () {};
 const mounted = function () {
