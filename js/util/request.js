@@ -4,6 +4,8 @@
 import Promise from 'promise';
 import Ajax from 'util/ajax.js';
 // import Fetch from 'util/fetch.js';
+import Store from 'global/center_store.js';
+
 const isProduction = Config.isProduction;
 const isMock = !isProduction;
 const useProxy = (URL.query().__useProxy === '1');
@@ -16,14 +18,25 @@ if (isProduction) {
 } else {
     ajaxUrlBase = '/mock';
 }
-
-const handleResult = (result) => {
+const getToken = () => {
+    if (Store.state.token) {
+        return 'Bearer ' + Store.state.token;
+    }
+};
+const getTokenHeader = () => {
+    const h = {};
+    if (Store.state.token) {
+        h.Authorization = 'Bearer ' + Store.state.token;
+    }
+    return h;
+};
+const handleResultSuccess = (result) => {
     if (!result || result.success === false) {
         return Promise.reject(result);
     }
     return result;
 };
-const handleResult2 = (result) => {
+const handleResultData = (result) => {
     if (!result) {
         return Promise.reject(result);
     }
@@ -35,22 +48,29 @@ const handleResult2 = (result) => {
     }
     return Promise.reject(result);
 };
-const baseFetch = (url, param) => {
-    return Ajax.fetch(url, param).then(handleResult);
-    // return Fetch.getJSON(url, param).then(handleResult);
-};
-const fetchJSON = (path, param) => {
+const fetchJSON = (path, param, options) => {
     if (isProduction || useProxy) {
-        return baseFetch(ajaxUrlBase + `${path}.action`, param);
+        var p = Ajax.fetch(ajaxUrlBase + `${path}.action`, param, options)
+    } else {
+        p = Ajax.fetch(ajaxUrlBase + `${path}.json`, param, options)
     }
-    return baseFetch(ajaxUrlBase + `${path}.json`, param);
+    return p.then(handleResultSuccess);
 };
 const fetchJSONData = (path, param) => {
-    return fetchJSON(path, param).then(handleResult2);
+    return fetchJSON(path, param).then(handleResultData);
+};
+const getJWTData = (path, param) => {
+    const options = {
+        headers: getTokenHeader()
+    };
+    return fetchJSON(path, param, options).then(handleResultData);
 };
 const post = (path, param) => {
     const url = ajaxUrlBase + path + '.action';
-    return Ajax.post(url, param, {dataType: 'json'}).then(handleResult);
+    return Ajax.post(url, param, {
+        dataType: 'json',
+        Authorization: getToken()
+    }).then(handleResultSuccess);
 };
 const postJSON = (path, param) => {
     const url = ajaxUrlBase + path;
@@ -60,15 +80,17 @@ const postJSON = (path, param) => {
     const options = {
         dataType: 'json',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            Authorization: getToken()
         }
     };
-    return Ajax.post(url, param, options).then(handleCodeResult);
+    return Ajax.post(url, param, options).then(handleResultSuccess);
 };
 
 export {
-    baseFetch,
     fetchJSON,
     fetchJSONData,
-    post
+    getJWTData,
+    post,
+    postJSON
 };
