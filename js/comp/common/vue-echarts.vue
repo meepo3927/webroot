@@ -117,6 +117,19 @@ methods.isDisposed = function () {
     }
     return true;
 };
+methods.onTouchStart = function (e) {
+    if (this.$el === e.target) {
+        return false;
+    }
+    if (this.$el.contains(e.target)) {
+        return false;
+    }
+    if (this.chart) {
+        this.chart.dispatchAction({
+            type: 'hideTip'
+        });
+    }
+};
 const watch = {};
 watch.options = {
     deep: true,
@@ -155,12 +168,14 @@ const mounted = function () {
     if (this.loading) {
         this.chart.showLoading('default', {color: LOADING_COLOR});
     }
+    document.addEventListener('touchstart', this.onTouchStart, false);
 };
 const beforeDestroy = function () {
     this.unbindResize();
     if (this.chart) {
         this.dispose();
     }
+    document.removeEventListener('touchstart', this.onTouchStart, false);
 };
 export default {
     props: {
