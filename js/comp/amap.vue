@@ -3,36 +3,8 @@
 </template>
 
 <script>
-const MAP_SRC = 'https://webapi.amap.com/maps?v=1.4.15&key=54fc25c73b5aa3a4d5fef63d7095f19e&callback=onAMapLoad';
+import amapUtil from 'util/amap.js';
 const methods = {};
-methods.loadMap = function (callback) {
-    if (window.AMap) {
-        callback && callback(window.AMap);
-        return true;
-    }
-    if (!this.loadMapCallbacks) {
-        this.loadMapCallbacks = [];
-    }
-    if (this.loadMapStatus === 'loading') {
-        callback && this.loadMapCallbacks.push(callback)
-        return false;
-    }
-    window.onAMapLoad = () => {
-        this.loadMapStatus = 'loaded';
-        callback && callback(window.AMap);
-        this.loadMapCallbacks.forEach((func) => {
-            func(window.AMap);
-        });
-        this.loadMapCallbacks.length = 0;
-        window.onAMapLoad = null;
-    };
-    const node = document.createElement('script');
-    node.charset = 'utf-8';
-    node.src = MAP_SRC;
-    this.loadMapStatus = 'loading';
-    document.body.appendChild(node);
-    return false;
-};
 methods.init = function (AMap) {
     const map = this.map = new AMap.Map(this.$el, {
         esizeEnable: true,
@@ -40,17 +12,18 @@ methods.init = function (AMap) {
         center: [111.672775, 40.822078]
     });
     this.map.on('complete', () => {
+        this.isMapCompleted = true;
+        for (let i = 0; i < this.initStack.length; i++) {
+            this.initStack[i](this, this.map, window.AMap);
+        }
+        this.initStack = [];
     });
     this.map.on('click', (p) => {
         // LOG(p.lnglat);
     });
-    for (let i = 0; i < this.initStack.length; i++) {
-        this.initStack[i](this, this.map, window.AMap);
-    }
-    this.initStack = [];
 };
 methods._ = function (callback) {
-    if (this.map) {
+    if (this.isMapCompleted) {
         return callback(this, this.map, window.AMap);
     } else {
         this.initStack.push(callback);
@@ -190,7 +163,7 @@ const created = function () {};
 const mounted = function () {
     this.polygonHolder = {};
     this.markerHolder = {};
-    this.loadMap(this.init);
+    amapUtil.load(this.init);
 };
 const beforeDestroy = function () {
     if (this.map) {
