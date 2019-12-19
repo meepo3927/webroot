@@ -29,17 +29,9 @@ methods._ = function (callback) {
         this.initStack.push(callback);
     }
 };
-// 添加工具条
-methods.addToolbar = function (options) {
-    const o = Tool.extend({
-        position: 'LB'
-    }, options);
-    AMap.plugin(['AMap.ToolBar'], () => {
-        this.map.addControl(new AMap.ToolBar(o));
-    });
-};
+
 // 添加标记
-methods.addMarker = function (item) {
+methods.addMarker = function (item, options = {}) {
     const lng = item.lng;
     const lat = item.lat;
     if (!item || !item.lng || !item.lat) {
@@ -47,6 +39,7 @@ methods.addMarker = function (item) {
     }
     const marker = new AMap.Marker({
         map: this.map,
+        icon: options.icon,
         position: new AMap.LngLat(item.lng, item.lat),
         extData: item,
         label: {
