@@ -36,7 +36,7 @@ define([], function () {
         }
         // 点击事件
         if (this.options.onClick) {
-            this.elem.onClick = this.options.onClick;
+            this.elem.addEventListener('click', this.options.onClick, true);
         }
     };
     proto.show = function () {
