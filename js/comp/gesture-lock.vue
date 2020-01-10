@@ -27,10 +27,10 @@ methods.onTouchMove = function (e) {
     }
     const p = this.getXY(e);
     for (let i = 0; i < this.circles.length; i++) {
-        const cc = this.circles[i];
-        if (cc.inCircle(p)) {
-            cc.drawActive();
-            this.line.add(i, cc);
+        const circle = this.circles[i];
+        if (circle.includePoint(p) && this.line.add(i, circle)) {
+            circle.setState('active');
+            this.drawAll();
         }
     }
 };
@@ -93,9 +93,15 @@ methods.drawCircles = function () {
         cc.draw();
     });
 };
+methods.drawAll = function () {
+    this.cleanCanvas();
+    this.drawCircles();
+    this.line.draw();
+};
 methods.drawError = function () {
-    this.line.list.forEach((cc) => {
-        cc.drawError();
+    this.cleanCanvas();
+    this.circles.forEach((cc) => {
+        (cc.state === 'active') ? cc.drawError() : cc.draw();
     });
     this.line.drawError();
 };
@@ -134,6 +140,6 @@ export default {
 
 <style scoped lang="less">
 canvas {
-    background-color: #292B38;
+    background-color: #FFF;
 }
 </style>
