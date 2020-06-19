@@ -1,5 +1,9 @@
 const CALLBACK_NAME = 'onWebAMapLoad';
-const MAP_SRC = 'https://webapi.amap.com/maps?v=1.4.15&key=54fc25c73b5aa3a4d5fef63d7095f19e&callback=' + CALLBACK_NAME;
+const MAP_VERSION = '1.4.15';
+const MAP_SRC = 'https://webapi.amap.com/maps?'
+    + 'v=2.0'
+    + '&key=54fc25c73b5aa3a4d5fef63d7095f19e'
+    + '&callback=' + CALLBACK_NAME;
 const isFunction = function (f) {
     return Object.prototype.toString.call(f) === '[object Function]';
 };
@@ -36,20 +40,47 @@ amap.load = (callback) => {
     return false;
 };
 amap.getCurrentPosition = (onComplete, onError = noop) => {
-    window.AMap.plugin('AMap.Geolocation', function () {
-        const o = {
-            enableHighAccuracy: true,
-            showButton: false,
-            showMarker: false,
-            showCircle: false,
-            panToLocation: false,
-            zoomToAccuracy: false
-        };
-        const geo = new AMap.Geolocation(o);
-        geo.getCurrentPosition();
-        AMap.event.addListener(geo, 'complete', onComplete);
-        AMap.event.addListener(geo, 'error', onError);
+    amap.load(() => {
+        window.AMap.plugin('AMap.Geolocation', function () {
+            const o = {
+                enableHighAccuracy: true,
+                showButton: false,
+                showMarker: false,
+                showCircle: false,
+                panToLocation: false,
+                zoomToAccuracy: false
+            };
+            const geo = new AMap.Geolocation(o);
+            AMap.event.addListener(geo, 'complete', onComplete);
+            AMap.event.addListener(geo, 'error', onError);
+            geo.getCurrentPosition();
+        });
     });
 };
-
+amap.loc = () => {
+    return new Promise((resolve, reject) => {
+        amap.getCurrentPosition((result) => {
+            resolve(result);
+        }, (err) => {
+            reject(err);
+        });
+    });
+};
+amap.getPolygonCenter = (list) => {
+    let x = 0.0;
+    let y = 0.0;
+    for (let i = 0; i < list.length; i++) {
+        const item = list[i];
+        if (item.lng && item.lat) {
+            x += parseFloat(item.lng);
+            y += parseFloat(item.lat);
+        } else if (item[0] && item[1]) {
+            x += parseFloat(item[0]);
+            y += parseFloat(item[1]);
+        }
+    }
+    x /= list.length;
+    y /= list.length;
+    return new AMap.LngLat(x, y);
+};
 export default amap;
